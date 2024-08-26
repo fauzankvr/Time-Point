@@ -1,0 +1,41 @@
+<%- include('../layouts/head.ejs') %>
+
+
+<div class="row container " style="display: flex; margin-top: 50px; align-items: center; margin: auto; ">
+ <div class=" col-sm-6 mt-5" >
+    <img src="/public/user/img/omega.jpg" alt="" style="max-width: 100%;">
+ </div> 
+
+
+  <div class="col-sm-6 form_container">
+   <form action="/login" method="post">
+      <h1 class="text-center" style="font-size: 36px">Login to your Account</h1>
+   <div class="mb-4">
+     <label for="name" class="form-label form_font_size mb-3 text-center d-block"> Enter your details below</label>
+     <% if (messages.invailedmessage) { %>
+      <div class="alert alert-danger"><%= messages.invailedmessage %></div>
+    <% } %>
+
+    <input type="email" name="email" class=" input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3 "   id="email" placeholder="Enter your email" >
+  </div>
+    <div class="mb-4">
+    <input type="password" name="password" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3"   id="email" placeholder="Enter your Password" >
+  </div>
+  <div>
+      <button class="btn btn-primary py-2 m-5 input_font_size login-padding " type="submit">Login</button>   
+      <a href="" class="ms-5">Forgotton Password? </a>
+  </div>
+    </form>
+  <div style="display: flex; justify-content: center;  width: 100%;">
+    <div class="btn btn-outline-dark input_font_size btn-sign-google">
+      <span><img src="/public/user/img/google-icon.png" style="width: 17px;" alt=""></span>
+      Sign up with Google
+    </div>
+  </div>
+    <div class="mt-4 ms-5 text-center">
+      <span>You have no account? <a href="/signup">Create account</a></span>
+            </div>
+ </div> 
+</div>
+
+<%- include('../layouts/foot.ejs') %>

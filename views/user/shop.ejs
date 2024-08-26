@@ -1,0 +1,113 @@
+<%- include('../layouts/user/userhead') %>
+<%- include('../layouts/user/userheader') %>
+
+<div class="container">
+  <div class="row">
+    <!-- Filter Section -->
+    <div class="col-lg-3">
+      <nav aria-label="breadcrumb" class="mt-4">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item climb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active" aria-current="page">Shop</li>
+        </ol>
+        <h3>Watches for Men & Women</h3>
+      </nav>
+
+      <!-- Gender Filter -->
+      <nav class="navbar navbar-light col-lg-9 mt-5">
+        <a class="navbar-brand" href="#"><h3>Gender</h3></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#genderFilter"
+          aria-controls="genderFilter"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span>+</span>
+        </button>
+        <div class="collapse col-lg-12" id="genderFilter">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <a class="nav-link" href="#">Male</a>
+                <input type="checkbox" />
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <a class="nav-link" href="#">Female</a>
+                <input type="checkbox" />
+              </div>
+            </li>
+            <li class="nav-item">
+              <div class="d-flex justify-content-between align-items-center">
+                <a class="nav-link" href="#">Unisex</a>
+                <input type="checkbox" />
+              </div>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <!-- Brand Filter -->
+      <nav class="navbar navbar-light col-lg-9 mt-5">
+        <a class="navbar-brand" href="#"><h3>Brand</h3></a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-toggle="collapse"
+          data-target="#brandFilter"
+          aria-controls="brandFilter"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span>+</span>
+        </button>
+        <div class="collapse col-lg-12" id="brandFilter">
+          <ul class="navbar-nav mr-auto">
+            <% brandData.forEach(element => { %>
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#"><%= element.name %></a>
+                  <input type="checkbox" />
+                </div>
+              </li>
+            <% }); %>
+          </ul>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Product Cards Section -->
+    <div class="col-lg-9 mt-5">
+      <div class="row">
+        <% productData.forEach(element => { %>
+          <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
+            <div class="card mx-3 mt-5 px-5" style="width: 28rem;">
+              <a href="/home/productDetails/<%= element.id %>">
+                <img src="/public/productImgs/<%= element.images.image1 %>" class="card-img-top img-fluid" alt="<%= element.product_name %>">
+              </a>
+              <div class="card-body">
+                <h5 class="card-title"><%= element.product_name %></h5>
+                <p class="card-text">₹ <%= element.price %> | <span style="color: rgb(99, 98, 98); font-size: bold;">₹ 25,000</span></p>
+                <div class="star-rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <a href="#" class="btn btn-primary mt-2">Add to cart</a>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/user/userfooter') %>
+<%- include('../layouts/user/userfoot') %>

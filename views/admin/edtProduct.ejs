@@ -1,0 +1,256 @@
+<%- include('../layouts/headadmin') %>
+<%- include('../layouts/adminHeader2') %>
+<%- include('../layouts/adminSidbar2') %>
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Edit a Product</h4>
+            <p class="card-description">Edit your product details below.</p>
+
+            <form class="forms-sample" action="/admin/productManagment/editProduct/<%= productDataEdit[0]._id %>" method="post" onsubmit=" return validDetails()" enctype="multipart/form-data">
+              <div class="form-group">
+                <label for="product_name">Product Name</label>
+                <input type="text" name="product_name" id="product_name" value="<%= productDataEdit[0].product_name %>" class="form-control" placeholder="Enter Product Name">
+                <div id="name-error" style="color: brown; font-size: small;"></div>
+              </div>
+
+              <!-- Brand and Category Fields -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Brand</label>
+                    <div class="col-sm-9">
+                      <select class="form-select" name="brand_id" required>
+                        <option value="<%= productDataEdit[0].brand_id._id %>" selected><%= productDataEdit[0].brand_id.name %></option>
+                        <% brandData.forEach(element => { %>
+                          <% if(productDataEdit[0].brand_id.name !== element.name){ %>
+                            <option value="<%= element._id %>"></option>><%= element.name %></option>
+                          <% } %>
+                        <% }) %>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Category</label>
+                    <div class="col-sm-9">
+                      <select class="form-select" name="category_id" required>
+                        <option value="<%= productDataEdit[0].category_id._id %>" selected><%= productDataEdit[0].category_id.name %></option>
+                        <% categoryData.forEach(element => { %>
+                          <% if(productDataEdit[0].category_id.name !== element.name){ %>
+                            <option value="<%= element._id %>"><%= element.name %></option>
+                          <% } %>
+                        <% }) %>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Gender and Color Fields -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Gender</label>
+                    <div class="col-sm-9">
+                      <select class="form-select" name="gender" required>
+                        <option selected><%= productDataEdit[0].gender %></option>
+                        <% if(productDataEdit[0].gender == "Female"){ %>
+                          <option>Male</option>
+                          <option>Unisex</option>
+                        <% } else if(productDataEdit[0].gender == "Male"){ %>
+                          <option>Female</option>
+                          <option>Unisex</option>
+                        <% } else { %>
+                          <option>Male</option>
+                          <option>Female</option>
+                        <% } %>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Color</label>
+                    <div class="col-sm-9">
+                      <select class="form-select" name="color" required>
+                        <option selected><%= productDataEdit[0].color %></option>
+                        <% if(productDataEdit[0].color == "Black"){ %>
+                          <option>Silver</option>
+                          <option>Gold</option>
+                        <% } else if(productDataEdit[0].color == "Silver"){ %>
+                          <option>Black</option>
+                          <option>Gold</option>
+                        <% } else { %>
+                          <option>Black</option>
+                          <option>Silver</option>
+                        <% } %>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Price and Stock Fields -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Price</label>
+                    <div class="col-sm-9">
+                      <input type="text" name="price" class="form-control" value="<%= productDataEdit[0].price %>">
+                      <div id="price-error" style="color: brown; font-size: small;"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group row">
+                    <label class="col-sm-3 col-form-label">Stock</label>
+                    <div class="col-sm-9">
+                      <input type="text" name="stock" class="form-control" value="<%= productDataEdit[0].stock %>">
+                      <div id="stock-error" style="color: brown; font-size: small;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Description Field -->
+              <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="discription" style="height: 100px;" class="form-control" id="description" placeholder="Write a description about the product"><%= productDataEdit[0].discription %></textarea>
+                <div id="description-error" style="color: brown; font-size: small;"></div>
+              </div>
+
+              <!-- Image Upload and Preview Fields -->
+              <div class="row">
+                <% for (let i = 1; i <= 4; i++) { %>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label>Image <%= i %></label>
+                      <div class="input-group col-xs-12">
+                        <input type="file" name="image<%= i %>" class="form-control file-upload-info" accept="image/*" onchange="previewAndCropImage(event, 'imagePreview<%= i %>', 'cropper<%= i %>')">
+                      </div>
+                      <img id="imagePreview<%= i %>" src="/public/productImgs/<%= productDataEdit[0].images[`image${i}`] %>" width="300px" alt="">
+                    </div>
+                  </div>
+                <% } %>
+              </div>
+
+              <button type="submit" class="btn btn-primary me-2">Update</button>
+              <button type="button" class="btn btn-light">Cancel</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crop Modal -->
+      <div id="cropModal" style="display: none;">
+        <div class="crop-container mb-3">
+          <img id="cropImage" style="max-width: 100%;" />
+          <button type="button" class="btn btn-primary" onclick="cropAndSaveImage()">Crop & Save</button>
+          <button type="button" class="btn btn-secondary" onclick="closeCropModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/cropperjs@1.5.12/dist/cropper.min.js"></script>
+<script>
+function validDetails() {
+   
+    let product_name = document.getElementById("product_name").value;
+    let price = document.getElementById("price").value;
+    let stock = document.getElementById("stock").value;
+    let description = document.getElementById("description").value;
+
+    document.getElementById('name-error').textContent = '';
+    document.getElementById('price-error').textContent = '';
+    document.getElementById('stock-error').textContent = '';
+    document.getElementById('description-error').textContent = '';
+
+    if (!product_name || product_name.trim().length == 0) {
+      document.getElementById('name-error').textContent = 'Name field should not be empty!';
+      return false;
+    }
+    if (!price || price.trim().length == 0 || price < 0 || isNaN(price)) {
+      document.getElementById('price-error').textContent = 'Price must be greater than 0';
+      return false;
+    }
+    if (!stock || stock.trim().length == 0 || stock < 0 || isNaN(stock)) {
+      document.getElementById('stock-error').textContent = 'Stock must be greater than 0';
+      return false;
+    }
+    if (!description || description.trim().length == 0) {
+      document.getElementById('description-error').textContent = 'Description field should not be empty!';
+      return false;
+    }
+    console.log('endddddddddddd')
+    return true;
+  }
+
+  let cropper;
+  let currentImageId;
+
+  function previewAndCropImage(event, previewId, cropperId) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const imgElement = document.getElementById('cropImage');
+        imgElement.src = e.target.result;
+        document.getElementById('cropModal').style.display = 'block';
+
+        currentImageId = previewId;
+        if (cropper) {
+          cropper.destroy();
+        }
+        cropper = new Cropper(imgElement, {
+          aspectRatio: 2 / 3,
+          viewMode: 2
+        });
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function cropAndSaveImage() {
+    if (!cropper) return;
+
+    const croppedCanvas = cropper.getCroppedCanvas({
+      width: 300,
+      height: 300
+    });
+
+    croppedCanvas.toBlob((blob) => {
+      const file = new File([blob], `cropped-${currentImageId}.jpg`, { type: 'image/jpeg' });
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+
+      const fileInput = document.querySelector(`input[name="${currentImageId.replace('imagePreview', 'image')}"]`);
+      fileInput.files = dataTransfer.files;
+
+      document.getElementById(currentImageId).src = croppedCanvas.toDataURL('image/jpeg');
+      document.getElementById('cropModal').style.display = 'none';
+
+      cropper.destroy();
+      cropper = null;
+    }, 'image/jpeg');
+  }
+
+  function closeCropModal() {
+    document.getElementById('cropModal').style.display = 'none';
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+  }
+</script>
+
+<%- include('../layouts/footadmin') %>

@@ -1,0 +1,58 @@
+   <!-- Top Notification Banner -->
+  <div class="bg-dark text-white text-center py-2 display-flex">
+    <div class="container">
+      <p class="mb-0 poppins-thin" style="font-size: 12px;">
+        Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!  
+        <a href="#" class="btn btn-primary text-light ">SHOP NOW</a>
+      </p>
+    </div>
+  </div>
+
+   <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand ml-5" href="index.html">
+                    <img src="/public/admin/img/logo.png" alt="Logo" style="height: 90px;">
+                </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-5">
+          <li class="nav-item ms-5">
+            <a class="nav-link" href="/home">Home</a>
+          </li>
+          <li class="nav-item ms-5">
+            <a class="nav-link" href="/home/shop">Shop</a>
+          </li>
+          <li class="nav-item ms-5">
+            <a class="nav-link" href="#">Contact</a>
+          </li>
+          <li class="nav-item ms-5">
+            <a class="nav-link" href="#">About</a>
+          </li>
+        </ul>
+        <form class="d-flex me-3">
+          <input class="form-control me-2" type="search" placeholder="search here...." aria-label="Search" style="font-size: 13px;">
+          <button class="btn" type="submit">
+            <img src="/public/user/img/search.png" alt="Search" style="width: 20px; height: 20px;">
+          </button>
+        </form>
+        <a href="#"><img src="/public/user/img/heart.png" alt="Favorites" class="me-3" style="width: 20px; height: 20px;"></a>
+        <a href="/cart.html">
+          <img src="/public/user/img/cart.png" alt="Cart" style="width: 25px; height: 25px;">
+        </a>
+          <!-- <a href="/cart.html" class="ms-2">
+          <img src="https://cdn.icon-icons.com/icons2/2442/PNG/512/profile_user_icon_148618.png" alt="Cart" style="width: 22px; height: 22px;" >
+        </a> -->
+        <% if (!user) { %>
+          <a href="/login"><button class="rounded btn btn-primary fs-5">login</button></a>
+       <%  }else{%>
+        <form method="post" action="/logout">
+          <a ><button type="submit" class="rounded btn btn-danger fs-5">logout</button></a>
+          </form>
+       <%} %>
+        
+      </div>
+    </div>
+  </nav>

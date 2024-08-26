@@ -1,0 +1,134 @@
+<%- include('../layouts/head.ejs') %>
+
+<div class="row container " style="display: flex; margin-top: 50px; align-items: center; margin: auto; ">
+  <div class="col-sm-6 mt-5">
+    <img src="/public/user/img/omega.jpg" alt="" style="max-width: 100%; margin-bottom: 50px;">
+  </div> 
+
+  <div class="col-sm-6 form_container">
+    <form id="signupForm" action="/signup" method="post" onsubmit=" return validRegister()">
+      <h1 class="text-center" style="font-size: 36px">Create an Account</h1>
+      <div class="mb-4">
+        <div class="container form-container">
+          <label class="form-label form_font_size mb-3 text-center d-block"> Enter your details below</label>
+          <% if (messages.invailed) { %>
+            <div id="invalid-msg" class="alert alert-danger" style="font-size: 15px; text-align: center;">
+              <%= messages.invailed %>
+            </div>
+          <% } %>
+        </div>
+
+        <input type="text" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3" id="name" name="name" placeholder="Name" >
+        <div id="name-error" style="color: brown; font-size: small;"></div>
+      </div>
+
+      <div class="mb-4">
+        <input type="email" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3" id="email" name="email" placeholder="Email" required>
+        <div id="email-error" style="color: brown; font-size: small;"></div>
+      </div>
+
+      <div class="mb-4">
+        <input type="text" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3" id="phone" name="phone" placeholder="Phone Number" required>
+        <div id="mobile-error" style="color: brown; font-size: small;"></div>
+      </div>
+
+      <div class="mb-4">
+        <input type="password" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3" id="password" name="password" placeholder="Password" required>
+        <div id="password-error" style="color: brown; font-size: small;"></div>
+      </div>
+
+      <div class="mb-4">
+        <input type="password" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3" id="confirm_password" name="confirm_password" placeholder="Confirm Password" required>
+        <div id="password-mismatch" style="display: none; color: brown; font-size: small;">Passwords do not match.</div>
+      </div>
+
+      <div class="center-div">
+        <button type="submit" id="submitButton" class="btn btn-primary mb-4 input_font_size signup-padding py-2">Create Account</button>
+      </div>
+    </form>
+
+    <a href="/auth/google">
+      <div style="display: flex; justify-content: center; width: 100%;">
+        <div class="btn btn-outline-dark input_font_size btn-sign-google">
+          <span><img src="/public/user/img/google-icon.png" style="width: 17px;" alt=""></span>
+          Sign up with Google
+        </div>
+      </div>
+    </a>
+
+    <div class="mt-4 ms-5 text-center">
+      <span>Already have an account? <a href="/login">Login</a></span>
+    </div>
+  </div>
+</div>
+
+<script>
+  function validRegister() {
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const phone = document.getElementById('phone').value;
+    const password = document.getElementById('password').value;
+    const confirm_password = document.getElementById('confirm_password').value;
+
+    // Clear any previous error messages
+    document.getElementById('name-error').textContent = '';
+    document.getElementById('email-error').textContent = '';
+    document.getElementById('mobile-error').textContent = '';
+    document.getElementById('password-error').textContent = '';
+    document.getElementById('password-mismatch').style.display = 'none';
+     
+    if (!name || name.trim().length === 0) {
+      document.getElementById('name-error').textContent = 'Name field should not be empty!';
+      return false;
+    }
+
+    const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
+    if (!email || !emailRegex.test(email)) {
+      document.getElementById('email-error').textContent = 'Please enter a valid email address. (e.g., example@gmail.com)';
+      return false;
+    } 
+
+    const mobileRegex = /^[6-9]\d{9}$/;
+    if (!phone || !mobileRegex.test(phone)) {
+      document.getElementById('mobile-error').textContent = 'Mobile number should be a 10-digit valid number';
+      return false;
+    }
+
+    if (new Set(phone).size === 1) {
+      document.getElementById('mobile-error').textContent = 'Mobile number should not consist of the same digit.';
+      return false;
+    }
+
+    const passwordRegex = /^(?=.*[!@#$%^&*]).{6,}$/;
+    if (!password || !passwordRegex.test(password)) {
+      document.getElementById('password-error').textContent = 'Password must be at least 6 characters and contain a special character.';
+      return false;
+    }
+
+    if (password !== confirm_password) {
+      document.getElementById('password-mismatch').style.display = 'block';
+      return false;
+    }
+
+    // Disabling the submit button after form submission
+     document.getElementById('signupForm').addEventListener('submit', function(event) {
+    const button = document.getElementById('submitButton');
+    button.disabled = true; // Disable the button
+    button.innerText = 'Submitting...'; // Optional: Change button text
+  });
+
+
+    return true;
+  }
+
+  
+  // For invalid messages - auto hide
+  const invalidMsgSignup = document.getElementById('invalid-msg');
+  if (invalidMsgSignup) {
+    setTimeout(() => {
+      invalidMsgSignup.style.display = 'none';
+    }, 5000);
+  }
+</script>
+
+<%- include('../layouts/foot.ejs') %>

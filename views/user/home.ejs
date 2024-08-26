@@ -1,0 +1,215 @@
+<%- include('../layouts/user/userhead') %>
+ <style>
+        .card {
+            height: 100%;
+        }
+        .card-img {
+            object-fit: cover;
+            height: 100%;
+        }
+        .card-img-overlay {
+            background: rgba(0, 0, 0, 0.5); 
+        }
+    </style>
+<%- include('../layouts/user/userheader') %>
+
+
+<div id="carouselExampleCaptions" class="carousel slide">
+    <div class="carousel-inner" style="background-color: rgb(219, 219, 219);">
+        <!-- First Slide -->
+        <div class="carousel-item active">
+            <div class="d-flex align-items-center">
+                <div class="container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 text-center text-lg-start">
+                            <div class="hero__caption">
+                                <h1 class="poppins-bold" style="font-size: 60px;">Select Your New <br> Perfect Style</h1>
+                                <p class="poppins-thin" style="font-size: 22px; font-weight: 40;">Handpicked watches that blend exceptional craftsmanship with timeless design. Each piece promises unmatched elegance and quality for every occasion.</p>
+                                <!-- Hero-btn -->
+                                <div class="hero__btn">
+                                    <a href="industries.html" class="btn btn-primary" style="font-size: 18px;">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 d-none d-sm-block">
+                            <div class="hero__img">
+                                <img src="/public/user/img/watch.png" alt="" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Second Slide -->
+        <div class="carousel-item">
+            <div class="d-flex align-items-center">
+                <div class="container">
+                    <div class="row justify-content-between align-items-center">
+                        <div class="col-xl-8 col-lg-8 col-md-8 col-sm-8 text-center text-lg-start">
+                            <div class="hero__caption">
+                                <h1 class="poppins-bold" style="font-size: 60px;">Explore our finest collection <br> of watches</h1>
+                                <p class="poppins-thin" style="font-size: 22px; font-weight: 40;">Experience the perfect fusion of artistry and precision. Every watch embodies refined style and enduring quality.</p>
+                                <!-- Hero-btn -->
+                                <div class="hero__btn">
+                                    <a href="industries.html" class="btn btn-primary" style="font-size: 18px;">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-4 d-none d-sm-block">
+                            <div class="hero__img">
+                                <img src="/public/user/img/watch3.png" alt="" class="img-fluid">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Carousel Controls -->
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+
+
+    <!-- brand names  -->
+
+<div class="container-fluid p-0">
+  <img src="/public/user/img/brand_names.jpg" class="img-fluid p-5" alt="">
+</div>
+    
+<!-- Cards -->
+ <h2 class="text-center "> New Arrivals </h2>
+<div class="container">
+  <div class="col-lg-12">
+    <div class="row">
+   <% for (let i = 0; i < 4; i++) { %>
+  <div class="col-lg-3 col-sm-6 mb-3 col-md-4">
+    <div class="card mx-3 mt-5 px-5" style="width: 28rem;">
+      <a href="/home/productDetails/<%= productData[i].id %>">
+        <img src="/public/productImgs/<%= productData[i].images.image1 %>" class="card-img-top img-fluid mb-1" alt="<%= productData[i].product_name %>">
+      </a>
+      <div class="card-body">
+        <h3 class="card-title" style="font-size: 15px;"><%= productData[i].product_name %></h3>
+        <h3 class="py-3">₹ <%= productData[i].price %> | <strike style="color: rgb(99, 98, 98);">₹ 25,000</strike></h3>
+        <div class="star-rating">
+          <!-- Example: 4 stars out of 5 -->
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="fas fa-star"></i>
+          <i class="far fa-star"></i>
+        </div>
+        <a href="" class="btn btn-primary px-4 mt-2" style="font-size: 14px;">Add to cart</a>
+      </div>
+    </div>
+  </div>
+<% } %>
+</div>
+</div>
+</div>
+
+
+
+
+
+<div class="d-flex justify-content-center align-items-center">
+  <a href="" class="btn btn-primary px-5 py-2 fs-5 m-5" >View More</a>
+</div>
+
+<section class="py-5">
+  <div class="container">
+    <!-- Section Category -->
+    <div class="mb-4">
+      <p class="text-uppercase text-muted">Featured</p>
+    </div>
+    <!-- Section Header -->
+    <div class="mb-5">
+      <h3 class="h2">Our Collections</h3>
+    </div>
+    <section class="container my-5">
+    <!-- Gallery -->
+    <div class="row">
+        <!-- Main Image -->
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark text-white border-0 h-100">
+                <img src="/public/user/img/gallery-5.jpg" class="card-img" style="max-height: 650px;" alt="Playstation 5">
+                <div class="card-img-overlay d-flex flex-column justify-content-end">
+                    <h2 class="card-title">Men's Collections</h2>
+                    <p class="card-text">Black and White version of the PS5 coming out on sale.</p>
+                    <a href="#" class="btn btn-primary">Shop Now</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Smaller Images -->
+        <div class="col-lg-6">
+            <div class="row h-100">
+                <div class="col-12 mb-4">
+                    <div class="card bg-dark text-white border-0 h-100">
+                        <img src="/public/user/img/gallary-6.avif" class="card-img" alt="Women's Collections">
+                        <div class="card-img-overlay d-flex flex-column justify-content-end">
+                            <h3 class="card-title">Women's Collections</h3>
+                            <p class="card-text">Featured women collections that give you another vibe.</p>
+                            <a href="#" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-dark text-white border-0 h-100">
+                        <img src="/public//user/img/gallary-7.avif" class="card-img" alt="Speakers">
+                        <div class="card-img-overlay d-flex flex-column justify-content-end">
+                            <h3 class="card-title">Speakers</h3>
+                            <p class="card-text">High-quality wireless speakers.</p>
+                            <a href="#" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card bg-dark text-white border-0 h-800">
+                        <img src="/public/user//img/gallary-8.avif" class="card-img" alt="Perfume">
+                        <div class="card-img-overlay d-flex flex-column justify-content-end">
+                            <h3 class="card-title">Perfume</h3>
+                            <p class="card-text">GUCCI INTENSE OUD EDP.</p>
+                            <a href="#" class="btn btn-primary">Shop Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-md-4">
+        <img src="../public/user/icons/service-1 (1).png" alt="FAST AND FREE DELIVERY" class="img-fluid mb-3" />
+        <h3 class="h5">FAST AND FREE DELIVERY</h3>
+        <p class="text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+      </div>
+      <div class="col-md-4">
+        <img src="../public/user/icons/service-2 (1).png" alt="24/7 SUPPORT" class="img-fluid mb-3" />
+        <h3 class="h5">24/7 SUPPORT</h3>
+        <p class="text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+      </div>
+      <div class="col-md-4">
+        <img src="../public/user/icons/service-3 (1).png" alt="MONEY BACK GUARANTY" class="img-fluid mb-3" />
+        <h3 class="h5">MONEY BACK GUARANTY</h3>
+        <p class="text-muted">Lorem ipsum dolor sit amet consectetur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+<%- include('../layouts/user/userfooter') %>
+<%- include('../layouts/user/userfoot') %>

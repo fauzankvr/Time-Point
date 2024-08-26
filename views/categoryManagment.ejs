@@ -1,0 +1,95 @@
+<%- include('layouts/headadmin') %>
+<%- include('layouts/adminHeader2') %>
+<%- include('layouts/adminSidbar2') %>
+ 
+
+<div class="main-panel">
+  <div class="content-wrapper">
+    <div class="row">
+      <div class="col-lg-12 grid-margin stretch-card">
+        <div class="card">
+          <div class="card-body">
+            <h4 class="card-title">Category Management</h4>
+            <p class="card-description">Manage Category detiails</p>    
+          <!-- Flash Messages -->
+            <% if (messages.success) { %>
+                <div class="alert alert-success">
+                    <%= messages.success %>
+                </div>
+            <% } %>
+            <% if (messages.error) { %>
+                <div class="alert alert-danger">
+                    <%= messages.error %>
+                </div>
+            <% } %>
+            <!-- End of Flash Messages -->
+
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Category Name</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <% categoryData.forEach(element => { %>
+                  <tr>
+                    <td><%= element.name %></td>
+                    <td>
+                      <div class="d-flex aligin-items-center justify-contern-center">
+                        <div class="mx-2">
+                   <a
+                          href="/admin/productManagment/editProduct/<%= element._id %>"
+                          type="button"
+                          class=" btn btn-primary btn-rounded btn-icon btn-sm"
+                        > 
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </a>
+                        </div>
+      
+                          <div class="ml-2">
+                         <a
+                          href="/admin/productManagment/deleteProduct/<%= element._id %>"
+                          type="button"
+                          class=" btn btn-danger btn-rounded btn-icon btn-sm"
+                        > 
+                           <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                      </div>
+                      </div>
+
+                    </td>
+             
+                    
+                </tr>
+                <% }) %>
+                </tbody>
+              </table>
+
+          <!-- Add New Category Section -->
+            <div class="mt-5">
+                <h5>+ Add New Category</h5>
+                <form action="/admin/addCategory" method="post" class="d-flex align-items-center">
+                 <div class="col-10">
+                  <input type="text" name="category_name" class="form-control me-2" placeholder="Category Name" required>
+                 </div>
+                 <div class="col-2 ps-2">
+                  <button type="submit" class="btn btn-md btn-dark">Add Category</button>
+                 </div>   
+                    
+                </form>
+            </div>
+            <!-- End of Add New Category Section -->
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<%- include('layouts/footadmin') %>
