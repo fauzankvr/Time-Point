@@ -1,0 +1,191 @@
+<%- include('../layouts/user/userhead') %> <%-
+include('../layouts/user/userheader') %>
+
+<style>
+  .gradient-custom {
+    background: #cd9cf2;
+
+    background: -webkit-linear-gradient(
+      to top left,
+      rgba(205, 156, 242, 1),
+      rgba(246, 243, 255, 1)
+    );
+
+    background: linear-gradient(
+      to top left,
+      rgba(205, 156, 242, 1),
+      rgba(246, 243, 255, 1)
+    );
+  }
+  /* Custom Table Styles */
+  .custom-table thead {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .credit {
+    color: #28a745; /* Bootstrap green for credit */
+    font-weight: bold;
+  }
+
+  .debit {
+    color: #dc3545; /* Bootstrap red for debit */
+    font-weight: bold;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+  }
+
+  .transaction-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  /* Custom date styling */
+  .date-cell {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  /* Padding for the entire section */
+  .custom-section {
+    padding: 30px 0;
+  }
+  /* Custom Table Styles */
+  .custom-table thead {
+    background-color: #6c757d;
+    color: white;
+  }
+
+  .custom-table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+
+  .credit {
+    color: #28a745; /* Bootstrap green for credit */
+    font-weight: bold;
+  }
+
+  .debit {
+    color: #dc3545; /* Bootstrap red for debit */
+    font-weight: bold;
+  }
+
+  .table td,
+  .table th {
+    vertical-align: middle;
+  }
+
+  .transaction-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+  }
+
+  /* Custom date styling */
+  .date-cell {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+  /* Padding for the entire section */
+  .custom-section {
+    padding: 30px 0;
+  }
+</style>
+
+<section class="h-100 gradient-custom">
+  <div class="py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-lg-10 col-xl-8">
+        <div class="card" style="border-radius: 10px">
+          <div class="card-header px-4 py-5 d-flex justify-content-between">
+            <h2 class="mb-0 fw-bold">Your Wallet</h2>
+            <h3 class="d-flex align-items-center mb-0 fw-bold">
+              Wallet Balance: <span class="mb-0 ms-2">₹ </span>
+            </h3>
+          </div>
+          <div class="card-body p-4">
+            <div class="container ">
+              <section class="custom-section">
+                <div class="container">
+                  <h2 class="text-center mb-4">Wallet Transactions</h2>
+                  <div class="table-responsive">
+                    <table
+                      class="table custom-table table-bordered table-hover"
+                    >
+                      <thead class="thead-dark">
+                        <tr>
+                          <th>Date</th>
+                          <th>Amount</th>
+                          <th>Reason</th>
+                          <th>Transaction Type</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <% userData.wallet_history.forEach(element => { %>
+                        <tr>
+                          <td class="date-cell">
+                            <script>
+                              document.write(
+                                new Date(
+                                  "<%= element.date %>"
+                                ).toLocaleDateString("en-GB")
+                              );
+                            </script>
+                          </td>
+                          <td>
+                            ₹ <%= parseFloat(element.amount).toFixed(2) %>
+                          </td>
+                          <td><%= element.description %></td>
+                          <td class="text-center">
+                            <% if (element.transactionType === 'credit') { %>
+                            <span class="credit">
+                              <img
+                                src="/path/to/credit-icon.svg"
+                                class="transaction-icon"
+                                alt="credit"
+                              />
+                              Credit
+                            </span>
+                            <% } else if (element.transactioType == 'debited') {
+                            %>
+                           <span class="badge bg-danger ">Debit</span>
+                            <% } %>
+                          </td>
+                        </tr>
+                        <% }) %>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+        <div
+          class="card-footer border-0 px-4 py-5"
+          style="
+            background-color: #a8729a;
+            border-bottom-left-radius: 10px;
+            border-bottom-right-radius: 10px;
+          "
+        >
+          <h3 class="text-white text-center">
+            Thank you for using our wallet services!
+          </h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('../layouts/user/userfooter') %> <%-
+include('../layouts/user/userfoot') %>

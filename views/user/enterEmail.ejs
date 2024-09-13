@@ -1,0 +1,72 @@
+<%- include('../layouts/user/userhead') %>
+
+<form id="forgotForm">
+    <div class="container" style="display: flex; justify-content: center; align-self: center;">
+        <div class="forgot-password-container">
+            <div width="200px" height="140px" style="align-items: center;">
+                <h2>Forgot your password?</h2>
+                <p>Provide your account email to receive an email to reset your password.</p>
+                <div class="row form-group">
+                    <div class="col-9">
+                        <label for="email">Enter Your Email Address:</label>
+                        <input type="text" style="font-size: 16px;" id="email" class="form-control" name="email">
+                    </div>
+                    <div class="col-3">
+                        <button type="button" id="sendBtn" class="btn btn-primary fs-4 mt-5">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<!-- /hidden form -->
+<form id="postRedirectForm" method="POST" action="/verifyOTP" style="display: none;">
+   <input type="text" id="email2" value="" name="email">
+</form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    $("#sendBtn").click(function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        const email = $("#email").val();
+        $("#email2").val(email);
+
+        $.ajax({
+            type: "POST",
+            url: "/forgotPassword",
+            data: { email: email },
+            success: function(response) {
+                if (response.message === "success") {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Email sent successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        document.getElementById('postRedirectForm').submit();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Please enter a valid email',
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            },
+            error: function() {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'An error occurred',
+                    text: 'Please try again later.',
+                    showConfirmButton: true
+                });
+            }
+        });
+    });
+</script>
+
+<%- include('../layouts/user/userfoot') %>

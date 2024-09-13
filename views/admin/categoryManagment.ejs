@@ -1,7 +1,6 @@
-<%- include('../layouts/headadmin') %>
-<%- include('../layouts/adminHeader2') %>
-<%- include('../layouts/adminSidbar2') %>
- 
+<%- include('../layouts/admin/headadmin') %> <%-
+include('../layouts/admin/adminHeader2') %> <%-
+include('../layouts/admin/adminSidbar2') %>
 
 <div class="main-panel">
   <div class="content-wrapper">
@@ -10,17 +9,12 @@
         <div class="card">
           <div class="card-body">
             <h4 class="card-title">Category Management</h4>
-            <p class="card-description">Manage Category detiails</p>    
-          <!-- Flash Messages -->
+            <p class="card-description">Manage Category detiails</p>
+            <!-- Flash Messages -->
             <% if (messages.success) { %>
-                <div class="alert alert-success">
-                    <%= messages.success %>
-                </div>
-            <% } %>
-            <% if (messages.error) { %>
-                <div class="alert alert-danger">
-                    <%= messages.error %>
-                </div>
+            <div class="alert alert-success"><%= messages.success %></div>
+            <% } %> <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= messages.error %></div>
             <% } %>
             <!-- End of Flash Messages -->
 
@@ -38,51 +32,81 @@
                   <tr>
                     <td><%= element.name %></td>
                     <td>
-                      <div class="d-flex aligin-items-center justify-contern-center">
+                      <div
+                        class="d-flex aligin-items-center justify-contern-center"
+                      >
                         <div class="mx-2">
-                   <a
-                          href="/admin/productManagment/editProduct/<%= element._id %>"
-                          type="button"
-                          class=" btn btn-primary btn-rounded btn-icon btn-sm"
-                        > 
+                          <!-- Trigger button (Your <a> tag) -->
+                          <a
+                            href="#"
+                            class="btn btn-primary btn-rounded btn-icon btn-sm"
+                            data-toggle="modal"
+                            data-target="#editCategoryModal"
+                            onclick="populateModal('<%= element._id %>','<%= element.name %>')"
+                          >
                             <i class="fa-solid fa-pen-to-square"></i>
-                        </a>
+                          </a>
                         </div>
-      
-                          <div class="ml-2">
-                         <a
-                          href="/admin/productManagment/deleteProduct/<%= element._id %>"
-                          type="button"
-                          class=" btn btn-danger btn-rounded btn-icon btn-sm"
-                        > 
-                           <i class="fa-solid fa-trash-can"></i>
-                        </a>
-                      </div>
-                      </div>
 
+                        <div class="ml-2">
+                          <% if ( element.is_delete == true) { %>
+                          <a
+                            href="/admin/categorytManagment/blockCatogory/<%= element._id %>"
+                            type="button"
+                            class="btn btn-danger btn-rounded btn-icon btn-sm"
+                          >
+                            <i class="fa-solid fa-trash-can"></i>
+                          </a>
+                          <% }else { %>
+                          <a
+                            href="/admin/categoryManagment/unBlockCatogory/<%= element._id %>"
+                            type="button"
+                            class="btn btn-secondary btn-rounded btn-icon btn-sm"
+                          >
+                            <i class="fa-solid fa-trash-can"></i>
+                          </a>
+
+                          <% } %>
+                        </div>
+                        
+                      </div>
                     </td>
-             
-                    
-                </tr>
-                <% }) %>
+                  </tr>
+                  <% }) %>
                 </tbody>
               </table>
 
-          <!-- Add New Category Section -->
-            <div class="mt-5">
+              <!-- Add New Category Section -->
+              <div class="mt-5">
                 <h5>+ Add New Category</h5>
-                <form action="/admin/addCategory" method="post" class="d-flex align-items-center">
-                 <div class="col-10">
-                  <input type="text" name="category_name" class="form-control me-2" placeholder="Category Name" required>
-                 </div>
-                 <div class="col-2 ps-2">
-                  <button type="submit" class="btn btn-md btn-dark">Add Category</button>
-                 </div>   
-                    
+                <form
+                  action="/admin/addCategory"
+                  method="post"
+                  onsubmit="return validDetails()"
+                  class="d-flex align-items-center"
+                >
+                  <div class="col-10">
+                    <input
+                      type="text"
+                      name="category_name"
+                      id="category_name"
+                      class="form-control me-2"
+                      placeholder="Category Name"
+                      required
+                    />
+                    <p
+                      id="name-error"
+                      style="color: brown; font-size: small"
+                    ></p>
+                  </div>
+                  <div class="col-2 ps-2">
+                    <button type="submit" class="btn btn-md btn-dark">
+                      Add Category
+                    </button>
+                  </div>
                 </form>
-            </div>
-            <!-- End of Add New Category Section -->
-
+              </div>
+              <!-- End of Add New Category Section -->
             </div>
           </div>
         </div>
@@ -91,5 +115,76 @@
   </div>
 </div>
 
+<!-- Modal Structure -->
+<div
+  class="modal fade"
+  id="editCategoryModal"
+  tabindex="-1"
+  aria-labelledby="editCategoryModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editCategoryForm" method="post" action="" onsubmit="return validDetailsModal()">
+          <div class="form-group">
+            <label for="categoryName">Category Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="categoryName"
+              name="category_name"
+              
+            />
+            <p id="name-error1" style="color: brown; font-size: small"></p>
+          </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
-<%- include('../layouts/footadmin') %>
+<script>
+  function validDetails() {
+    var name = document.getElementById("category_name").value;
+    document.getElementById('name-error').textContent = '';
+    if (!name || name.trim().length == 0) {
+      document.getElementById("name-error").innerHTML = "Field is required";
+      return false;
+    }
+
+    return true;
+  }
+
+    function validDetailsModal() {
+    var name = document.getElementById("categoryName").value;
+    document.getElementById('name-error1').textContent = '';
+    if (!name || name.trim().length == 0) {
+      document.getElementById("name-error1").innerHTML = "Field is required";
+      return false;
+    }
+
+    return true;
+  }
+
+  function populateModal(categoryId, categoryName) {
+    // Set the form action dynamically based on the category ID
+    document.getElementById("editCategoryForm").action =
+      "/admin/catetoryManagment/editCatogory/"+categoryId;
+    document.getElementById("categoryName").value = categoryName;
+  }
+</script>
+
+<%- include('../layouts/admin/footadmin') %>

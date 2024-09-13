@@ -88,28 +88,27 @@
 <div class="container">
   <div class="col-lg-12">
     <div class="row">
-   <% for (let i = 0; i < 4; i++) { %>
+   <% productData.slice(0, 4).forEach(product => { %>
   <div class="col-lg-3 col-sm-6 mb-3 col-md-4">
     <div class="card mx-3 mt-5 px-5" style="width: 28rem;">
-      <a href="/home/productDetails/<%= productData[i].id %>">
-        <img src="/public/productImgs/<%= productData[i].images.image1 %>" class="card-img-top img-fluid mb-1" alt="<%= productData[i].product_name %>">
+      <a href="/home/productDetails/<%= product.id %>">
+        <img src="/public/productImgs/<%= product.images.image1 %>" class="card-img-top img-fluid mb-1" alt="<%= product.product_name %>">
       </a>
       <div class="card-body">
-        <h3 class="card-title" style="font-size: 15px;"><%= productData[i].product_name %></h3>
-        <h3 class="py-3">₹ <%= productData[i].price %> | <strike style="color: rgb(99, 98, 98);">₹ 25,000</strike></h3>
+        <h3 class="card-title" style="font-size: 15px;"><%= product.product_name %></h3>
+        <h3 class="py-3">₹ <%= product.price %> | <strike style="color: rgb(99, 98, 98);">₹ 25,000</strike></h3>
         <div class="star-rating">
-          <!-- Example: 4 stars out of 5 -->
           <i class="fas fa-star"></i>
           <i class="fas fa-star"></i>
           <i class="fas fa-star"></i>
           <i class="fas fa-star"></i>
           <i class="far fa-star"></i>
         </div>
-        <a href="" class="btn btn-primary px-4 mt-2" style="font-size: 14px;">Add to cart</a>
       </div>
     </div>
   </div>
-<% } %>
+<% }); %>
+
 </div>
 </div>
 </div>
@@ -207,6 +206,22 @@
     </div>
   </div>
 </section>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+  <% if (messages.invailedmessage) { %>
+    <script>
+    Swal.fire({
+      icon: 'error',
+      title: 'Blocked',
+      text: '<%= messages.invailedmessage %>',
+      confirmButtonText: 'OK'
+    });
+    </script>
+  <% } %>
 
 
 

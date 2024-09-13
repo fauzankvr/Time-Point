@@ -1,6 +1,6 @@
-<%- include('../layouts/headadmin') %>
-<%- include('../layouts/adminHeader2') %>
-<%- include('../layouts/adminSidbar2') %>
+<%- include('../layouts/admin/headadmin') %>
+<%- include('../layouts/admin/adminHeader2') %>
+<%- include('../layouts/admin/adminSidbar2') %>
 
 <div class="main-panel">
   <div class="content-wrapper">
@@ -10,12 +10,19 @@
           <div class="card-body">
             <h4 class="card-title">Edit a Product</h4>
             <p class="card-description">Edit your product details below.</p>
+             <!-- Flash Messages -->
+            <% if (messages.success) { %>
+            <div class="alert alert-success"><%= messages.success %></div>
+            <% } %> <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= messages.error %></div>
+            <% } %>
+            <!-- End of Flash Messages -->
 
-            <form class="forms-sample" action="/admin/productManagment/editProduct/<%= productDataEdit[0]._id %>" method="post" onsubmit=" return validDetails()" enctype="multipart/form-data">
+            <form class="forms-sample" action="/admin/productManagment/editProduct/<%= productDataEdit[0]._id %>" method="post" onsubmit="return validDetails()" enctype="multipart/form-data">
               <div class="form-group">
                 <label for="product_name">Product Name</label>
                 <input type="text" name="product_name" id="product_name" value="<%= productDataEdit[0].product_name %>" class="form-control" placeholder="Enter Product Name">
-                <div id="name-error" style="color: brown; font-size: small;"></div>
+                <p id="name-error" style="color: brown; font-size: small;"></p>
               </div>
 
               <!-- Brand and Category Fields -->
@@ -28,7 +35,7 @@
                         <option value="<%= productDataEdit[0].brand_id._id %>" selected><%= productDataEdit[0].brand_id.name %></option>
                         <% brandData.forEach(element => { %>
                           <% if(productDataEdit[0].brand_id.name !== element.name){ %>
-                            <option value="<%= element._id %>"></option>><%= element.name %></option>
+                            <option value="<%= element._id %>"> <%=element.name %> </option>
                           <% } %>
                         <% }) %>
                       </select>
@@ -104,8 +111,8 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Price</label>
                     <div class="col-sm-9">
-                      <input type="text" name="price" class="form-control" value="<%= productDataEdit[0].price %>">
-                      <div id="price-error" style="color: brown; font-size: small;"></div>
+                      <input type="text" name="price" id="price" class="form-control" value="<%= productDataEdit[0].price %>">
+                      <p id="price-error" style="color: brown; font-size: small;"></p>
                     </div>
                   </div>
                 </div>
@@ -113,8 +120,8 @@
                   <div class="form-group row">
                     <label class="col-sm-3 col-form-label">Stock</label>
                     <div class="col-sm-9">
-                      <input type="text" name="stock" class="form-control" value="<%= productDataEdit[0].stock %>">
-                      <div id="stock-error" style="color: brown; font-size: small;"></div>
+                      <input type="text" id="stock" name="stock" class="form-control" value="<%= productDataEdit[0].stock %>">
+                      <p id="stock-error" style="color: brown; font-size: small;"></p>
                     </div>
                   </div>
                 </div>
@@ -124,7 +131,7 @@
               <div class="form-group">
                 <label for="description">Description</label>
                 <textarea name="discription" style="height: 100px;" class="form-control" id="description" placeholder="Write a description about the product"><%= productDataEdit[0].discription %></textarea>
-                <div id="description-error" style="color: brown; font-size: small;"></div>
+                <p id="description-error" style="color: brown; font-size: small;"></p>
               </div>
 
               <!-- Image Upload and Preview Fields -->
@@ -134,8 +141,9 @@
                     <div class="form-group">
                       <label>Image <%= i %></label>
                       <div class="input-group col-xs-12">
-                        <input type="file" name="image<%= i %>" class="form-control file-upload-info" accept="image/*" onchange="previewAndCropImage(event, 'imagePreview<%= i %>', 'cropper<%= i %>')">
+                        <input type="file" name="image<%= i %>" class="form-control file-upload-info"accept="image/jpeg, image/png" onchange="previewAndCropImage(event, 'imagePreview<%= i %>', 'cropper<%= i %>', '<%= i %>')">
                       </div>
+                      <p id="file-error<%= i %>" style="color: red; font-size: small;"></p>
                       <img id="imagePreview<%= i %>" src="/public/productImgs/<%= productDataEdit[0].images[`image${i}`] %>" width="300px" alt="">
                     </div>
                   </div>
@@ -164,7 +172,6 @@
 <script src="https://unpkg.com/cropperjs@1.5.12/dist/cropper.min.js"></script>
 <script>
 function validDetails() {
-   
     let product_name = document.getElementById("product_name").value;
     let price = document.getElementById("price").value;
     let stock = document.getElementById("stock").value;
@@ -191,16 +198,27 @@ function validDetails() {
       document.getElementById('description-error').textContent = 'Description field should not be empty!';
       return false;
     }
-    console.log('endddddddddddd')
     return true;
   }
+ 
 
   let cropper;
   let currentImageId;
 
-  function previewAndCropImage(event, previewId, cropperId) {
+  function previewAndCropImage(event, previewId, cropperId,index) {
     const file = event.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png'];
+    const fileErrorElement = document.getElementById(`file-error${index}`);
+
+     fileErrorElement.textContent = '';
+
     if (file) {
+      if (!allowedTypes.includes(file.type)) {
+            fileErrorElement.textContent = 'Only JPG and PNG files are allowed!';
+            event.target.value = ''; // Clear the selected file
+            return;
+      }
+
       const reader = new FileReader();
       reader.onload = function (e) {
         const imgElement = document.getElementById('cropImage');
@@ -212,7 +230,7 @@ function validDetails() {
           cropper.destroy();
         }
         cropper = new Cropper(imgElement, {
-          aspectRatio: 2 / 3,
+          aspectRatio: 2 / 2,
           viewMode: 2
         });
       };
@@ -224,25 +242,30 @@ function validDetails() {
     if (!cropper) return;
 
     const croppedCanvas = cropper.getCroppedCanvas({
-      width: 300,
-      height: 300
+        width: 300,
+        height: 300
     });
 
+    // Get the original file extension from the current image
+    const originalImageType = currentImageId.includes('png') ? 'image/png' : 'image/jpg';
+    const fileExtension = originalImageType === 'image/png' ? 'png' : 'jpg';
+
     croppedCanvas.toBlob((blob) => {
-      const file = new File([blob], `cropped-${currentImageId}.jpg`, { type: 'image/jpeg' });
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
+        const file = new File([blob], `cropped-${currentImageId}.${fileExtension}`, { type: originalImageType });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
 
-      const fileInput = document.querySelector(`input[name="${currentImageId.replace('imagePreview', 'image')}"]`);
-      fileInput.files = dataTransfer.files;
+        const fileInput = document.querySelector(`input[name="${currentImageId.replace('imagePreview', 'image')}"]`);
+        fileInput.files = dataTransfer.files;
 
-      document.getElementById(currentImageId).src = croppedCanvas.toDataURL('image/jpeg');
-      document.getElementById('cropModal').style.display = 'none';
+        document.getElementById(currentImageId).src = croppedCanvas.toDataURL(originalImageType);
+        document.getElementById('cropModal').style.display = 'none';
 
-      cropper.destroy();
-      cropper = null;
-    }, 'image/jpeg');
-  }
+        cropper.destroy();
+        cropper = null;
+    }, originalImageType);
+}
+
 
   function closeCropModal() {
     document.getElementById('cropModal').style.display = 'none';
@@ -253,4 +276,4 @@ function validDetails() {
   }
 </script>
 
-<%- include('../layouts/footadmin') %>
+<%- include('../layouts/admin/footadmin') %>

@@ -29,9 +29,9 @@
             height: 50px;
         }
         #resend-otp {
-           cursor: pointer;
-
-            color: #198754;
+             pointer-events: none;
+            text-decoration: none;
+            color: #8a8a8a;
         }
     </style>
 </head>
@@ -54,11 +54,8 @@
                             
                             <p class="text-muted text-center">Didn't get the code? <a id
                             ="resend-otp" >Click to resend.</a></p>
-                            <div class="row pt-5">
-                                <div class="col-6">
-                                   <a href="/signup"> <button class="btn btn-outline-secondary w-100">Cancel</button></a>
-                                </div>
-                                <div class="col-6">
+                            <div class="row pt-5 alighn-items-center d-flex">
+                                <div class="col-6 m-auto">
                                     <button id="verifyButton" class="btn btn-success w-100" >Verify</button>
                                 </div>
                             </div>
@@ -160,7 +157,17 @@
         });
     });
 
-    $("#resend-otp").click(function () {
+    $("#resend-otp").click(function (e) {
+        e.preventDefault(); // Prevent default link behavior
+
+    // Disable the resend button
+    $(this).css({
+        cursor: "not-allowed",
+        textDecoration: "none",
+        color: "grey",
+        pointerEvents: "none", // Disable click
+        fontWeight: "normal"
+    });
         const threeMinutes = 60 * 3; // 180 seconds
         startCountdown(threeMinutes);
 
@@ -168,7 +175,8 @@
             type: "POST",
             url: "/resend-otp",
             success: function (response) {
-                Swal.fire({
+                if(response.success==true){
+                    Swal.fire({
                     toast: true,
                     icon: 'success',
                     title: response.message,
@@ -182,6 +190,23 @@
                         toast.addEventListener('mouseleave', Swal.resumeTimer);
                     }
                 });
+                }else{
+                     Swal.fire({
+                    toast: true,
+                    icon: 'error',
+                    title: response.message,
+                    animation: true,
+                    position: 'top',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    didOpen: (toast) => {
+                        toast.addEventListener('mouseenter', Swal.stopTimer);
+                        toast.addEventListener('mouseleave', Swal.resumeTimer);
+                    }
+                });
+                }
+
             }
         });
     });

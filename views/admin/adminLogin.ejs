@@ -1,4 +1,4 @@
-<%- include('../layouts/head.ejs') %>
+<%- include('../layouts/admin/headadmin') %>
 
 
 <div class="row container " style="display: flex; margin-top: 50px; align-items: center; margin: auto; ">
@@ -9,17 +9,17 @@
 
   <div class="col-sm-6 form_container">
    <form action="/admin" method="post">
-      <h1 class="text-center" style="font-size: 36px">Admin Login</h1>
+      <h1 class="text-center" style="font-size: 36px;  font-weight: bold">Admin Login</h1>
    <div class="mb-4">
      <label for="name" class="form-label form_font_size mb-3 text-center d-block"> Enter your details below</label>
      <% if (messages.invailedmessage) { %>
       <div class="alert alert-danger"><%= messages.invailedmessage %></div>
     <% } %>
 
-    <input type="email" name="email" class=" input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3 "   id="email" placeholder="Enter your email" >
+    <input type="email" name="email" class=" form-control rounded-0 border-0 border-bottom border-dark p-3 " style="background-color: #F4F5F7;" id="email" placeholder="Enter your email" >
   </div>
     <div class="mb-4">
-    <input type="password" name="password" class="input_font_size form-control rounded-0 border-0 border-bottom border-dark p-3"   id="email" placeholder="Enter your Password" >
+    <input type="password" name="password" class=" form-control rounded-0 border-0 border-bottom border-dark p-3"style="background-color: #F4F5F7;"   id="email" placeholder="Enter your Password" >
   </div>
   <button class="btn btn-primary py-2 m-5 input_font_size login-padding " type="submit">Login</button>   
     </form>
@@ -28,4 +28,4 @@
  </div> 
 </div>
 
-<%- include('../layouts/foot.ejs') %>
+<%- include('../layouts/admin/footadmin') %>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+
+    <!-- Bootstrap 5 stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- FontAwesome 6 stylesheet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            background-color: #ebecf0;
+        }
+        .otp-letter-input {
+            max-width: 40px;
+            height: 40px;
+            border: 1px solid #198754;
+            border-radius: 10px;
+            color: #198754;
+            font-size: 20px;
+            text-align: center;
+            margin: 0 5px;
+        }
+        .btn {
+            height: 50px;
+        }
+        #resend-otp {
+            pointer-events: none;  
+        }
+    </style>
+</head>
+<body>
+    <div class="container p-3">
+        <div class="row">
+            <div class="col-md-3"></div>
+            <div class="col-md-5 mt-4">
+                <div class="bg-white p-5 rounded-3 shadow-sm border">
+                    <div>
+                        <p class="text-center text-success" style="font-size: 5.5rem;"><i class="fa-solid fa-envelope-circle-check"></i></p>
+                        <p class="text-center h5">Please check your email</p>
+                        <p class="text-muted text-center">We've sent a code to <strong><%= locals.data ? locals.data : 'Your email'%></strong></p>
+                        <div class="d-flex justify-content-center">
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                            <input type="text" class="otp-letter-input" maxlength="1" />
+                        </div>
+                        <p class="text-muted text-center p-2">Password expires in <b id="timer">03:00</b></p>
+                    
+                        <div class="row pt-3">
+                            <div class="col-5 m-auto">
+                                <button id="verifyButton" class="btn btn-success w-100">Verify</button>
+                            </div>
+                            <div class="col-5 m-auto">
+                                <button id="resend-otp" class="btn btn-secondary">Click to resend</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form action="/changePassword" method="POST" id="postForm" style="display: none;"></form>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- Bootstrap 5 JavaScript bundle (includes Popper) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.0.1/js/bootstrap.bundle.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <!-- SweetAlert2 for displaying alerts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // Declare a variable to store the countdown interval
+        let countdownInterval;
+
+        // Function to start the countdown
+        function startCountdown(duration) {
+            let timer = duration, minutes, seconds;
+            const display = document.getElementById('timer');
+
+            // Clear any existing countdown interval
+            if (countdownInterval) {
+                clearInterval(countdownInterval);
+            }
+
+            countdownInterval = setInterval(() => {
+                minutes = Math.floor(timer / 60);
+                seconds = timer % 60;
+
+                // Format the minutes and seconds with leading zeros if necessary
+                minutes = minutes < 10 ? '0' + minutes : minutes;
+                seconds = seconds < 10 ? '0' + seconds : seconds;
+
+                // Update the timer display
+                display.textContent = `${minutes}:${seconds}`;
+
+                // Check if the timer has reached zero
+                if (--timer < 0) {
+                    clearInterval(countdownInterval);
+                    display.textContent = '00:00';
+                    // Enable the resend button and apply styles
+                    const resendButton = document.getElementById('resend-otp');
+                    resendButton.style.pointerEvents = "auto";;
+                }
+            }, 1000); // Update every second
+        }
+
+        // Start the countdown with 3 minutes (180 seconds)
+        window.onload = function () {
+            const threeMinutes = 60 * 3; // 180 seconds
+            startCountdown(threeMinutes);
+        };
+
+        $("#verifyButton").click(function () {
+            let otp = '';
+            $('.otp-letter-input').each(function() {
+                otp += $(this).val();
+            });
+
+            $.ajax({
+                type: "POST",
+                url: "/verifyOTP2", // Replace with your server endpoint
+                data: {
+                    otp: otp
+                },
+                success: function (response) {
+                    // Redirect if verification is successful
+                    if (response.message === "OTP verified successfully") {
+                        document.getElementById('postForm').submit();
+                    } else {
+                        // Show error message using SweetAlert2
+                        Swal.fire({
+                            toast: true,
+                            icon: 'error',
+                            title: response.message,
+                            animation: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                            didOpen: (toast) => {
+                                toast.addEventListener('mouseenter', Swal.stopTimer);
+                                toast.addEventListener('mouseleave', Swal.resumeTimer);
+                            }
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+
+        $("#resend-otp").click(function () {
+            const threeMinutes = 60 * 3; // 180 seconds
+            startCountdown(threeMinutes);
+
+            $.ajax({
+                type: "POST",
+                url: "/resend-otp",
+                success: function (response) {
+                    Swal.fire({
+                        toast: true,
+                        icon: 'success',
+                        title: response.message,
+                        animation: true,
+                        position: 'top',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer);
+                            toast.addEventListener('mouseleave', Swal.resumeTimer);
+                        }
+                    });
+                }
+            });
+        });
+
+        // Automatically move to the next input field when a digit is entered
+        $('.otp-letter-input').on('input', function () {
+            if (this.value.length === 1) {
+                $(this).next('.otp-letter-input').focus();
+            }
+        });
+
+        // Automatically move to the previous input field when backspace is pressed
+        $('.otp-letter-input').on('keydown', function (e) {
+            if (e.key === 'Backspace' && !this.value) {
+                $(this).prev('.otp-letter-input').focus();
+            }
+        });
+    </script>
+</body>
+</html>

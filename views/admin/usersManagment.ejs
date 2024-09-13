@@ -1,5 +1,6 @@
-<%- include('../layouts/headadmin') %> <%- include('../layouts/adminHeader2') %>
-<%-include('../layouts/adminSidbar2') %>
+<%- include('../layouts/admin/headadmin') %>
+ <%- include('../layouts/admin/adminHeader2') %>
+<%-include('../layouts/admin/adminSidbar2') %>
 
 <div class="main-panel">
   <div class="content-wrapper">
@@ -9,6 +10,14 @@
           <div class="card-body">
             <h4 class="card-title">User Management</h4>
             <p class="card-description">Manage Users detiails</p>
+             <!-- Flash Messages -->
+            <% if (messages.success) { %>
+            <div class="alert alert-success"><%= messages.success %></div>
+            <% } %> <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= messages.error %></div>
+            <% } %>
+            <!-- End of Flash Messages -->
+
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -60,4 +69,4 @@
   </div>
 </div>
 
-<%- include('layouts/footadmin') %>
+<%- include('../layouts/admin/footadmin') %>

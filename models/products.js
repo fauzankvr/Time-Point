@@ -14,7 +14,7 @@ const productSchema = new mongoose.Schema({
   },
   gender: String,
   color: String,
-  price: { type: String, required: true },
+  price: { type: Number, required: true },
   stock: { type: Number, required: true },
   discription: { type: String, required: true },
   images: {
@@ -24,7 +24,8 @@ const productSchema = new mongoose.Schema({
     image4: String,
   },
   is_delete: { type: Boolean, default: false },
-});
+  is_list:{type:Boolean,default:false}
+},{ timestamps: true });
 
 const products = mongoose.model('products', productSchema)
 

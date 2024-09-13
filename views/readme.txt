@@ -282,3 +282,98 @@ headers
             </div>
         </div>
     </div>
+
+
+
+
+
+
+
+            <div class="col-md-4">
+            <div class="p-3 py-5">
+                <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
+                <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="experience" value=""></div> <br>
+                <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value=""></div>
+            </div>
+        </div>
+
+
+
+
+        profile 
+
+         <!-- <% orderData.forEach(order => { %>
+        <% order.products.forEach(element => { %>
+        <div class="col-md-12">
+            <div class="address-card">
+                <div class="row">
+                    <div class="col-md-2 d-flex align-items-center" >
+                        <img style="width:60px; margin-left: 10px;"  src="/public/productImgs/<%= element.product_id.images.image1 %>" alt="">
+                    </div>
+                    <div class="col-md-2">
+                        <p class="mb-1"><strong><%= element.product_id.product_name %></strong></p>
+                    </div>
+                    <div class="col-md-2 ">
+                        <p class="mb-1 fw-bold" style="margin-left: 19px;">₹<%= element.total_price %></p>
+                    </div>
+                    <div class="col-md-2 ">
+                        <p class="mb-1 fw-bold" style="margin-left: 19px;"><%= element.quantity %></p>
+                    </div>
+                     <div class="col-md-2">
+                        <% if(element.status == "pending"){   %>                      
+                            <span class="fw-bold text-primary fs-4"><%= element.status %></span>
+                        <%} else if(element.status == "delivered"){ %>
+                            <span class="fw-bold text-success fs-4"><%= element.status %></span>
+                        <%}else if(element.status == "cancelled"){%>%>
+                            <span class="fw-bold text-danger fs-4"><%= element.status %></span>
+                        <%}%>
+                        
+                    </div>
+                   <div class="col-md-2 ">
+                    
+                    <% if(element.status == "pending"){ %>
+                        <button class="btn btn-danger fs-4" onclick="cancelOrder('<%= element._id %>','<%= order._id %>',)">Cancel</button>
+                   <% }else if(element.status == "delivered"){ %>
+                        <span class="badge bg-success fs-4">Delivered</span>
+                    <% } else if(element.status == "cancelled"){ %>
+                        <span class="badge bg-danger fs-4">Cancelled</span>
+                    <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+         <%}); %>
+     <%}); %> -->
+
+
+
+
+<% if(element.status == "pending"){ %>
+                      <div class="d-flex aligin-items-center justify-contern-center">
+                         <div class="mx-2">
+                         <a
+                          href="/admin/orderManagment/deliverd/<%= order._id %>/<%= element._id %>"
+                          type="button"
+                          class=" btn btn-success  btn-sm"
+                        > 
+                            <span>Deliverd</span>
+                        </a>
+                        </div>
+
+                      <div class="ml-2">
+                        
+                       
+                          <a
+                          href="/admin/orderManagment/cancel/<%= order._id %>/<%= element._id %>"
+                          type="button"
+                          class=" btn btn-danger btn-sm"
+                        > 
+                             <span>Cancel</span>
+                            </a>
+                      </div>
+                      </div>
+                      <% }else if(element.status == "delivered"){ %>
+                        <span class="badge bg-success">Delivered</span>
+                      <% } else if(element.status == "cancelled"){ %>
+                        <span class="badge bg-danger">Cancelled</span>
+                      <% } %>

@@ -1,0 +1,429 @@
+<%- include('../layouts/user/userhead') %> <%-
+include('../layouts/user/userheader') %>
+
+<section class="h-100 h-custom" style="background-color: #d2c9ff">
+  <div class="container py-5 h-100">
+    <div class="row d-flex justify-content-center align-items-center h-100">
+      <div class="col-12">
+        <div
+          class="card card-registration card-registration-2"
+          style="border-radius: 15px"
+        >
+          <div class="card-body p-0">
+            <div class="row g-0">
+              <div class="col-lg-8">
+                <div class="p-5">
+                  <div
+                    class="d-flex justify-content-between align-items-center mb-5"
+                  >
+                    <h1 class="fw-bold mb-0">Select Your Payment Method</h1>
+                  </div>
+                  <hr class="my-4" />
+                  <div class="row">
+                    <div class="container my-4">
+                      <div class="row">
+                        <!-- Left Sidebar -->
+                        <div class="col-md-4">
+                          <div class="list-group" id="payment-options">
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action active"
+                              data-target="cash"
+                            >
+                              <i class="fa fa-money"></i> Cash On Delivery
+                              (Cash/UPI)
+                            </a>
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action"
+                              data-target="upi"
+                            >
+                              <i class="fa-brands fa-google-pay fs-1"></i> Razor Pay
+                              (Pay via any App)
+                            </a>
+                      
+                          </div>
+                        </div>
+
+                        <!-- Right Content -->
+                        <div class="col-md-8">
+                          <div id="content-cash" class="payment-content">
+                            <h4>Recommended Payment Options</h4>
+                            <div class="custom-control custom-radio">
+                              <input
+                                type="radio"
+                                id="cashRadio1"
+                                name="paymentMethod"
+                                class="custom-control-input"
+                                checked
+                              />
+                              <label
+                                class="custom-control-label"
+                                for="cashRadio1"
+                                >Cash on Delivery (Cash/UPI)</label
+                              >
+                            </div>
+                            <div>
+                              <button
+                                onclick="placeOrder('COD')"
+                                class="btn btn-primary px-5 py-3"
+                                style="
+                                  font-size: 15px;
+                                  font-weight: 500;
+                                  margin-top: 60px;
+                                  width: 100%;
+                                "
+                              >
+                                PLACE ORDER
+                              </button>
+                            </div>
+                          </div>
+
+                          <div id="content-upi" class="payment-content d-none">
+                            <h4>Razor Pay Payment</h4>
+                            <p>Use any UPI app for fast and secure payments.</p>
+                             <div></div>
+                              <button
+                                onclick="placeOrder('RazorPay')"
+                                class="btn btn-primary px-5 py-3"
+                                style="
+                                  font-size: 15px;
+                                  font-weight: 500;
+                                  margin-top: 60px;
+                                  width: 100%;
+                                "
+                              >
+                                PLACE ORDER
+                              </button>
+                            </div>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="pt-5"
+                      style="display: flex; justify-content: space-between"
+                    >
+                      <h6 class="mb-0">
+                        <a href="#!" class="text-body"
+                          ><i class="fas fa-long-arrow-alt-left me-2"></i>Back
+                          to shop</a
+                        >
+                      </h6>
+                    </div>
+                    <div class="pt-5"></div>
+                  </div>
+                </div>
+              
+
+              <div class="col-lg-4 bg-body-tertiary">
+                <div class="p-5">
+                  <h3 class="fw-bold mb-5 mt-2 pt-1 text-uppercase">
+                    Price details
+                  </h3>
+                  <hr class="my-4" />
+                  <div class="d-flex justify-content-between mb-5">
+                    <h4 class="mb-3">Price(items(<%= cartData.length %>))</h4>
+                    <h4 class="mb-3 text-success">
+                      ₹ <span id="total_price2"><%= total %></span>
+                    </h4>
+                  </div>
+                  
+                  <div class="d-flex justify-content-between mb-5">
+                    <h4 class="mb-3">Delivery Charges</h4>
+                    <h4 class="mb-3 text-success">Free</h4>
+                  </div>
+                  <% if(discount){ %>
+                  <div class="d-flex justify-content-between mb-5" id="couponDiv">
+                    <h4 class="mb-3">Coupon Discount</h4>
+                    <h4 class="mb-3 text-success" id="couponDiscount"><%= discount %></h4>
+                  </div>
+                  <% } %>
+                  <hr class="my-4" />
+                  <div class="d-flex justify-content-between mb-5">
+                    <h3 class="text-uppercase">Total price</h3>
+                    <% if(discount) {%>
+                    <h3>₹ <span id="total_price1"><%= grandtotal %></span></h3>
+                    <% } else {%>
+                    <h3>₹ <span id="total_price1"><%= total %></span></h3>
+                    <% } %>
+                  </div>
+
+                </div>
+                 <div class="coupon-container" id="couponContainer1">
+                  <h3 class=" mb-3">Apply Coupon</h3>
+
+                 
+                  <!-- Coupon Applied Section -->
+                   <% if(discount){ %>
+                  <div
+                    class="alert alert-success d-flex justify-content-between align-items-center p-3 mb-3"
+                    id="couponApplied2"
+                  >
+                    <div>
+                      <strong class="text-warning">You Save : ₹ <strong><%= discount %></strong></strong
+                      ><br />
+                      <span>Coupon applied: <strong ><%= couponCode %></strong></span>
+                    </div>
+                    <button class="btn btn-lg" onclick="removeCoupon('<%= couponCode %>')">
+                      <i class="fas fa-trash-alt fs-4"></i>
+                    </button>
+                  </div>
+                  <% }else{ %>
+                     <div class="coupon-input-group" id="couponInput">
+                    <input
+                      type="text"
+                      class="form-control fs-4 p-2"
+                      id="couponCode"
+                      placeholder="Enter coupon code"
+                    />
+                    <button class="btn fs-4" onclick="applyCoupon()">
+                      APPLY
+                    </button>
+                  </div>
+                  <p
+                    class="text-danger"
+                    id="couponError"
+                    style="font-size: 12px"
+                  ></p>
+                    <% } %>
+                  <!-- <h3 class="text-center mt-2">Applicable Coupons</h3>
+                  <div class="coupon-list"> -->
+                    <!-- Coupon 1 -->
+                    <!-- <div class="coupon-item">
+                      <div class="form-check">
+                        <input
+                          class="form-check-input"
+                          type="radio"
+                          name="coupon"
+                          id="coupon1"
+                        />
+                        <label class="form-check-label" for="coupon1">
+                          <div class="coupon-savings">Savings: ₹508.95</div>
+                          <div class="coupon-code">ALLSTAR15</div>
+                          <div class="coupon-description">
+                            Get Extra 15% off upto 850 on cart value of 2990.
+                          </div>
+                          <div class="coupon-terms">View T & C</div>
+                        </label>
+                      </div>
+                    </div> -->
+
+                    <!-- Add more coupons here -->
+                  </div>
+                </div>
+
+                
+              </div>
+              </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+ <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+ <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script
+  src="https://kit.fontawesome.com/e354b719fb.js"
+  crossorigin="anonymous"
+></script>
+<script>
+  function applyCoupon() {
+    var couponCode = document.getElementById("couponCode").value;
+    fetch("/applyCoupon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        couponCode: couponCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.reload();
+           document.getElementById("couponError").innerHTML = "";
+          document.getElementById("couponApplied2").classList.remove("d-none");
+          document.getElementById("couponApplied").innerHTML = data.couponCode;
+          document.getElementById("couponSavings").innerHTML = data.discount;
+          document.getElementById("couponDiv").classList.remove("d-none");
+          document.getElementById("couponDiscount").innerHTML = data.discount;
+          document.getElementById("total_price1").innerHTML = data.grandtotal;
+          document.getElementById("couponInput").classList.add("d-none");
+        } else {
+          document.getElementById("couponError").innerHTML = data.message;
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  }
+
+function removeCoupon(couponCode) {
+  fetch("/removeCoupon", {  
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      couponCode: couponCode,
+    }),
+  }).then((response) => response.json())
+    .then((data) => {
+      if(data.success){
+        window.location.reload();
+      }
+    })}
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const options = document.querySelectorAll(".list-group-item");
+    const contents = document.querySelectorAll(".payment-content");
+
+    options.forEach((option) => {
+      option.addEventListener("click", function () {
+        const target = this.getAttribute("data-target");
+        options.forEach((opt) => opt.classList.remove("active"));
+        this.classList.add("active");
+        contents.forEach((content) => content.classList.add("d-none"));
+        document.getElementById(`content-${target}`).classList.remove("d-none");
+      });
+    });
+  });
+
+ function placeOrder(payment) {
+  if (payment === "RazorPay") {
+    fetch("/create-order", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        payment: payment,
+        amount: document.getElementById("total_price1").innerHTML,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status) {
+          var options = {
+            key: "rzp_test_wYk4gKQpFEA1Kg", 
+            amount: data.amount,
+            currency: "INR",
+            name: "Time Point",
+            description: "Order Payment",
+            order_id: data.order_id,
+            handler: function (response) {
+              fetch("/verify-payment", {
+                method: "post",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  payment_id: response.razorpay_payment_id,
+                  order_id: response.razorpay_order_id,
+                  signature: response.razorpay_signature,
+                }),
+              })
+                .then((response) => response.json())
+                .then((verifyData) => {
+                  if (verifyData.status) {
+                    Swal.fire({
+                      icon: "success",
+                      title: "Order Successful",
+                      text: "Your order has been placed successfully",
+                      confirmButtonText: "OK",
+                      timer: 2000,
+                      willClose: () => {
+                        window.location = "/home"; 
+                      },
+                    });
+                  } else {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Payment Failed",
+                      text: "Verification failed. Please try again.",
+                      confirmButtonText: "OK",
+                    });
+                  }
+                });
+            },
+            prefill: {
+              name: "Customer Name",
+              email: "customer.email@example.com",
+              contact: "9876543210",
+            },
+            theme: {
+              color: "#3399cc",
+            },
+          };
+          var rzp1 = new Razorpay(options);
+          rzp1.open();
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Order Failed",
+            text: data.message || "Something went wrong. Please try again.",
+            confirmButtonText: "OK",
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to process the order. Please check your network.",
+          confirmButtonText: "OK",
+        });
+      });
+  } else {
+    fetch("/payment", {
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        payment: payment,
+      }),
+    })
+      .then(response => response.json())
+      .then(data => {
+        if (data.status) {
+          Swal.fire({
+            icon: "success",
+            title: "Order Successful",
+            text: "Your order has been placed successfully",
+            confirmButtonText: "OK",
+            timer: 2000,
+            willClose: () => {
+              window.location = "/home"; 
+            },
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Order Failed",
+            text: data.message || "Something went wrong. Please try again.",
+            confirmButtonText: "OK",
+          });
+        }
+      })
+      .catch((error) => {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Failed to process the order. Please check your network.",
+          confirmButtonText: "OK",
+        });
+      });
+  }
+}
+
+
+</script>
+
+<%- include('../layouts/user/userfooter') %> <%-
+include('../layouts/user/userfoot') %>

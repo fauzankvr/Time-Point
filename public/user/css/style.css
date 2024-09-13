@@ -129,7 +129,7 @@ input[type=number]::-webkit-outer-spin-button {
 
 .form-control:focus {
     box-shadow: none;
-    border: 2px solid red
+    border: 2px solid rgb(0, 60, 255)
 }
 
 .validate {
@@ -205,3 +205,252 @@ input[type=number]::-webkit-outer-spin-button {
               margin-bottom: 20px;
           }
           
+.bg-light-our{
+    background-color: #e6e6e6;
+}
+.swal-custom-font {
+    font-size: 15px;
+    /* Adjust the font size */
+    font-weight: bold;
+    /* Optional: Make font bold */
+}
+
+.swal-custom-font1{
+    font-size: 12px;
+    padding: 20px;
+}
+
+
+/* =============  address card ====================== */
+
+.address-card {
+    background-color: #eff9ff;
+    /* Light pink background */
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-new-address {
+    background-color: #ebf5fa;
+    /* Light pink background */
+    border-radius: 10px;
+    padding: 20px;
+   margin: 20px 0;
+    text-align: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.add-new-address:hover {
+    background-color: #d5fff9;
+    
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #333;
+}
+
+.icon-btn:hover {
+    color: #ff5e5e;
+}
+
+.form-fs{
+    font-size: 18px;
+    color: rgb(77, 77, 77);
+    padding: 6px;
+}
+.form-lab{
+    font-size: 18px;
+}
+.forgot-password-container {
+      margin-top: 140px;
+      background-color: #f4f4f4;
+      padding: 70px;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      max-width: 570px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .forgot-password-container h2 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .forgot-password-container p {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      color: #6c757d;
+    }
+
+    .form-group label {
+      font-size: 1.5rem;
+      color: #333;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
+
+        .address-card {
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+    
+        .address-card.selected {
+            border-color: #007bff;
+            background-color: #f5faff;
+        }
+
+
+
+                .list-group-item {
+                    border: none;
+                    padding: 15px;
+                    font-size: 16px;
+                    cursor: pointer;
+                }
+        
+                .list-group-item img {
+                    width: 20px;
+                }
+        
+                .list-group-item-action:hover,
+                .list-group-item-action:focus {
+                    background-color: #f8f9fa;
+                }
+        
+                .list-group-item.active {
+                    background-color: #dc3545;
+                    color: white;
+                    font-weight: bold;
+                    border-left: 4px solid #ff4444;
+                }
+        
+                .payment-content {
+                    padding: 20px;
+                    border: 1px solid #e0e0e0;
+                    border-radius: 5px;
+                    background-color: #fff;
+                }
+        
+                .payment-content h4 {
+                    margin-bottom: 20px;
+                }
+        
+                .custom-control-input:checked~.custom-control-label::before {
+                    background-color: #28a745;
+                    border-color: #28a745;
+                }
+
+
+                                 .order-status {
+                                     border-radius: 12px;
+                                     padding: 4px 8px;
+                                     color: white;
+                                     font-size: 0.9rem;
+                                 }
+                
+                                 .on-deliver {
+                                     background-color: #28a745;
+                                 }
+                
+                                 .on-process {
+                                     background-color: #ffc107;
+                                 }
+                
+                                 .order-card {
+                                     border: 1px solid #eee;
+                                     border-radius: 8px;
+                                     padding: 16px;
+                                     margin-bottom: 16px;
+                                 }
+                
+                                 .product-item {
+                                     padding: 8px;
+                                     width: 48.5%;
+                                     border: 1px solid #ddd;
+                                     border-radius: 8px;
+                                     margin-bottom: 8px;
+                                 }
+
+                                 /* Custom styles */
+        .coupon-container {
+            border: 1px dashed #d4b483;
+            padding: 15px;
+            margin:auto ;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 340px;
+            margin-bottom: 20px;
+        }
+
+        .coupon-input-group {
+            display: flex;
+            margin-bottom: 9px;
+        }
+
+        .coupon-input-group input {
+            border-radius: 0;
+        }
+
+        .coupon-input-group button {
+            border-radius: 0;
+            background-color: #d4b483;
+            color: white;
+            border: none;
+        }
+
+        .coupon-list {
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .coupon-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .coupon-item:last-child {
+            border-bottom: none;
+        }
+
+        .coupon-savings {
+            font-weight: bold;
+            color: green;
+        }
+
+        .coupon-code {
+            font-weight: bold;
+            margin-top: 5px;
+        }
+
+        .coupon-description {
+            color: #888;
+            font-size: 0.9rem;
+        }
+
+        .coupon-terms {
+            font-size: 0.8rem;
+            color: #007bff;
+            cursor: pointer;
+        }
+
+                .alert-success {
+                    border: 1px solid #28a745;
+                    background-color: #e9f5ee;
+                    color: #28a745;
+                }

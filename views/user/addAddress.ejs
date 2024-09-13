@@ -1,0 +1,231 @@
+<%- include('../layouts/user/userhead') %> <%-
+include('../layouts/user/userheader') %>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-12 mb-4">
+      <div class="card mb-4">
+        <div class="card-header py-3">
+          <h1 class="mb-0 text-center">
+            <%= address ? 'Edit Address' : 'Add New Address' %>
+          </h1>
+        </div>
+        <div class="card-body">
+          <form
+            action="<%= address ? '/editAddress/' + address._id : '/addAddress' %>"
+            method="post"
+            onsubmit="return validDetails()"
+          >
+            <% if (address) { %>
+            <input type="hidden" name="id" value="<%= address._id %>" />
+            <% } %>
+
+            <div class="row mb-4">
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="name">Name</label>
+                  <input
+                    type="text"
+                    name="name"
+                    id="name"
+                    class="form-control fs-3"
+                    value="<%= address ? address.name : '' %>"
+                  />
+                  <p id="nameError" class="text-danger"></p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="phone">Mobile No</label>
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    class="form-control fs-3"
+                    value="<%= address ? address.phone : '' %>"
+                  />
+                  <p><span id="phoneError" class="text-danger"></span></p>
+                </div>
+              </div>
+            </div>
+            <input type="hidden" name="profile" value="<%= profile %>" />
+            <!-- Pincode and Locality -->
+            <div class="row mb-4">
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="pincode">Pincode</label>
+                  <input
+                    type="text"
+                    name="pincode"
+                    id="pincode"
+                    class="form-control fs-3"
+                    value="<%= address ? address.pincode : '' %>"
+                  />
+                  <p><span id="pincodeError" class="text-danger"></span></p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="locality">Locality</label>
+                  <input
+                    type="text"
+                    id="locality"
+                    name="locality"
+                    class="form-control fs-3"
+                    value="<%= address ? address.locality : '' %>"
+                  />
+                  <p><span id="localityError" class="text-danger"></span></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Address (Area and Street) -->
+            <div data-mdb-input-init class="form-outline mb-4">
+              <label class="form-label" for="form7Example7"
+                >Address (Area and Street)</label
+              >
+              <textarea
+                class="form-control fs-3"
+                id="address"
+                name="address"
+                rows="4"
+              >
+              <%= address ? address.address : '' %></textarea
+              >
+              <p><span id="addressError" class="text-danger"></span></p>
+            </div>
+
+            <!-- City/District/Town and State -->
+            <div class="row mb-4">
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="city"
+                    >City/District/Town</label
+                  >
+                  <input
+                    type="text"
+                    name="city"
+                    id="city"
+                    class="form-control fs-3"
+                    value="<%= address ? address.city : '' %>"
+                  />
+                  <p><span id="cityError" class="text-danger"></span></p>
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="state">State</label>
+                  <input
+                    type="text"
+                    id="state"
+                    name="state"
+                    class="form-control fs-3"
+                    value="<%= address ? address.state : '' %>"
+                  />
+                  <p><span id="stateError" class="text-danger"></span></p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Landmark and Alternate Phone (optional) -->
+            <div class="row mb-4">
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="form7Example1"
+                    >Landmark (optional)</label
+                  >
+                  <input
+                    type="text"
+                    name="landmark"
+                    id="form7Example1"
+                    class="form-control fs-3"
+                    value="<%= address ? address.landmark : '' %>"
+                  />
+                </div>
+              </div>
+              <div class="col">
+                <div class="form-outline">
+                  <label class="form-label" for="form7Example2"
+                    >Alternate Phone (optional)</label
+                  >
+                  <input
+                    type="text"
+                    id="form7Example2"
+                    name="alternatePhone"
+                    class="form-control fs-3"
+                    value="<%= address ? address.alternatePhone : '' %>"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center mt-5">
+              <button
+                type="submit"
+                class="btn btn-primary btn-block mb-4 fs-3 px-5"
+              >
+                <%= address ? 'Update' : 'Save' %>
+              </button>
+              <button class="btn fs-4 mb-2">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function validDetails() {
+    const name = document.getElementById('name').value;
+    const phone = document.getElementById('phone').value;
+    const address = document.getElementById('address').value;
+    const city = document.getElementById('city').value;
+    const state = document.getElementById('state').value;
+    const pincode = document.getElementById('pincode').value;
+    const locality = document.getElementById('locality').value;
+
+    document.getElementById('nameError').textContent = '';
+    document.getElementById('phoneError').textContent = '';
+    document.getElementById('addressError').textContent = '';
+    document.getElementById('cityError').textContent = '';
+    document.getElementById('stateError').textContent = '';
+    document.getElementById('pincodeError').textContent = '';
+    document.getElementById('localityError').textContent = '';
+   
+    if(!name || name.trim().length == 0) {
+      document.getElementById('nameError').textContent = 'Name is required';
+      return false;
+  }
+    const mobileRegex = /^[6-9]\d{9}$/;
+  if(!phone || !mobileRegex.test(phone)) {
+    document.getElementById('phoneError').textContent = 'Please enter a valid phone number';
+    return false;
+  }
+  if(!address || address.trim().length == 0) {
+    document.getElementById('addressError').textContent = 'Address is required';
+    return false;
+  }
+  if(!city || city.trim().length == 0) {
+    document.getElementById('cityError').textContent = 'City is required';
+    return false;
+  }
+  if(!state || state.trim().length == 0) {
+    document.getElementById('stateError').textContent = 'State is required';
+    return false;
+  }
+  if(!pincode || pincode.trim().length > 6 || pincode.trim().length < 6) {
+    document.getElementById('pincodeError').textContent = 'Please enter a valid pincode';
+    return false;
+  }
+  if(!locality || locality.trim().length == 0) {
+    document.getElementById('localityError').textContent = 'Locality is required';
+    return false;
+  }
+  return true;
+}
+</script>
+
+<%- include('../layouts/user/userfooter') %> <%-
+include('../layouts/user/userfoot') %>

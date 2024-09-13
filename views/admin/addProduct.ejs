@@ -1,6 +1,6 @@
-<%- include('../layouts/headadmin') %>
-<%- include('../layouts/adminHeader2') %>
-<%- include('../layouts/adminSidbar2') %>
+<%- include('../layouts/admin/headadmin') %>
+<%- include('../layouts/admin/adminHeader2') %>
+<%- include('../layouts/admin/adminSidbar2') %>
 
 <div class="main-panel">
   <div class="content-wrapper">
@@ -108,8 +108,9 @@
                   <div class="form-group">
                     <label>Image 1</label>
                     <div class="input-group col-xs-12">
-                      <input type="file" name="image1" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview1', 'cropper1')">
+                      <input type="file" name="image1" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview1', 'cropper1','file-error1')">
                     </div>
+                    <p id="file-error1" style="color: red; font-size: small;"></p>
                     <img id="imagePreview1" src="/public/admin/img/dummyimg.png" width="300px" alt="">
                     
                   </div>
@@ -118,8 +119,9 @@
                   <div class="form-group">
                     <label>Image 2</label>
                     <div class="input-group col-xs-12">
-                      <input type="file" name="image2" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview2', 'cropper2')">
+                      <input type="file" name="image2" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview2', 'cropper2','file-error1')">
                     </div>
+                    <p id="file-error2" style="color: red; font-size: small;"></p>
                     <img id="imagePreview2" src="/public/admin/img/dummyimg.png" width="300px" alt="">
                     
                   </div>
@@ -131,8 +133,9 @@
                   <div class="form-group">
                     <label>Image 3</label>
                     <div class="input-group col-xs-12">
-                      <input type="file" name="image3" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview3', 'cropper3')">
+                      <input type="file" name="image3" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview3', 'cropper3','file-error3')">
                     </div>
+                     <p id="file-error3" style="color: red; font-size: small;"></p>
                     <img id="imagePreview3" src="/public/admin/img/dummyimg.png" width="300px" alt="">
                     
                   </div>
@@ -141,8 +144,9 @@
                   <div class="form-group">
                     <label>Image 4</label>
                     <div class="input-group col-xs-12">
-                      <input type="file" name="image4" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview4', 'cropper4')">
+                      <input type="file" name="image4" class="form-control file-upload-info" accept="image/*" required onchange="previewAndCropImage(event, 'imagePreview4', 'cropper4','file-error4')">
                     </div>
+                    <p id="file-error4" style="color: red; font-size: small;"></p>
                     <img id="imagePreview4" src="/public/admin/img/dummyimg.png" width="300px" alt="">
                     
                   </div>
@@ -203,9 +207,21 @@
 let cropper;
 let currentImageId;
 
-function previewAndCropImage(event, previewId, cropperId) {
+function previewAndCropImage(event, previewId, cropperId,errorId) {
   const file = event.target.files[0];
+  const allowedTypes = ['image/jpeg', 'image/png'];
+  const fileErrorElement = document.getElementById(errorId);
+
+  fileErrorElement.textContent = '';
+   
+
+
   if (file) {
+     if (!allowedTypes.includes(file.type)) {
+            fileErrorElement.textContent = 'Only JPG and PNG files are allowed!';
+            event.target.value = ''; // Clear the selected file
+            return;
+      }
     const reader = new FileReader();
     reader.onload = function (e) {
       const imgElement = document.getElementById('cropImage');
@@ -214,48 +230,42 @@ function previewAndCropImage(event, previewId, cropperId) {
 
       currentImageId = previewId;
       if (cropper) {
-        cropper.destroy(); // Destroy the previous cropper instance
+        cropper.destroy(); 
       }
       cropper = new Cropper(imgElement, {
-        aspectRatio: 2/3, // Set the aspect ratio to 1:1 for square crops
+        aspectRatio: 2/2, 
         viewMode: 2
       });
     };
     reader.readAsDataURL(file);
   }
 }
-
 function cropAndSaveImage() {
-  if (!cropper) return; // Check if the cropper is initialized
+    if (!cropper) return;
 
-  const croppedCanvas = cropper.getCroppedCanvas({
-    width: 300, // Set the width of the cropped image
-    height: 300 // Set the height of the cropped image (1:1 aspect ratio)
-  });
+    const croppedCanvas = cropper.getCroppedCanvas({
+        width: 300,
+        height: 300
+    });
 
-  // Convert the cropped canvas to a blob
-  croppedCanvas.toBlob((blob) => {
-    // Create a new File object from the blob
-    const file = new File ([blob], `cropped-${currentImageId}.jpg`, { type: 'image/jpeg' });
-    
-    // Create a DataTransfer object and add the file
-    const dataTransfer = new DataTransfer();
-    dataTransfer.items.add(file);
+    // Get the original file extension from the current image
+    const originalImageType = currentImageId.includes('png') ? 'image/png' : 'image/jpg';
+    const fileExtension = originalImageType === 'image/png' ? 'png' : 'jpg';
 
-    // Find the file input associated with the current image and set its files to the DataTransfer object
-    const fileInput = document.querySelector(`input[name="${currentImageId.replace('imagePreview', 'image')}"]`);
-    fileInput.files = dataTransfer.files;
+    croppedCanvas.toBlob((blob) => {
+        const file = new File([blob], `cropped-${currentImageId}.${fileExtension}`, { type: originalImageType });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(file);
 
-    // Update the preview image with the cropped image
-    document.getElementById(currentImageId).src = croppedCanvas.toDataURL('image/jpeg');
+        const fileInput = document.querySelector(`input[name="${currentImageId.replace('imagePreview', 'image')}"]`);
+        fileInput.files = dataTransfer.files;
 
-    // Hide the crop modal
-    document.getElementById('cropModal').style.display = 'none';
-    
-    // Reset and destroy the cropper
-    cropper.destroy();
-    cropper = null;
-  }, 'image/jpeg');
+        document.getElementById(currentImageId).src = croppedCanvas.toDataURL(originalImageType);
+        document.getElementById('cropModal').style.display = 'none';
+
+        cropper.destroy();
+        cropper = null;
+    }, originalImageType);
 }
 
 function closeCropModal() {
@@ -266,4 +276,4 @@ function closeCropModal() {
   }
 }
 </script>
-<%- include('../layouts/footadmin') %>
+<%- include('../layouts/admin/footadmin') %>

@@ -1,6 +1,6 @@
-<%- include('../layouts/headadmin') %>
- <%- include('../layouts/adminHeader2') %>
-  <%-include('../layouts/adminSidbar2') %>
+<%- include('../layouts/admin/headadmin') %>
+ <%- include('../layouts/admin/adminHeader2') %>
+  <%-include('../layouts/admin/adminSidbar2') %>
 
 
 <div class="main-panel">
@@ -25,7 +25,21 @@
             <!-- End of Flash Messages -->
             <a href="/admin/poroductMangment/addProduct">
                 <button type="button" class="btn btn-inverse-info btn-icon "><span class="bold fs-5">+ </span> Add New product</button>
-            </a>         
+            </a>        
+            <div class="d-flex  align-items-end justify-content-end"></div>
+     <!-- <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle fs-4" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+    Sort By
+  </button>
+  <ul class="dropdown-menu fs-4" aria-labelledby="dropdownMenuButton1">
+    <li><a class="dropdown-item" href="/home/shop?sort=asc">Price Low to High</a></li>
+    <li><a class="dropdown-item" href="/home/shop?sort=desc">Price High to Low</a></li>
+    <li><a class="dropdown-item" href="/home/shop?sort=a-z">aA - zZ </a></li>
+    <li><a class="dropdown-item" href="/home/shop?sort=z-a">zZ - aA </a></li>
+    <li><a class="dropdown-item" href="/home/shop">Popularity</a></li>
+  </ul>
+</div> -->
+</div> 
             <div class="table-responsive">
               <table class="table table-striped">
                 <thead>
@@ -104,4 +118,4 @@
 
 
   
-<%- include('../layouts/footadmin') %>
+<%- include('../layouts/admin/footadmin') %>

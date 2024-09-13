@@ -6,7 +6,7 @@ const brandCollections= require ('../models/brandModel')
 exports.getProductManagment = async (req, res) => {
     try {
         let productData = await productCollection.find().populate('category_id','name').populate('brand_id','name')
-        res.render("productManagment", { productData });
+        res.render("admin/productManagment", { productData });
     } catch (error) {
         console.log(error)
     }
@@ -18,7 +18,7 @@ exports.getAddProduct = async (req, res) => {
         const categoryData=await categoryCollections.find()
       const brandData = await brandCollections.find();
       
-        res.render("admin/addProduct",{categoryData,brandData});
+      res.render("admin/addProduct",{categoryData,brandData});
     } catch (error) {
         console.log(error)
     }
@@ -121,11 +121,10 @@ exports.postEditProduct = async (req, res) => {
     if (!updatedProduct) {
       return res.status(404).send("Product not found");
     }
-    console.log(updateData);
     // Redirect to the product management page after successful update
     req.flash("success", "Product edited Successfully");
     res.redirect("/admin/productManagment");
-  } catch (error) {
+  } catch (error) {       
     console.error("Error updating product:", error);
     res.status(500).send("An error occurred while updating the product.");
   }
@@ -138,22 +137,36 @@ exports.blockProduct = async (req, res) => {
   await productCollection.updateOne(
     { _id: productId },
     { $set: { is_delete: false } }
-  );
+    );
+    req.flash("success", "product unblocked successfully");
     res.redirect("/admin/productManagment");
   } catch (error) {
     console.log(error)
+    req.flash("error", "An error occurred while blocking the product");
+    return res.redirect("/admin/productManagment");
   }
 }
 
 exports.unBlockProduct = async (req, res) => {
   try {
     const productId = req.params.id;
+        const product = await productCollection.findById(productId);
+        const catetory = await categoryCollections.findById(
+          product.category_id
+        );
+        if (catetory.is_delete) {
+          req.flash("error", "This category already deleted");
+          return res.redirect("/admin/productManagment");
+        }
     await productCollection.updateOne(
       { _id: productId },
       { $set: { is_delete: true } }
     );
+    req.flash("success", "product blocked successfully");
     res.redirect("/admin/productManagment");
   } catch (error) {
     console.log(error)
+    req.flash("error", "An error occurred while blocking the product");
+    return res.redirect("/admin/productManagment");
   }
 } 

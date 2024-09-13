@@ -1,6 +1,6 @@
-<%- include('../layouts/headadmin') %>
-<%- include('../layouts/adminHeader2') %>
-<%- include('../layouts/adminSidbar2') %>
+<%- include('../layouts/admin/headadmin') %>
+<%- include('../layouts/admin/adminHeader2') %>
+<%- include('../layouts/admin/adminSidbar2') %>
  
 
 <div class="main-panel">
@@ -41,7 +41,7 @@
                       <div class="d-flex aligin-items-center justify-contern-center">
                         <div class="mx-2">
                    <a
-                          href="/admin/productManagment/editProduct/<%= element._id %>"
+                          href="#"
                           type="button"
                           class=" btn btn-primary btn-rounded btn-icon btn-sm"
                         > 
@@ -49,15 +49,27 @@
                         </a>
                         </div>
       
-                          <div class="ml-2">
-                         <a
-                          href="/admin/productManagment/deleteProduct/<%= element._id %>"
-                          type="button"
-                          class=" btn btn-danger btn-rounded btn-icon btn-sm"
-                        > 
-                           <i class="fa-solid fa-trash-can"></i>
-                        </a>
-                      </div>
+                           <div class="ml-2">
+                          <% if ( element.is_delete == true) { %>
+                          <a
+                            href="/admin/brandManagment/unBlockBrand/<%= element._id %>"
+                            type="button"
+                            class="btn btn-danger btn-rounded btn-icon btn-sm"
+                          >
+                            <i class="fa-solid fa-trash-can"></i>
+                          </a>
+                          <% }else { %>
+                          <a
+                            href="/admin/brandManagment/blockBrand/<%= element._id %>"
+                            type="button"
+                            class="btn btn-secondary btn-rounded btn-icon btn-sm"
+                          >
+                            <i class="fa-solid fa-trash-can"></i>
+                          </a>
+
+                          <% } %>
+                        </div>
+
                       </div>
 
                     </td>
@@ -92,4 +104,4 @@
 </div>
 
 
-<%- include('../layouts/footadmin') %>
+<%- include('../layouts/admin/footadmin') %>

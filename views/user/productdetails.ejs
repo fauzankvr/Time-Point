@@ -1,16 +1,32 @@
 <%- include('../layouts/user/userhead') %>
  <style>
+    .main-image-container {
+        position: relative;
+        overflow: hidden;
+        cursor: crosshair; 
+        width: 100%;
+        max-width: 300px;  
+        height: auto;
+    }
+
+    .main-image {
+        width: 100%;
+        height: auto;
+        height: auto;
+        object-fit: cover;
+        max-height: 400px; 
+        transition: transform 0.2s ease; 
+    }
+
+    .main-image-container:hover .main-image {
+        transform: scale(1.7); 
+    }
         .product-images {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
-        .main-image {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            max-height: 500px; 
-        }
+
         .thumbnail-images {
             display: flex;
             gap: 10px;
@@ -46,6 +62,35 @@
         .delivery-info p {
             margin-bottom: 5px;
         }
+        .product-card {
+      border: 1px solid #e5e5e5;
+      padding: 15px;
+      border-radius: 8px;
+      background-color: #fff;
+    }
+    .product-price {
+      color: #e91e63;
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+    .product-old-price {
+      text-decoration: line-through;
+      color: #999;
+    }
+    .product-discount {
+      color: #e91e63;
+      font-weight: bold;
+    }
+    .size-chart, .delivery-options {
+      margin-top: 15px;
+    }
+    .size-options button {
+      margin: 5px;
+    }
+    .btn-wishlist {
+      border-color: #e91e63;
+      color: #e91e63;
+    }
     </style>
 <%- include('../layouts/user/userheader') %>
 
@@ -56,7 +101,6 @@
         <div class="container">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="#">Home</a></li>
-                <li class="breadcrumb-item"><a href="#">Men</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Watch Details</li>
             </ol>
         </div>
@@ -68,72 +112,199 @@
             <!-- Product Images -->
             <div class="col-md-6">
                 <div class="row">
-
                 <div class="thumbnail-images col-4 d-flex flex-column">
-                    <img src="/public//productImgs/<%= productData.images.image2 %>" class="img-thumbnail " alt="Watch Thumbnail 1">
-                    <img src="/public//productImgs/<%= productData.images.image3 %>" class="img-thumbnail " alt="Watch Thumbnail 2">
-                    <img src="/public//productImgs/<%= productData.images.image4 %>" class="img-thumbnail " alt="Watch Thumbnail 3">
+                    <img src="/public//productImgs/<%= productData.images.image2 %>" class="img-thumbnail" onclick="changeMainImage(this)" alt="Watch Thumbnail 1">
+                    <img src="/public//productImgs/<%= productData.images.image3 %>" class="img-thumbnail " onclick="changeMainImage(this)" alt="Watch Thumbnail 2">
+                    <img src="/public//productImgs/<%= productData.images.image4 %>" class="img-thumbnail " onclick="changeMainImage(this)" alt="Watch Thumbnail 3">
                 </div>
-                <div class="mb-4 col-8">
-                    <img src="/public//productImgs/<%= productData.images.image1 %> " class="main-image" id="main-image1"  alt="Fossil Grant Brown Watch">
+              <div class="main-image-container  mb-4">
+                     <img src="/public/productImgs/<%= productData.images.image1 %>" class="main-image" id="main-image1" alt="Fossil Grant Brown Watch">
                 </div>
-
                 </div>
-                
-                
             </div>
+      <div class="col-lg-6 col-md-8 mx-auto product-card">
+        <!-- Product Title -->
+        <h4 class="product-title"><%= productData.product_name %></h4>
+        <p class="product-description"></p>
 
-            <!-- Product Details -->
-            <div class="col-md-6">
-                <h1 class="product-title"><%= productData.product_name %></h1>
-                <p class="product-price">₹<%= productData.price %></p>
-                <p class="product-rating">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i> (39 reviews)
-                </p>
-                <p><%= productData.discription %></p>
+        <!-- Rating and Reviews -->
+        <div class="d-flex align-items-center mb-3">
+          <span class="badge bg-success me-2">4.3</span>
+          <small class="text-muted">225 Ratings</small>
+        </div>
 
-                <%if (productData.stock < 5 && productData.stock > 0) { %>
+        <!-- Price -->
+        <div class="product-pricing mb-3">
+          <span class="product-price fs-2">₹<%= productData.price %></span>
+          <span class="product-old-price ms-2">₹1799</span>
+          <span class="product-discount ms-2">(55% OFF)</span>
+        </div>
+  <hr class="mb-4">
+       
+        <%if (productData.stock <= 5 && productData.stock > 0) { %>
                 <div class="out_of_stock">
-                    <h4 class="text-danger">Reminging Stock : <b><%= productData.stock %></b></h4>
+                    <h2 class="text-danger">Reminging Stock : <b><%= productData.stock %></b></h2>
                 </div>
                 <% }else if (productData.stock == 0 )  { %>
                     <div class="out_of_stock">
-                    <p class="text-danger">Out of Stock</p>
+                    <p class="text-danger fs-2 fw-bold">Out of Stock</p>
                 </div>
-                    <% } %>
-      
-               
+                    <% }else if (productData.stock > 5)  { %>
+                    <div class="out_of_stock">
+                    <p class="text-success  fs-2 fw-bold">In Stock</p>
+                </div>
+                   <% } %>
 
-                <!-- Buy Now -->
-                <div class="mb-3 mt-5">
-                    <button class="btn btn-primary btn-lg">Buy Now</button>
-                </div>
 
-                <!-- Delivery Options -->
-                <div>
-                    <p><i class="bi bi-truck"></i> Free Delivery</p>
-                    <p><i class="bi bi-arrow-repeat"></i> Return Delivery</p>
-                </div>
-            </div>
+        <!-- Buttons -->
+        <div class="d-flex mb-5 mt-5">
+            <% if(productData.stock == 0 ) {%>
+                <button disabled class="btn btn-ligth me-3 fs-3 fw-bold p-3">ADD TO CART</button>
+            <% }else {%>
+                <button onclick="addToCart('<%= productData.id %>')" class="btn btn-danger me-3 fs-3 fw-bold p-3">ADD TO CART</button>
+            <% }%>
+          
+          <button class="btn btn-outline-danger btn-wishlist me-3 fs-3 fw-bold p-3" onclick="addToWishlist('<%= productData.id %>')">WISHLIST</button>
+        </div>
+
+        <!-- Delivery Options -->
+        <div class="delivery-options mt-4">
+          <h6>DELIVERY OPTIONS</h6>
+          <p>PIN Code: <span class="text-success">673639</span></p>
+          <ul class="list-unstyled">
+            <li>Get it by <strong>Mon, Sep 09</strong></li>
+            <li>Pay on delivery available</li>
+            <li>Easy 14 days return & exchange available</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Modal for zoomed image -->
+<div id="imageZoomModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modal-zoom-image">
+</div>
+
         </div>
     </div>
 
    
 <script>
-        let options={
-            width:350,
-            zoomWidth:500,
-            offset:{ vertical:0,horizontal:-700 },
-            zoomType: 'inner', // Zoom inside the image container
-            cursor: 'crosshair'
-        };
-        new ImageZoom(document.getElementById("main-image1"),options)
-     </script>
+    
+    const mainImageContainer = document.querySelector('.main-image-container');
+    const mainImage = document.getElementById('main-image1');
 
+    mainImageContainer.addEventListener('mousemove', function (e) {
+        const containerRect = mainImageContainer.getBoundingClientRect();
+
+        const mouseX = e.clientX - containerRect.left;
+        const mouseY = e.clientY - containerRect.top;
+
+        const percentX = (mouseX / containerRect.width) * 100;
+        const percentY = (mouseY / containerRect.height) * 100;
+
+        mainImage.style.transformOrigin = `${percentX}% ${percentY}%`;
+        mainImage.style.transform = 'scale(2.0)'; // Adjust scale as needed
+    });
+
+    mainImageContainer.addEventListener('mouseleave', function () {
+        mainImage.style.transform = 'scale(1)';
+    }); 
+
+        function changeMainImage(thumbnail) {
+        var mainImage = document.getElementById('main-image1');
+        var mainImageSrc = mainImage.src;
+        mainImage.src = thumbnail.src;
+        thumbnail.src = mainImageSrc;
+    }
+     
+    function addToCart(id) {
+        fetch(`/home/cart/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                id: id
+            })
+        }).then(res => res.json())
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to cart',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: data.data || 'Something went wrong!',
+            customClass: {
+            popup: "swal-custom-font",
+        }
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+})
+.catch(error => {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'An error occurred!',
+    }).then(() => {
+        window.location.reload();
+    });
+});
+
+        
+    }
+
+    function addToWishlist(id) {
+        fetch(`/home/wishlist`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                productId: id
+            })
+        }).then(res => res.json())
+.then(data => {
+    if (data.success) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Added to wishlist',
+            showConfirmButton: false,
+            timer: 1500
+        })
+    } else {
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: data.data || 'Something went wrong!',
+            customClass: {
+            popup: "swal-custom-font",
+        }
+        }).then(() => {
+            window.location.reload();
+        });
+    }
+})
+.catch(error => {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: 'An error occurred!',
+    }).then(() => {
+        window.location.reload();
+    });
+});
+    }
+
+</script>
 
 <%- include('../layouts/user/userfooter') %>
 <%- include('../layouts/user/userfoot') %>
