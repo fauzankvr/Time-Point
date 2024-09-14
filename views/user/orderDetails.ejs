@@ -109,13 +109,18 @@ include('../layouts/user/userheader') %>
                     <% } else if(element.return_status == "approved"){%>
                     <div>
                       <p class="badge bg-success fs-4">Approved</p>
-                      <p style="font-size: 10px;">Your return request has been approved</p>
+                      <p style="font-size: 10px">
+                        Your return request has been approved
+                      </p>
                     </div>
                     <% } else if(element.return_status == "rejected"){%>
                     <div>
                       <p class="badge bg-danger fs-4">Rejected</p>
-                      <p style="font-size: 10px;">Your return request has been rejected</p>
-                    </div> <% } %>
+                      <p style="font-size: 10px">
+                        Your return request has been rejected
+                      </p>
+                    </div>
+                    <% } %>
                   </div>
                 </div>
                 <hr
@@ -230,7 +235,8 @@ include('../layouts/user/userheader') %>
             <div class="d-flex justify-content-between pt-2">
               <p class="text-muted mb-0">Invoice Number : 0000</p>
               <p class="text-muted mb-0">
-                <span class="fw-bold me-4">Discount</span> ₹ <%= (order.grant_total_ - order.coupon.discountTotal).toFixed(1) %>
+                <span class="fw-bold me-4">Discount</span> ₹ <%=
+                (order.grant_total_ - order.coupon.discountTotal).toFixed(1) %>
               </p>
             </div>
 
@@ -252,7 +258,14 @@ include('../layouts/user/userheader') %>
             <h5
               class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"
             >
-              Total paid: <span class="h2 mb-0 ms-2">₹ <%= order.coupon.discountTotal %></span>
+              Total paid:
+              <span class="h2 mb-0 ms-2"
+                >₹ <% if(order.coupon.discountTotal==0){ %>
+                  <%= order.grant_total_ %>
+                <%}else{%>
+                  <%= order.coupon.discountTotal %>
+               <% } %></span
+              >
             </h5>
           </div>
         </div>

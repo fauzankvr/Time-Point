@@ -1,4 +1,5 @@
 const usersCollection = require('../models/users')
+const orderModal = require('../models/orderModal')
 const bcrypt = require('bcrypt')
 
 exports.getAdmin = async (req, res) => {
@@ -72,7 +73,31 @@ exports.unBlockUser = async (req, res) => {
 };
 
 exports.getDashbord = async (req, res) => {
-  res.render('admin/admindash');
+  const orderData = await orderModal.find();
+  const totalOrders = orderData.reduce((acc, item) => {
+    return acc + item.products.length;
+  }, 0);
+  const totalAmount1 = orderData.reduce((acc, item) => {
+    return acc + item.grant_total_;
+  }, 0)
+  
+  function formatIndianNumber(number) {
+    const numStr = number.toString();
+    const lastThreeDigits = numStr.slice(-3);
+    const otherDigits = numStr.slice(0, -3);
+
+    if (otherDigits !== "") {
+      return (
+        otherDigits.replace(/\B(?=(\d{2})+(?!\d))/g, ",") +
+        "," +
+        lastThreeDigits
+      );
+    } else {
+      return lastThreeDigits;
+    }
+  }
+const totalAmount = formatIndianNumber(totalAmount1);
+  res.render("admin/admindash", { totalOrders, totalAmount });
 }
 
 

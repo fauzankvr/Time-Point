@@ -6,6 +6,10 @@ const categorySchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'offerModel',  
+  },
   is_delete: { type: Boolean, default: false },
 });
 

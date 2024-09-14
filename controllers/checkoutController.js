@@ -16,7 +16,7 @@ exports.getdeliveryAddress = async (req, res) => {
   const user = req.session.user;
   const userData = await User.findOne({ email: user });
   const address = await Address.find({ user_id: userData._id });
-  const addressData = address[0].addresses;
+ 
   const cartCollection = await Cart.findOne({ user_id: userData._id }).populate(
     "products.product_id"
   );
@@ -33,7 +33,10 @@ if (cartCollection) {
   const total = cartData.reduce((acc, item) => {
     return acc + item.total_price;
   }, 0);
-
+  if (address.length == 0) {
+    return res.render("user/deliveryAddress", { user, addressData: [], total, cartData });
+   }
+   const addressData = address[0].addresses;
   res.render("user/deliveryAddress", { user, addressData, total, cartData });
 };
 
@@ -227,7 +230,7 @@ exports.cancelOrder = async (req, res) => {
     date: new Date(),
     amount: order.coupon.discountTotal,
     description: "refund for cancelled order",
-    transactioType: "debited",
+    transactioType: "credited",
   });
   await userData.save();
 
@@ -277,7 +280,7 @@ exports.applyCoupon = async (req, res) => {
   }, 0);
   const { couponCode } = req.body;
   const coupon = await couponModel.findOne({ coupon_code: couponCode });
-
+ 
   if (!coupon) {
     return res.status(404).json({ success: false, message: "Coupon not found" });
   }else if (coupon.expiry_date < Date.now()) {

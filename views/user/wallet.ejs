@@ -146,16 +146,11 @@ include('../layouts/user/userheader') %>
                           </td>
                           <td><%= element.description %></td>
                           <td class="text-center">
-                            <% if (element.transactionType === 'credit') { %>
+                            <% if (element.transactioType === 'credited') { %>
                             <span class="credit">
-                              <img
-                                src="/path/to/credit-icon.svg"
-                                class="transaction-icon"
-                                alt="credit"
-                              />
-                              Credit
+                             <span class="badge bg-success ">Credit</span> 
                             </span>
-                            <% } else if (element.transactioType == 'debited') {
+                            <% } else if(element.transactioType == 'debited') {
                             %>
                            <span class="badge bg-danger ">Debit</span>
                             <% } %>

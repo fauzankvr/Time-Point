@@ -299,9 +299,8 @@ exports.getProfile = async (req, res) => {
   const orderData = await orderModal
     .find({ user_id: userData._id })
     .populate("products.product_id");
-  
-  if (!addressData1) {
-    return res.render("user/profile", { userData, user ,addressData:[]});
+  if (addressData1.length == 0) {
+    return res.render("user/profile", { userData, user,orderData:[] ,addressData:[]});
   } else {
     const addressData = addressData1[0].addresses;
     res.render("user/profile", { userData, user, addressData ,orderData });

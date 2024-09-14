@@ -100,7 +100,7 @@ router.get(
 router.post("/payment", orderController.postPayment);
 router.post("/cancelOrder", orderController.cancelOrder);
 router.post("/returnOrder", orderController.returnOrder);
-router.get('/home/orderDetails/:id', orderController.getOrderDetails)
+router.get('/home/orderDetails/:id',userAuth.isLoggedIn, orderController.getOrderDetails)
 
 router.post("/create-order", orderController.createOrder);
 router.post("/verify-payment", orderController.verifyPayment);
@@ -109,6 +109,7 @@ router.post("/verify-payment", orderController.verifyPayment);
 
 router.post("/applyCoupon", orderController.applyCoupon);
 router.post("/removeCoupon", orderController.removeCoupon);
+
 // ===================== wallet =============
 router.get("/home/wallet", userAuth.isLoggedIn, orderController.getWallet);
 

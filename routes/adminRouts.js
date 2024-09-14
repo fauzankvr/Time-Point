@@ -9,7 +9,7 @@ const categoryControllers = require('../controllers/categoryControllers')
 const brandControllers = require('../controllers/brandControllers')
 const orderControllers = require('../controllers/orderController')
 const couponControllers = require('../controllers/couponControlles')
-
+const offerControllers = require('../controllers/offerController')
 
 //app router
 
@@ -144,4 +144,11 @@ router.get(
 router.get("/admin/couponManagment", adminAuth.isLoggedIn, couponControllers.getCouponManagment)
 router.post("/admin/couponManagment", couponControllers.postCouponManagment)
 
+
+// =========================== offer Management =================
+
+router.get("/admin/offerManagment", adminAuth.isLoggedIn, offerControllers.getOfferManagment);
+router.post("/admin/offerManagment/addOffer", offerControllers.postAddOffer);
+router.post("/admin/offerManagement/ChangeOffer", offerControllers.postChangeOffer);
+router.post("/admin/offerManagement/ChangeCategoryOffer", offerControllers.postChangeCategoryOffer);
 module.exports = router

@@ -24,7 +24,12 @@ const productSchema = new mongoose.Schema({
     image4: String,
   },
   is_delete: { type: Boolean, default: false },
-  is_list:{type:Boolean,default:false}
+  is_list: { type: Boolean, default: false },
+  discount_price: { type: Number, default: 0 },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "offerModel",
+  }
 },{ timestamps: true });
 
 const products = mongoose.model('products', productSchema)

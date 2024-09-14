@@ -1,7 +1,6 @@
-<%- include('../layouts/admin/headadmin') %>
- <%- include('../layouts/admin/adminHeader2') %>
-  <%-include('../layouts/admin/adminSidbar2') %>
-
+<%- include('../layouts/admin/headadmin') %> <%-
+include('../layouts/admin/adminHeader2') %>
+<%-include('../layouts/admin/adminSidbar2') %>
 
 <div class="main-panel">
   <div class="content-wrapper">
@@ -13,21 +12,18 @@
             <p class="card-description">Manage Product detiails</p>
             <!-- Flash Messages -->
             <% if (messages.success) { %>
-                <div class="alert alert-success">
-                    <%= messages.success %>
-                </div>
-            <% } %>
-            <% if (messages.error) { %>
-                <div class="alert alert-danger">
-                    <%= messages.error %>
-                </div>
+            <div class="alert alert-success"><%= messages.success %></div>
+            <% } %> <% if (messages.error) { %>
+            <div class="alert alert-danger"><%= messages.error %></div>
             <% } %>
             <!-- End of Flash Messages -->
             <a href="/admin/poroductMangment/addProduct">
-                <button type="button" class="btn btn-inverse-info btn-icon "><span class="bold fs-5">+ </span> Add New product</button>
-            </a>        
-            <div class="d-flex  align-items-end justify-content-end"></div>
-     <!-- <div class="dropdown">
+              <button type="button" class="btn btn-inverse-info btn-icon">
+                <span class="bold fs-5">+ </span> Add New product
+              </button>
+            </a>
+            <!-- <div class="d-flex align-items-end justify-content-end"></div> -->
+            <!-- <div class="dropdown">
   <button class="btn btn-secondary dropdown-toggle fs-4" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
     Sort By
   </button>
@@ -39,83 +35,82 @@
     <li><a class="dropdown-item" href="/home/shop">Popularity</a></li>
   </ul>
 </div> -->
-</div> 
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Product</th>
-                    <th>Product Name</th>
-                    <th>Catogory</th>
-                    <th>Brand</th>
-                    <th>Price</th>
-                    <th>Stock</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
+         
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Product Name</th>
+                  <th>Catogory</th>
+                  <th>Brand</th>
+                  <th>Price</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
 
-                <tbody>
-                  <% productData.forEach(element => { %>
-                  <tr>
-                    <td class="py-1">
-                              <img src="/public/productImgs/<%= element.images.image1 %>" alt="image" />
-                            </td>
-                    <td><%= element.product_name %></td>
-                    <td><%= element.category_id.name %></td>
-                    <td><%= element.brand_id.name %></td>
-                    <td><%= element.price %></td>
-                    <td><%= element.stock %></td>
+              <tbody>
+                <% productData.forEach(element => { %>
+                <tr>
+                  <td class="py-1">
+                    <img
+                      src="/public/productImgs/<%= element.images.image1 %>"
+                      alt="image"
+                    />
+                  </td>
+                  <td><%= element.product_name %></td>
+                  <td><%= element.category_id.name %></td>
+                  <td><%= element.brand_id.name %></td>
+                  <td><%= element.price %></td>
+                  <td><%= element.stock %></td>
 
-                    <td>
-                      <div class="d-flex aligin-items-center justify-contern-center">
-                         <div class="mx-2">
-                         <a
+                  <td>
+                    <div
+                      class="d-flex aligin-items-center justify-contern-center"
+                    >
+                      <div class="mx-2">
+                        <a
                           href="/admin/productManagment/editProduct/<%= element._id %>"
                           type="button"
-                          class=" btn btn-primary btn-rounded btn-icon btn-sm"
-                        > 
-                            <i class="fa-solid fa-pen-to-square"></i>
+                          class="btn btn-primary btn-rounded btn-icon btn-sm"
+                        >
+                          <i class="fa-solid fa-pen-to-square"></i>
                         </a>
-                        </div>
+                      </div>
 
                       <div class="ml-2">
-                        
                         <% if ( element.is_delete == true) { %>
-                          <a
-                         href="/admin/productManagment/blockProduct/<%= element._id %>"
+                        <a
+                          href="/admin/productManagment/blockProduct/<%= element._id %>"
                           type="button"
-                          class=" btn btn-danger btn-rounded btn-icon btn-sm"
-                        > 
-                             <i class="fa-solid fa-trash-can"></i>
-                            </a>
-                        <% }else { %>   
-                        <a                       
+                          class="btn btn-danger btn-rounded btn-icon btn-sm"
+                        >
+                          <i class="fa-solid fa-trash-can"></i>
+                        </a>
+                        <% }else { %>
+                        <a
                           href="/admin/productManagment/unBlockProduct/<%= element._id %>"
                           type="button"
-                          class="btn btn-secondary btn-rounded btn-icon btn-sm "
-                         > 
-
-                         <i class="fa-solid fa-trash-can"></i>
+                          class="btn btn-secondary btn-rounded btn-icon btn-sm"
+                        >
+                          <i class="fa-solid fa-trash-can"></i>
                         </a>
-                          
-                          <% } %>
-                     
+
+                        <% } %>
                       </div>
-                      </div>
-                    </td>
- 
+                    </div>
+                  </td>
                 </tr>
                 <% }) %>
-                </tbody>
-              </table>
-            </div>
+              </tbody>
+            </table>
           </div>
         </div>
+         </div>
       </div>
     </div>
   </div>
 </div>
 
-
-  
 <%- include('../layouts/admin/footadmin') %>

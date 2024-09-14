@@ -60,6 +60,7 @@ const orderSchema = new mongoose.Schema(
       },
       discountTotal: {
         type: Number,
+        default:0
       }
     },
   },
