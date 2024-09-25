@@ -109,8 +109,17 @@ include('../layouts/user/userheader') %>
                         <i class="fas fa-plus fs-4"></i>
                       </button>
                     </div>
-                    <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
+                    <div class="col-md-3 col-lg-2 col-xl-2 ">
+                      <% if(element.product_id.offer) { %>
+                        <% if(element.product_id.offer.is_delete == false && element.product_id.offer.offer_end_date > Date.now()) {%>
+                      <h6 class="mb-0 text-center">₹ <%= element.product_id.discount_price %></h6>
+                        <span class="text-muted text-decoration-line-through text-center fs-2 ms-4">₹ <%= element.product_id.price %></span>
+                          <% }else{ %>
+                            <h6 class="mb-0">₹ <%= element.product_id.price %></h6>
+                            <% } %>
+                      <% } else { %>
                       <h6 class="mb-0">₹ <%= element.product_id.price %></h6>
+                        <% } %>
                     </div>
                     <div class="col-md-1 col-lg-1 col-xl-1 text-end">
                       <button

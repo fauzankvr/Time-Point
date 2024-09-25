@@ -35,7 +35,8 @@ include('../layouts/admin/adminSidbar2') %>
                 <thead>
                   <tr>
                     <th>Coupon Code</th>
-                    <th>Discount</th>
+                    <th>Discount(%)</th>
+                    <th>Minimum Amount</th>
                     <th>Start Date</th>
                     <th>Expiry Date</th>
                     <th>Actions</th>
@@ -46,7 +47,8 @@ include('../layouts/admin/adminSidbar2') %>
                   <% couponData.forEach(element => { %>
                   <tr>
                     <td><%= element.coupon_code %></td>
-                    <td><%= element.discount %></td>
+                    <td><%= element.discount %>%</td>
+                    <td>₹ <%= element.minimum_amount %></td>
                     <td>
                       <script>
                 document.write(new Date('<%= element.start_date %>').toLocaleDateString('en-GB'));
@@ -61,9 +63,9 @@ include('../layouts/admin/adminSidbar2') %>
                       <div
                         class="d-flex aligin-items-center justify-contern-center"
                       >
-                        <div class="mx-2">
+                        <!-- <div class="mx-2"> -->
                           <!-- Trigger button (Your <a> tag) -->
-                          <a
+                          <!-- <a
                             href="#"
                             class="btn btn-primary btn-rounded btn-icon btn-sm"
                             data-toggle="modal"
@@ -71,23 +73,24 @@ include('../layouts/admin/adminSidbar2') %>
                             onclick="populateModal('<%= element._id %>', '<%= element.name %>')"
                           >
                             <i class="fa-solid fa-pen-to-square"></i>
-                          </a>
-                        </div>
+                          </a> -->
+                        <!-- </div> -->
 
                         <div class="ml-2">
-                          <% if ( element.is_delete == true) { %>
+                          <% if ( element.is_delete == false) { %>
                           <a
-                            href="/admin/categorytManagment/blockCatogory/<%= element._id %>"
+                            href="/admin/couponManagment/blockCoupon/<%= element._id %>"
                             type="button"
-                            class="btn btn-danger btn-rounded btn-icon btn-sm"
+                             class="btn btn-secondary btn-rounded btn-icon btn-sm"
                           >
                             <i class="fa-solid fa-trash-can"></i>
                           </a>
                           <% }else { %>
                           <a
-                            href="/admin/categoryManagment/unBlockCatogory/<%= element._id %>"
+                            href="/admin/couponManagment/unBlockCoupon/<%= element._id %>"
                             type="button"
-                            class="btn btn-secondary btn-rounded btn-icon btn-sm"
+                           
+                            class="btn btn-danger btn-rounded btn-icon btn-sm"
                           >
                             <i class="fa-solid fa-trash-can"></i>
                           </a>
@@ -155,6 +158,16 @@ include('../layouts/admin/adminSidbar2') %>
               
             />
             <p id="discount-error" style="color: brown; font-size: small"></p>
+            <div class="form-group">
+            <label for="categoryName">Minimum Amount</label>
+            <input
+              type="text"
+              class="form-control"
+              required
+              name="minimum_amount"
+              
+            />
+          </div>
           </div>
           <div class="form-group">
             <label for="categoryName">Start Date</label>

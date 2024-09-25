@@ -12,27 +12,43 @@ exports.getAddToCart = async (req, res) => {
     }
     const cartCollection = await cartModel
       .findOne({ user_id: userData._id })
-      .populate("products.product_id");
+      .populate({
+        path: "products.product_id",
+        populate: {
+          path: "offer", 
+        },
+      });
+
 
     if (!cartCollection) { 
       const cartData = []
       const total = 0
       return res.render("user/cart", { user, cartData, total });
     }
+
     if (cartCollection) {
-      // Filter products where `is_delete` is false
       cartCollection.products = cartCollection.products.filter(
         (product) => product.product_id.is_delete === false
       );
     }
     const cartData = cartCollection.products;
     
-    const total = cartData.reduce((acc, item) => {
-      if (item.product_id.stock > 0 ) { 
-        return acc + item.total_price;    
-      } 
-      return acc; 
-    },0)
+const total = await cartData.reduce((acc, item) => {
+  if (item.product_id.stock > 0) {
+    if (
+      item.product_id.offer &&
+      item.product_id.offer.is_delete == false &&
+      item.product_id.offer.offer_end_date > new Date() &&
+      item.product_id.offer.offer_start_date < new Date()
+    ) {
+      return acc + item.product_id.discount_price * item.quantity;
+    } else {
+      return acc + item.product_price * item.quantity;
+    }
+  }
+  return acc;
+}, 0);
+    
 
     res.render("user/cart", { user, cartData ,total });
   } catch (error) {
@@ -45,7 +61,10 @@ exports.postAddToCart = async (req, res) => {
   try {
     const user = req.session.user;
     if (!user) {
-      return res.json({ success: false, data: "You cant add to cart without login" });
+      return res.json({
+        success: false,
+        data: "You can't add to cart without logging in",
+      });
     }
 
     const userDoc = await userModal.findOne({ email: user });
@@ -75,8 +94,16 @@ exports.postAddToCart = async (req, res) => {
     if (existingProductIndex > -1) {
       const productInCart = cart.products[existingProductIndex];
 
-      if (productInCart.quantity >= productData.stock) {
-        return res.json({ success: false, data: "You added maximum quantity" }); 
+      if (
+        productInCart.quantity >= productData.stock ||
+        productData.stock <= 0 ||
+        productData.is_delete == true ||
+        productInCart.quantity >= 10
+      ) {
+        return res.json({
+          success: false,
+          data: "You added the maximum quantity",
+        });
       }
 
       productInCart.quantity += 1;
@@ -87,7 +114,9 @@ exports.postAddToCart = async (req, res) => {
         product_id: productId,
         product_price: productData.price,
         quantity: 1,
-        total_price: productData.price * 1,
+        total_price: productData.offer
+          ? productData.discount_price
+          : productData.price,
       });
     }
     await cart.save();
@@ -99,54 +128,102 @@ exports.postAddToCart = async (req, res) => {
 };
 
 
-exports.updateQuantity = async (req, res) => {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            return res.redirect("/login");   
-        }
-        const { productId, quantity } = req.body;
-       
-      const productData = await productModal.find({ _id: productId });
-      
-      if (productData[0].stock < quantity) {
-            console.log(productData.stock)
-            return res.json({success:false , message:"This product maximus quantity you added"});
-        }
-        const updatedProduct = await cartModel.updateOne(
-          {
-            "products.product_id": productId,
-          },
-          {
-            $set: {
-              "products.$.quantity": quantity,
-              "products.$.total_price": quantity * productData[0].price,
-            },
-          }
-      );
-      const userdata = await userModal.findOne({ email: user });
-      const cartCollection = await cartModel
-        .findOne({ user_id: userdata._id })
-        .populate("products.product_id"); 
 
-      if (cartCollection) {
-        cartCollection.products = cartCollection.products.filter(
-          (product) =>
-            product.product_id && product.product_id.is_delete === false
-        );
-      }
+exports.updateQuantity = async (req, res) => {
+  try {
+    const user = req.session.user;
+    if (!user) {
+      return res.redirect("/login");
+    }
+
+    const { productId, quantity } = req.body;
+    const productData = await productModal.findById(productId);
+
+    // Stock check
+    if (productData.stock < quantity) {
+      return res.json({
+        success: false,
+        message: "This product exceeds the available stock",
+      });
+    }
+
+    const cartItem = await cartModel
+      .findOne({
+        "products.product_id": productId,
+      })
+      .populate("products.product_id");
+
+    const productInCart = cartItem.products.find(
+      (product) => product.product_id._id.toString() === productId
+    );
+
+   
+    let updateQuery = {
+      $set: {
+        "products.$.quantity": quantity,
+        "products.$.total_price": quantity * productData.price, 
+      },
+    };
+
+    if (productInCart.product_id.offer) {
+      updateQuery.$set["products.$.discount_price"] =
+        quantity * productData.discount_price;
+      updateQuery.$set["products.$.total_price"] =
+        quantity * productData.discount_price; 
+    }
+
+ 
+    await cartModel.updateOne(
+      { "products.product_id": productId },
+      updateQuery
+    );
+
+    const userdata = await userModal.findOne({ email: user });
+    const cartCollection = await cartModel
+      .findOne({ user_id: userdata._id })
+      .populate({
+        path: "products.product_id",
+        populate: {
+          path: "offer",
+        },
+      });
 
     
-      const total = cartCollection.products.reduce((acc, crr) => acc + crr.total_price, 0)
-   
-        res.json({
-          success: true,
-          message: { name: productData[0].product_name, quantity: quantity ,total:total},
-        });
-    } catch (error) {
-        console.log(error)
+    if (cartCollection) {
+      cartCollection.products = cartCollection.products.filter(
+        (product) =>
+          product.product_id && product.product_id.is_delete === false 
+      );
     }
-}
+
+    const total = cartCollection.products.reduce((acc, item) => {
+      if (item.product_id.stock > 0) {
+        if (
+          item.product_id.offer &&
+          item.product_id.offer.is_delete == false 
+        ) {
+          return acc + item.product_id.discount_price * item.quantity;
+        } else {
+          return acc + item.product_price * item.quantity;
+        }
+      }
+      return acc;
+    }, 0);
+  
+    res.json({
+      success: true,
+      message: {
+        name: productData.product_name,
+        quantity: quantity,
+        total: total,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: "An error occurred" });
+  }
+};
+
 
 exports.deleteItem = async (req, res) => { 
   try {

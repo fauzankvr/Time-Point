@@ -15,7 +15,26 @@ const offerControllers = require('../controllers/offerController')
 
 router.get('/admin', adminAuth.isLoggedOut, adminControllers.getAdmin) 
 router.post("/admin", adminControllers.postAdmin);  
-router.get('/admin/dashboard' ,adminAuth.isLoggedIn, adminControllers.getDashbord)
+router.get('/admin/dashboard', adminAuth.isLoggedIn, adminControllers.getDashbord)
+router.get("/admin/generate-pdf", adminAuth.isLoggedIn, adminControllers.generatePdf)
+router.get("/admin/generate-excel", adminAuth.isLoggedIn, adminControllers.generateExcel)
+router.post("/admin/best-selling-products", adminControllers.bestSellingProducts)
+router.post(
+  "/admin/category-product-count",
+  adminControllers.bestSellingCategories
+);
+router.post(
+  "/admin/best-selling-brands",
+  adminControllers.bestSellingBrands
+);
+
+router.get(
+  "/admin/dashboard/more",
+  adminAuth.isLoggedIn,
+  adminControllers.getChart
+);
+  
+
 router.get('/admin/userManagment',adminAuth.isLoggedIn, adminControllers.getuseManagment) 
 router.get('/admin/userManagment/blockUser/:id',adminAuth.isLoggedIn, adminControllers.blockUser) 
 router.get("/admin/userManagment/unBlockUser/:id",adminAuth.isLoggedIn, adminControllers.unBlockUser); 
@@ -143,6 +162,8 @@ router.get(
 
 router.get("/admin/couponManagment", adminAuth.isLoggedIn, couponControllers.getCouponManagment)
 router.post("/admin/couponManagment", couponControllers.postCouponManagment)
+router.get("/admin/couponManagment/blockCoupon/:id", couponControllers.postBlockCoupon)
+router.get("/admin/couponManagment/unBlockCoupon/:id", couponControllers.postunBlockCoupon)
 
 
 // =========================== offer Management =================
@@ -151,4 +172,8 @@ router.get("/admin/offerManagment", adminAuth.isLoggedIn, offerControllers.getOf
 router.post("/admin/offerManagment/addOffer", offerControllers.postAddOffer);
 router.post("/admin/offerManagement/ChangeOffer", offerControllers.postChangeOffer);
 router.post("/admin/offerManagement/ChangeCategoryOffer", offerControllers.postChangeCategoryOffer);
+router.get("/admin/offerManagment/blockOffer/:id", offerControllers.postBlockOffer);
+router.get("/admin/offerManagment/unBlockOffer/:id", offerControllers.postunBlockOffer);
+
+
 module.exports = router

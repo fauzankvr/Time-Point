@@ -1,11 +1,41 @@
 const mongoose = require('mongoose')
 
+function generateCustomUUID() {
+  const chars =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < 16; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+async function generateUniqueOrderID() {
+  let orderId;
+  let orderExists = true;
+  while (orderExists) {
+    orderId = generateCustomUUID();
+    const existingOrder = await orderModal.findOne({ order_id: orderId });
+    if (!existingOrder) {
+      orderExists = false; 
+    }
+  }
+  return orderId;
+}
+
 const orderSchema = new mongoose.Schema(
   {
     user_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "users",
       required: true,
+    },
+    order_id: {
+      type: String,
+      required: true,
+      unique: true,
+      default: async function () {
+        return await generateUniqueOrderID()
+      }
     },
     products: [
       {
@@ -45,6 +75,11 @@ const orderSchema = new mongoose.Schema(
       type: String,
       enum: ["COD", "RazorPay"],
       required: true,
+    },
+    paymentStatus: {
+      type: String,
+      default: "pending",
+      enum: ["pending", "paid", "failed"],
     },
     grant_total_: {
       type: Number,

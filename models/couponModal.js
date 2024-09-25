@@ -23,6 +23,10 @@ const couponSchema = new mongoose.Schema({
     },
     minimum_amount: {
         type: Number, 
+    },
+    is_delete: {
+        type: Boolean,
+        default:false
     }
     
 })

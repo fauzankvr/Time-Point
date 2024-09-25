@@ -131,7 +131,7 @@ include('../layouts/admin/adminSidbar2') %>
                               <div
                                 class="d-flex align-items-center justify-content-center"
                               >
-                                <div class="mx-2">
+                                <!-- <div class="mx-2">
                                   <a
                                     href="#"
                                     class="btn btn-primary btn-rounded btn-icon btn-sm"
@@ -142,9 +142,9 @@ include('../layouts/admin/adminSidbar2') %>
                                   
                                     <span>Edit</span>
                                   </a>
-                                </div>
+                                </div> -->
                                 <div class="ml-2">
-                                  <% if (element.is_delete) { %>
+                                  <% if (element.is_delete==true) { %>
                                   <a
                                     href="/admin/offerManagment/unBlockOffer/<%= element._id %>"
                                     class="btn btn-secondary btn-sm"
@@ -163,7 +163,7 @@ include('../layouts/admin/adminSidbar2') %>
                               </div>
                             </td>
                           </tr>
-                          <% }) %>
+                          <% }) %> 
                         </tbody>
                       </table>
                     </div>

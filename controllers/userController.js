@@ -7,6 +7,7 @@ const nodeMailer = require("nodemailer");
 const otpVerification = require("../models/otpverification");
 const addressModal = require('../models/addressModal');
 const orderModal = require('../models/orderModal');
+const mongoose = require('mongoose')
 
 exports.home = async (req, res) => { 
   const productData = await productsCollection.find({is_delete:false}); 
@@ -218,59 +219,71 @@ exports.getShowProducts = async (req, res) => {
     };
 
     if (query) {
-      filter.product_name = { $regex: query, $options: "i" }; 
+      filter.product_name = { $regex: query, $options: "i" };
     }
 
     if (gender) {
-      filter.gender = gender;
+      filter.gender = { $in: Array.isArray(gender) ? gender : [gender] }; // Support multiple values
     }
+
     if (brand) {
-      filter.brand = brand;
+      filter.brand_id = { $in: Array.isArray(brand) ? brand : [brand] }; // Support multiple values
     }
 
     if (category) {
-      filter.category = category;
+      filter.category_id = {
+        $in: Array.isArray(category) ? category : [category],
+      }; // Support multiple values
     }
 
- 
     const brandData = await brandCollection.find();
     const categoryData = await categoryCollection.find({ is_delete: false });
 
-    // Sorting options
     let sortOption = {};
     switch (sort) {
       case "asc":
-        sortOption.price = 1; 
+        sortOption.price = 1;
         break;
       case "desc":
-        sortOption.price = -1; 
+        sortOption.price = -1;
         break;
       case "a-z":
-        sortOption.product_name = 1; 
+        sortOption.product_name = 1;
         break;
       case "z-a":
-        sortOption.product_name = -1; 
+        sortOption.product_name = -1;
         break;
       default:
-        sortOption = { _id: -1 }; 
+        sortOption = { _id: -1 }; // Default sort by newest
         break;
     }
 
     const productData = await productsCollection.find(filter).sort(sortOption);
 
     const user = req.session.user;
-    res.render("user/shop", { brandData, categoryData, productData, user });
+
+    res.render("user/shop", {
+      brandData,
+      categoryData,
+      productData,
+      user,
+      query,
+      gender,
+      brand,
+      category,
+      sort,
+    });
   } catch (error) {
-    console.log(error);
+    console.error("Error fetching products:", error);
+    res.status(500).send("Server Error");
   }
 };
-
 
 
 exports.getProductDetails = async(req, res) => {
   try {
     const id = req.params.id
-    const productData = await productsCollection.findOne({ _id: id })
+    const productData = await productsCollection.findOne({ _id: id }).populate('offer')
     const user = req.session.user;
     res.render("user/productDetails",{productData,user});
   } catch (error) {

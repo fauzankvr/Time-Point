@@ -31,7 +31,7 @@ exports.postChangeOffer = async (req, res) => {
          const { productId, offerId } = req.body;
          const productData = await productModel.findOne({ _id: productId });
          const offerData = await offerModel.findOne({ _id: offerId });
-         const discountPrice = (productData.price * offerData.offer_percentage) / 100;
+         const discountPrice = productData.price-(productData.price * offerData.offer_percentage) / 100;
        await productModel.findByIdAndUpdate(productId, {
          discount_price: discountPrice,
          offer: offerId,
@@ -52,7 +52,8 @@ exports.postChangeCategoryOffer = async (req, res) => {
       const products = await productModel.find({ category_id: categoryId });
 
       for (const product of products) {
-        const discountPrice = (product.price * offerData.offer_percentage) / 100;
+        const discountPrice =
+          product.price - (product.price * offerData.offer_percentage) / 100;
         await productModel.findByIdAndUpdate(product._id, {
           discount_price: discountPrice,
           offer: offerId,
@@ -68,3 +69,34 @@ exports.postChangeCategoryOffer = async (req, res) => {
     res.json({ success: false, message: "Failed to update offer" });
   }
 };
+
+
+exports.postBlockOffer = async (req, res) => {
+  try {
+    const offerId = req.params.id;
+    const offerData = await offerModel.findOne({ _id: offerId });
+    if (offerId) {
+      await offerModel.findByIdAndUpdate(offerId, { is_delete: true });
+      req.flash("success", "Offer blocked successfully");
+      return res.redirect("/admin/offerManagment");
+    }
+  } catch (error) {
+    console.error(error);
+}
+}
+
+
+exports.postunBlockOffer = async (req, res) => {
+  try {
+    const offerId = req.params.id;
+    const offerData = await offerModel.findOne({ _id: offerId });
+    if (offerData) {
+      await offerModel.findByIdAndUpdate(offerId, { is_delete: false });
+      req.flash("success", "Offer unblocked successfully");
+      return res.redirect("/admin/offerManagment");
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+

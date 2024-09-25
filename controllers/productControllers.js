@@ -5,7 +5,11 @@ const brandCollections= require ('../models/brandModel')
 
 exports.getProductManagment = async (req, res) => {
     try {
-        let productData = await productCollection.find().populate('category_id','name').populate('brand_id','name')
+        let productData = await productCollection
+          .find()
+          .populate("category_id", "name")
+          .populate("brand_id", "name")
+          .sort({ createdAt: -1 });
         res.render("admin/productManagment", { productData });
     } catch (error) {
         console.log(error)
@@ -66,9 +70,33 @@ exports.getEditProduct = async (req, res) => {
 };
 
 exports.postEditProduct = async (req, res) => {
-  const productId = req.params.id; 
+      const productId = req.params.id;
   try {
-    // Destructuring to extract values from req.body
+    const updatedProductData = {
+      price: req.body.price, 
+
+    };
+
+    const updatedProduct = await productCollection
+      .findOneAndUpdate(
+        { _id: productId },
+        { $set: updatedProductData },
+        { new: true } 
+      )
+      .populate("offer");
+
+    if (updatedProduct && updatedProduct.offer) {
+      const discountPrice =
+        updatedProduct.price -
+        (updatedProduct.price * updatedProduct.offer.offer_percentage) / 100;
+
+      await productCollection.findOneAndUpdate(
+        { _id: updatedProduct._id }, 
+        { $set: { discount_price: discountPrice } },
+        { new: true } 
+      );
+    }
+
     const {
       product_name,
       brand_id,
@@ -77,7 +105,7 @@ exports.postEditProduct = async (req, res) => {
       color,
       price,
       stock,
-      discription, // Corrected typo from `discription` to `description`
+      discription, 
     } = req.body;
 
     // Initialize an update object
@@ -92,7 +120,6 @@ exports.postEditProduct = async (req, res) => {
       discription,
     };
 
-    // Check if images are present in the request, then update accordingly
     if (req.files) {
       if (req.files.image1) {
         updateData["images.image1"] = req.files.image1[0].filename;
@@ -108,19 +135,19 @@ exports.postEditProduct = async (req, res) => {
       }
     }
 
-    // Update the product data in the collection
-    const updatedProduct = await productCollection.findByIdAndUpdate(
+    const updatedProduct1 = await productCollection.findByIdAndUpdate(
       productId,
       updateData,
       {
-        new: true, // Return the updated document
-        runValidators: true, // Validate the updated fields
+        new: true, 
+        runValidators: true, 
       }
     );
-    
-    if (!updatedProduct) {
+
+    if (!updatedProduct1) {
       return res.status(404).send("Product not found");
     }
+
     // Redirect to the product management page after successful update
     req.flash("success", "Product edited Successfully");
     res.redirect("/admin/productManagment");

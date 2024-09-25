@@ -1,5 +1,7 @@
-<%- include('../layouts/admin/headadmin') %> <%-
-include('../layouts/admin/adminHeader2') %> <%-
+<%- include('../layouts/admin/headadmin') %>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<%-include('../layouts/admin/adminHeader2') %> <%-
 include('../layouts/admin/adminSidbar2') %>
 
 <!-- partial -->
@@ -11,75 +13,43 @@ include('../layouts/admin/adminSidbar2') %>
           <div
             class="d-sm-flex align-items-center justify-content-between border-bottom"
           >
-            <ul class="nav nav-tabs" role="tablist">
+            <ul class="nav nav-tabs">
               <li class="nav-item">
                 <a
-                  class="nav-link active ps-0"
+                  class="nav-link active"
                   id="home-tab"
                   data-bs-toggle="tab"
-                  href="#overview"
-                  role="tab"
-                  aria-controls="overview"
-                  aria-selected="true"
+                  href="#home"
                   >Overview</a
                 >
               </li>
               <li class="nav-item">
                 <a
                   class="nav-link"
-                  id="profile-tab"
-                  data-bs-toggle="tab"
-                  href="#audiences"
-                  role="tab"
-                  aria-selected="false"
-                  >Audiences</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link"
-                  id="contact-tab"
-                  data-bs-toggle="tab"
-                  href="#demographics"
-                  role="tab"
-                  aria-selected="false"
-                  >Demographics</a
-                >
-              </li>
-              <li class="nav-item">
-                <a
-                  class="nav-link border-0"
                   id="more-tab"
                   data-bs-toggle="tab"
                   href="#more"
-                  role="tab"
-                  aria-selected="false"
                   >More</a
                 >
               </li>
             </ul>
             <div>
               <div class="btn-wrapper">
-                <a href="#" class="btn btn-otline-dark align-items-center"
+                <!-- <a href="#" class="btn btn-otline-dark align-items-center"
                   ><i class="icon-share"></i> Share</a
+                > -->
+                <a href="#" class="btn btn-otline-dark" id="printButton"
+                  ><i class="icon-printer"></i> Print Sales Report(pdf)</a
                 >
-                <a href="#" class="btn btn-otline-dark"
-                  ><i class="icon-printer"></i> Print</a
-                >
-                <a href="#" class="btn btn-primary text-white me-0"
-                  ><i class="icon-download"></i> Export</a
+                <a href="#" class="btn btn-primary text-white me-0" id="excelButton" 
+                  ><i class="icon-download"></i> Print Sales Report(excel)</a
                 >
               </div>
             </div>
           </div>
-          
+
           <div class="tab-content tab-content-basic">
-            <div
-              class="tab-pane fade show active"
-              id="overview"
-              role="tabpanel"
-              aria-labelledby="overview"
-            >
+            <div class="tab-pane fade show active" id="home">
               <div class="row">
                 <div class="col-sm-12">
                   <div
@@ -97,33 +67,142 @@ include('../layouts/admin/adminSidbar2') %>
                     </div>
                     <div>
                       <p class="statistics-title">Total Discount</p>
-                      <h3 class="rate-percentage">68.8</h3>
+                      <h3 class="rate-percentage"><%= totalDiscount %></h3>
                       <!-- <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p> -->
                     </div>
                     <div class="d-none d-md-block">
                       <p class="statistics-title">Product Count</p>
-                      <h3 class="rate-percentage">2m:35s</h3>
-                      <!-- <p class="text-success d-flex"> -->
-                        <!-- <i class="mdi mdi-menu-down"></i><span>+0.8%</span> -->
-                      </p>
+                      <h3 class="rate-percentage"><%= productCount %></h3>
                     </div>
                     <div class="d-none d-md-block">
                       <p class="statistics-title">Users</p>
-                      <h3 class="rate-percentage">68.8</h3>
+                      <h3 class="rate-percentage"><%= usersCount %></h3>
                       <p class="text-danger d-flex">
                         <!-- <i class="mdi mdi-menu-down"></i><span>68.8</span> -->
                       </p>
                     </div>
                     <div class="d-none d-md-block">
-                      <p class="statistics-title">Avg. Time on Site</p>
-                      <h3 class="rate-percentage">2m:35s</h3>
-                      <p class="text-success d-flex">
-                        <i class="mdi mdi-menu-down"></i><span>+0.8%</span>
-                      </p>
+                      <div>
+                        <div class="dropdown">
+                          <button
+                            class="btn btn-light dropdown-toggle toggle-dark btn-lg mb-0 me-0"
+                            type="button"
+                            id="dropdownMenuButton2"
+                            data-bs-toggle="dropdown"
+                            aria-haspopup="true"
+                            aria-expanded="false"
+                          >
+                            Sort by:
+                          </button>
+                          <div
+                            class="dropdown-menu"
+                            aria-labelledby="dropdownMenuButton2"
+                          >
+                            <a
+                              class="dropdown-item"
+                              href="/admin/dashboard?sort=month"
+                              >Month</a
+                            >
+                            <a
+                              class="dropdown-item"
+                              href="/admin/dashboard?sort=week"
+                              >Week</a
+                            >
+                            <a
+                              class="dropdown-item"
+                              href="/admin/dashboard?sort=day"
+                              >Today</a
+                            >
+                            <div class="dropdown-divider"></div>
+                            <a
+                              class="dropdown-item"
+                              href="#"
+                              data-toggle="modal"
+                              data-target="#customDateModal"
+                              >Custom Date</a
+                            >
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <div class="row"></div>
+              <div class="col-lg-12 grid-margin stretch-card">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                        <thead>
+                          <tr>
+                            <th>Order Id</th>
+                            <th>Product Name</th>
+                            <th>Quantity</th>
+                            <th>Payment Type</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          <% orderData.forEach(order => { %> <%
+                          order.products.forEach(element => { %>
+                          <tr>
+                            <td><%= order.order_id %></td>
+                            <td><%= element.product_id.product_name%></td>
+                            <td><%= element.quantity %></td>
+                            <td><%= order.paymentOption %></td>
+                            <% if (element.return_status) { %>
+                            <td><%= element.return_status %></td>
+                            <% } else { %>
+                            <td><%= element.status %></td>
+                            <% } %>
+                          </tr>
+                          <% }) %> <% }) %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ======== best sellig products   -->
+
+            <div class="tab-pane fade" id="more">
+              <div class="row">
+                <div class="col-sm-12">
+                  <div
+                    class="statistics-details d-flex align-items-center justify-content-between"
+                  >
+                    <button
+                      class="btn btn-light p-3"
+                      onclick="sellingProduct()"
+                    >
+                      <p class="fs-4">Best selling product</p>
+                      <h3 class="fs-5 text-center">(top 10)</h3>
+                      <!-- <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p> -->
+                    </button>
+
+                    <button
+                      class="btn btn-light p-3"
+                      onclick="sellingCategory()"
+                    >
+                      <p class="fs-4">Best selling category</p>
+                      <h3 class="fs-5 text-center">(top 10)</h3>
+                      <!-- <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p> -->
+                    </button>
+                    <button class="btn btn-light p-3" onclick="sellingBrand()">
+                      <p class="fs-4">Best selling brands</p>
+                      <h3 class="fs-5 text-center">(top 10)</h3>
+                      <!-- <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p> -->
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Render the chart on page load or when sorting is changed -->
               <div class="row">
                 <div class="col-lg-12 d-flex flex-column">
                   <div class="row flex-grow">
@@ -144,39 +223,6 @@ include('../layouts/admin/adminSidbar2') %>
                               </h5>
                             </div>
                             <div id="performanceLine-legend"></div>
-                          </div>
-                          <div class="d-sm-flex align-items-center mt-4">
-                            <h2 class="me-2 fw-bold">$36,2531.00</h2>
-                            <h4 class="me-2">USD</h4>
-                            <h4 class="text-success">(+1.37%)</h4>
-                          </div>
-                          <div class="chartjs-wrapper mt-4">
-                            <canvas id="performanceLine"></canvas>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-lg-8 d-flex flex-column">
-                  <div class="row flex-grow">
-                    <div class="col-12 grid-margin stretch-card">
-                      <div class="card card-rounded">
-                        <div class="card-body">
-                          <div
-                            class="d-sm-flex justify-content-between align-items-start"
-                          >
-                            <div>
-                              <h4 class="card-title card-title-dash">
-                                Market Overview
-                              </h4>
-                              <p class="card-subtitle card-subtitle-dash">
-                                Lorem ipsum dolor sit amet consectetur
-                                adipisicing elit
-                              </p>
-                            </div>
                             <div>
                               <div class="dropdown">
                                 <button
@@ -187,44 +233,45 @@ include('../layouts/admin/adminSidbar2') %>
                                   aria-haspopup="true"
                                   aria-expanded="false"
                                 >
-                                  This month
+                                  Sort by:
                                 </button>
                                 <div
                                   class="dropdown-menu"
                                   aria-labelledby="dropdownMenuButton2"
                                 >
-                                  <h6 class="dropdown-header">Settings</h6>
-                                  <a class="dropdown-item" href="#">Action</a>
-                                  <a class="dropdown-item" href="#"
-                                    >Another action</a
+                                  <a
+                                    class="dropdown-item"
+                                    href="?tab=more&chart=year"
+                                    >Year</a
                                   >
-                                  <a class="dropdown-item" href="#"
-                                    >Something else here</a
+                                  <a
+                                    class="dropdown-item"
+                                    href="?tab=more&chart=month"
+                                    >Month</a
+                                  >
+                                  <a
+                                    class="dropdown-item"
+                                    href="?tab=more&chart=week"
+                                    >Week</a
                                   >
                                   <div class="dropdown-divider"></div>
-                                  <a class="dropdown-item" href="#"
-                                    >Separated link</a
+                                  <a
+                                    class="dropdown-item"
+                                    href="#"
+                                    data-toggle="modal"
+                                    data-target="#customDateModal"
+                                    >Custom Date</a
                                   >
                                 </div>
                               </div>
                             </div>
                           </div>
-                          <div
-                            class="d-sm-flex align-items-center mt-1 justify-content-between"
-                          >
-                            <div
-                              class="d-sm-flex align-items-center mt-4 justify-content-between"
-                            >
-                              <h2 class="me-2 fw-bold">$36,2531.00</h2>
-                              <h4 class="me-2">USD</h4>
-                              <h4 class="text-success">(+1.37%)</h4>
-                            </div>
-                            <div class="me-3">
-                              <div id="marketingOverview-legend"></div>
-                            </div>
+                          <div class="d-sm-flex align-items-center mt-4">
+                            <h2 class="me-2 fw-bold">₹ <%= JSON.stringify(JSON.parse(data).totalPrice) %></h2>
                           </div>
-                          <div class="chartjs-bar-wrapper mt-3">
-                            <canvas id="marketingOverview"></canvas>
+                          <div class="chartjs-wrapper mt-4">
+                            <canvas id="performanceLine"></canvas>
+                            <input type="hidden" id="chartData" value='<%- JSON.stringify(data) %>' />
                           </div>
                         </div>
                       </div>
@@ -233,14 +280,496 @@ include('../layouts/admin/adminSidbar2') %>
                 </div>
               </div>
             </div>
+
+            <div
+              class="modal fade"
+              id="bestSellingModal"
+              tabindex="-1"
+              aria-labelledby="bestSellingModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="bestSellingModalLabel">
+                      Top 10 Best Selling Products
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Image</th>
+                          <th>Name</th>
+                          <th>Quantity</th>
+                          <th>Price</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bestSellingProductsTable">
+                        <!-- Product rows will be inserted here dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="modal fade"
+              id="bestCatogoryModal"
+              tabindex="-1"
+              aria-labelledby="bestSellingModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="bestSellingModalLabel">
+                      Top 10 Best Selling Category
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Category Name</th>
+                          <th>Product Count</th>
+                          <th>Total Price</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bestSellingCategoryTable">
+                        <!-- Product rows will be inserted here dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ==========brand modal   -->
+
+            <div
+              class="modal fade"
+              id="bestSellingBrand"
+              tabindex="-1"
+              aria-labelledby="bestSellingModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="bestSellingModalLabel">
+                      Top 10 Best Selling Brands
+                    </h5>
+                    <button
+                      type="button"
+                      class="btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                  <div class="modal-body">
+                    <table class="table table-striped">
+                      <thead>
+                        <tr>
+                          <th>Brand Name</th>
+                          <th>Product Count</th>
+                          <th>Total Price</th>
+                        </tr>
+                      </thead>
+                      <tbody id="bestSellingBrandsTable">
+                        <!-- Product rows will be inserted here dynamically -->
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="modal-footer">
+                    <button
+                      type="button"
+                      class="btn btn-secondary"
+                      data-bs-dismiss="modal"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Modal for Custom Date -->
+            <div
+              class="modal fade"
+              id="customDateModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="customDateModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="customDateModalLabel">
+                      Select Custom Date Range
+                    </h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form action="/admin/dashboard" method="GET">
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="startDate"
+                          name="startDate"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="endDate"
+                          name="endDate"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="submit" class="btn btn-primary">
+                        Filter
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            
+            <!-- Modal for Custom Date -->
+
+            <div
+              class="modal fade"
+              id="customDateModal"
+              tabindex="-1"
+              role="dialog"
+              aria-labelledby="customDateModalLabel"
+              aria-hidden="true"
+            >
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="customDateModalLabel">
+                      Select Custom Date Range
+                    </h5>
+                    <button
+                      type="button"
+                      class="close"
+                      data-dismiss="modal"
+                      aria-label="Close"
+                    >
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <form action="/admin/dashboard" method="GET">
+                    <div class="modal-body">
+                      <div class="form-group">
+                        <label for="startDate">Start Date</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="startDate"
+                          name="startDate"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="endDate">End Date</label>
+                        <input
+                          type="date"
+                          class="form-control"
+                          id="endDate"
+                          name="endDate"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-dismiss="modal"
+                      >
+                        Close
+                      </button>
+                      <button type="submit" class="btn btn-primary">
+                        Filter
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+    const printButton = document.getElementById("printButton");
+    const excelButton = document.getElementById("excelButton");
+
+    // Function to get query parameters
+    function getQueryParams() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let params = {};
+
+        if (urlParams.has("sort")) {
+            params.sort = urlParams.get("sort");
+        }
+        if (urlParams.has("startDate") && urlParams.has("endDate")) {
+            params.startDate = urlParams.get("startDate");
+            params.endDate = urlParams.get("endDate");
+        }
+
+        return params;
+    }
+
+    // When the PDF button is clicked
+    printButton.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const queryParams = getQueryParams();
+        let url = "/admin/generate-pdf?";
+
+        // Append sorting parameters to the URL
+        if (queryParams.sort) {
+            url += `sort=${queryParams.sort}`;
+        } else if (queryParams.startDate && queryParams.endDate) {
+            url += `startDate=${queryParams.startDate}&endDate=${queryParams.endDate}`;
+        }
+
+        // Fetch the PDF
+        const response = await fetch(url);
+        if (response.ok) {
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'sales-report.pdf'; // Specify the filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error("Error downloading PDF:", response.statusText);
+        }
+    });
+
+    // Excel download implementation (if needed)
+    excelButton.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const queryParams = getQueryParams();
+        let url = "/admin/generate-excel?";
+
+        if (queryParams.sort) {
+            url += `sort=${queryParams.sort}`;
+        } else if (queryParams.startDate && queryParams.endDate) {
+            url += `startDate=${queryParams.startDate}&endDate=${queryParams.endDate}`;
+        }
+
+        // Fetch the Excel file
+        const response = await fetch(url);
+        if (response.ok) {
+            const blob = await response.blob();
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'sales-report.xlsx'; // Specify the filename
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        } else {
+            console.error("Error downloading Excel:", response.statusText);
+        }
+    });
+});
+
+
+
+    function sellingProduct() {
+      fetch("/admin/best-selling-products", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sort: "best_selling" }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const tableBody = document.getElementById("bestSellingProductsTable");
+          tableBody.innerHTML = ""; // Clear any existing rows
+
+          // Iterate over the top 10 products and create rows dynamically
+          data.forEach((product) => {
+            const row = `<tr>
+          <td><img src="/public/productImgs/${product.productDetails.images.image1}" alt="${product.product_name}" style="width: 50px; height: 50px;" /></td>
+          <td>${product.productDetails.product_name}</td>
+          <td>${product.totalQuantity}</td>
+          <td>₹ ${product.product_price}</td>
+        </tr>`;
+            tableBody.innerHTML += row;
+          });
+
+          // Open the modal after loading the data
+          const bestSellingModal = new bootstrap.Modal(
+            document.getElementById("bestSellingModal")
+          );
+          bestSellingModal.show();
+        })
+        .catch((error) => {
+          console.error("Error fetching best-selling products:", error);
+        });
+    }
+
+    function sellingCategory() {
+      fetch("/admin/category-product-count", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const tableBody = document.getElementById("bestSellingCategoryTable");
+          tableBody.innerHTML = ""; // Clear any existing rows
+
+          // Iterate over the categories and create rows dynamically
+          data.forEach((category) => {
+            const row = `<tr>
+        <td>${category._id}</td> <!-- Category name -->
+        <td>${category.productCount}</td> <!-- Product count -->
+        <td>₹ ${category.totalPrice.toFixed(2)}</td> <!-- Total price -->
+      </tr>`;
+            tableBody.innerHTML += row;
+          });
+
+          // Open the modal after loading the data
+          const bestSellingModal = new bootstrap.Modal(
+            document.getElementById("bestCatogoryModal")
+          );
+          bestSellingModal.show();
+        })
+        .catch((error) => {
+          console.error("Error fetching best-selling categories:", error);
+        });
+    }
+
+    function sellingBrand() {
+      fetch("/admin/best-selling-brands", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          const tableBody = document.getElementById("bestSellingBrandsTable");
+          tableBody.innerHTML = ""; // Clear any existing rows
+
+          // Iterate over the categories and create rows dynamically
+          data.forEach((category) => {
+            const row = `<tr>
+        <td>${category._id}</td> <!-- Category name -->
+        <td>${category.productCount}</td> <!-- Product count -->
+        <td>₹ ${category.totalPrice.toFixed(2)}</td> <!-- Total price -->
+      </tr>`;
+            tableBody.innerHTML += row;
+          });
+
+          // Open the modal after loading the data
+          const bestSellingModal = new bootstrap.Modal(
+            document.getElementById("bestSellingBrand")
+          );
+          bestSellingModal.show();
+        })
+        .catch((error) => {
+          console.error("Error fetching best-selling categories:", error);
+        });
+    }
+
+    
+
+    // ========= tab =======
+
+    $(document).ready(function () {
+      function getTabFromUrl() {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get("tab");
+      }
+
+      // Call the function to get the tab parameter
+      const tab = getTabFromUrl();
+      if (tab === "more") {
+        $("#more-tab").tab("show");
+      } else {
+        $("#home-tab").tab("show");
+      }
+
+      $('a[data-bs-toggle="tab"]').on("click", function (e) {
+        e.preventDefault();
+        const targetTab = $(this).attr("href");
+        const newUrl =
+          window.location.pathname + "?tab=" + targetTab.replace("#", "");
+        history.pushState(null, "", newUrl);
+        $(this).tab("show");
+      });
+    });
+
+    
+  </script>
+
+  <%- include('../layouts/admin/footadmin') %>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<%- include('../layouts/admin/footadmin') %>

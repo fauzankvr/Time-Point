@@ -14,7 +14,7 @@ const userSchema = new mongoos.Schema({
     date: {type: Date},
     amount: { type: Number },
     description: { type: String },
-    transactioType: { type: String }
+    transactionType: { type: String }
   }],
 });
 

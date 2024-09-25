@@ -85,7 +85,13 @@ router.post("/home/cart/:id", cartController.postAddToCart);
 router.post('/cart/update-quantity', cartController.updateQuantity);
 router.post('/cart/delete-item', cartController.deleteItem);
 
-// ============================= order 
+// ============================= order
+
+router.get(
+  "/home/orderHistory",
+  userAuth.isLoggedIn,
+  orderController.getOrderHistory
+);
 
 router.get(
   "/home/deliveryAddress",
@@ -101,6 +107,10 @@ router.post("/payment", orderController.postPayment);
 router.post("/cancelOrder", orderController.cancelOrder);
 router.post("/returnOrder", orderController.returnOrder);
 router.get('/home/orderDetails/:id',userAuth.isLoggedIn, orderController.getOrderDetails)
+router.get(
+  "/downloadInvoice/:productId/:orderId",
+  orderController.downloadInvoice
+);
 
 router.post("/create-order", orderController.createOrder);
 router.post("/verify-payment", orderController.verifyPayment);

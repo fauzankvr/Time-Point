@@ -28,7 +28,7 @@
                 <thead>
                   <tr>
                     <th>Order Id</th>
-                    <th>Product Id</th>
+                    <th>Product Name</th>
                     <th>Quantity</th>
                     <th>Payment Type</th>
                     <th>Status</th>
@@ -40,8 +40,8 @@
                   <% orderData.forEach(order => { %>
                     <% order.products.forEach(element => { %>
                   <tr>
-                    <td><%= order._id %></td>
-                    <td><%= element.product_id.id%></td>
+                    <td><%= order.order_id %></td>
+                    <td><%= element.product_id.product_name%></td>
                     <td><%= element.quantity %></td>
                     <td><%= order.paymentOption %></td>
                     <% if (element.return_status) { %>

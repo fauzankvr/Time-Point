@@ -8,7 +8,7 @@ const categorySchema = new mongoose.Schema({
   },
   offer: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'offerModel',  
+    ref: 'offerModel', 
   },
   is_delete: { type: Boolean, default: false },
 });
