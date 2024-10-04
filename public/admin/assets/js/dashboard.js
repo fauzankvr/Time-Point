@@ -20,7 +20,7 @@
           labels: chartData.labels,
           datasets: [
             {
-              label: "This week",
+              label: chartData.label,
               data: chartData.values,
               backgroundColor: saleGradientBg,
               borderColor: ["#1F3BB3"],
@@ -89,7 +89,7 @@
           scales: {
             y: {
               beginAtZero: true,
-              
+
               border: {
                 display: false,
               },

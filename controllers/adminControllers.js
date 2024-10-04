@@ -206,6 +206,7 @@ exports.getDashbord = async (req, res) => {
       );
 
       data = {
+        label: "Yearly",
         labels: yearLabels,
         values: yearlyAmounts,
         totalPrice: yearlyTotalPrice,
@@ -256,6 +257,7 @@ exports.getDashbord = async (req, res) => {
           "NOV",
           "DEC",
         ],
+        label: "Monthly",
         values: monthlyAmounts,
         totalPrice: monthlyTotalPrice,
       };
@@ -298,6 +300,7 @@ exports.getDashbord = async (req, res) => {
 
       data = {
         labels: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+        label: "Weekly",
         values: weeklyAmounts,
         totalPrice: weeklyTotalPrice,
       };
@@ -340,6 +343,7 @@ exports.getDashbord = async (req, res) => {
 
       data = {
         labels: ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+        label: "Weekly",
         values: weeklyAmountsDe,
         totalPrice: weeklyTotalPriceDe,
       };
@@ -518,7 +522,7 @@ exports.generateExcel = async (req, res) => {
   }
 
   try {
-    const orders = await orderModal.find(filter).populate("user_id");
+    const orders = await orderModal.find(filter).populate("user_id").populate("products.product_id");
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
@@ -526,17 +530,25 @@ exports.generateExcel = async (req, res) => {
     worksheet.columns = [
       { header: "Order ID", key: "order_id", width: 20 },
       { header: "User", key: "user", width: 30 },
+      { header: "Product", key: "product", width: 30 },
+      { header: "Quantity", key: "quantity", width: 10 },
+      {header:"Payment Type",key:"payment_type",width:20},
       { header: "Date", key: "date", width: 20 },
       { header: "Total Amount", key: "total_amount", width: 15 },
     ];
 
     orders.forEach((order) => {
-      worksheet.addRow({
-        order_id: order.order_id,
-        user: order.user_id.name,
-        total_amount: order.grant_total_,
-        date: order.createdAt.toDateString(),
-      });
+      order.products.forEach((product) => {
+        worksheet.addRow({
+          order_id: order.order_id,
+          user: order.user_id.name,
+          product: product.product_id.product_name,
+          quantity: product.quantity,
+          payment_type: order.paymentOption,
+          total_amount: order.grant_total_,
+          date: order.createdAt.toDateString(),
+        });
+      })   
     });
 
     worksheet.addRow({

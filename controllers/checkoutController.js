@@ -563,7 +563,6 @@ exports.returnOrder = async (req, res) => {
   res.json({ success: true });
 };
 
-
 exports.getOrderDetails = async (req, res) => {
   try {
     const user = req.session.user;
@@ -575,11 +574,10 @@ exports.getOrderDetails = async (req, res) => {
         path: "offer",
       },
     });
-    let total = 0
-    let discount = 0
+    let total = 0;
+    let discount = 0;
     if (order.paymentStatus == "failed") {
-
-       total = order.products.reduce((acc, item) => {
+      total = order.products.reduce((acc, item) => {
         if (item.product_id.stock > 0) {
           if (
             item.product_id.offer &&
@@ -604,26 +602,27 @@ exports.getOrderDetails = async (req, res) => {
           return (
             acc +
             (item.product_id.price - item.product_id.discount_price) *
-            item.quantity
+              item.quantity
           );
         } else {
           return acc;
         }
       }, 0);
     } else {
-       total = order.products.reduce((acc, item) => {
-        return acc + item.product_id.price * item.quantity;
+      total = order.products.reduce((acc, item) => {
+        return acc + item.product_price * item.quantity;
       }, 0);
-       discount = order.products.reduce((acc, item) => {
+      discount = order.products.reduce((acc, item) => {
         return acc + item.total_price;
       }, 0);
+       discount = discount - total;
     }
+   
     res.render("user/orderDetails", { user, order, total, discount });
   } catch (error) {
     console.log(error);
   }
 };
-
 
 exports.getOrderHistory = async (req, res) => {
   const user = req.session.user;
@@ -638,52 +637,55 @@ exports.getOrderHistory = async (req, res) => {
 exports.downloadInvoice = async (req, res) => {
   try {
     const { productId, orderId } = req.params;
-    const order = await orderModal.findOne({ _id: orderId }).populate({
-      path: "products.product_id",
-      populate: {
-        path: "offer",
-      },
-    });
+    const order = await orderModal
+      .findOne({ _id: orderId })
+      .select("products coupon address createdAt order_id") 
+      .populate({
+        path: "products.product_id",
+        select: "product_name price discount_price offer", 
+        populate: {
+          path: "offer", 
+          select: "offer_value",
+        },
+      });
+
+
     const product = order.products.find(
       (p) => p.product_id._id.toString() === productId
     );
-    console.log(product);
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
 
     let total = product.product_id.price * product.quantity;
 
-    let grandtotal = 0;
+    let grandtotal = product.product_id.price * product.quantity;
     if (product.product_id.offer) {
       grandtotal = product.product_id.discount_price * product.quantity;
-    } else {
-      grandtotal = product.product_id.price * product.quantity;
     }
-    let discout = 0;
+
+    let discount = 0;
     if (product.product_id.offer) {
-      discout = product.product_id.price - product.product_id.discount_price;
-      discout = discout * product.quantity;
+      discount =
+        (product.product_id.price - product.product_id.discount_price) *
+        product.quantity;
     }
-    let coupon = 0;
-    console.log(order.coupon);
-    if (order.coupon.discount > 0) {
-      if (product.product_id.offer) {
-        coupon =
-          (product.product_id.discount_price *
-            product.quantity *
-            order.coupon.discount) /
-          100;
-      } else {
-        coupon =
-          (product.product_id.price *
-            product.quantity *
-            order.coupon.discount) /
-          100;
-      }
+
+    let couponDiscount = 0;
+    if (order.coupon && order.coupon.discount > 0) {
+      const applicablePrice = product.product_id.offer
+        ? product.product_id.discount_price
+        : product.product_id.price;
+      couponDiscount =
+        (applicablePrice * product.quantity * order.coupon.discount) / 100;
     }
-    grandtotal = grandtotal - coupon;
+
+    grandtotal = grandtotal - couponDiscount;
     const htmlContent = `
     <html>
-<head>
-    <style>
+    <head>
+        <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -724,89 +726,54 @@ exports.downloadInvoice = async (req, res) => {
             float: right;
         }
     </style>
-</head>
-<body>
-
-    <h1 style="text-align: center;">Tax Invoice</h1>
-
-    <table class="invoice-header">
-        <tr>
-            <td><strong>Order Id:</strong> ${order.order_id}</td>
-        </tr>
-        <tr>
-            <td><strong>Order Date:</strong> ${order.createdAt.toLocaleDateString()}</td>
-            <td><strong>Invoice Date:</strong> ${new Date().toLocaleDateString()}</td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <strong>Sold By:</strong> TIME POINT, CALICUT, <br>THAMARASHERY, KERALA - 65372
-            </td>
-        </tr>
-    </table>
-
-    <table class="invoice-header">
-        <tr>
-            <td>
-                <strong>Shipping Address</strong><br>
+    </head>
+    <body>
+        <h1 style="text-align: center;">Tax Invoice</h1>
+        <table class="invoice-header">
+            <tr><td><strong>Order Id:</strong> ${order.order_id}</td></tr>
+            <tr><td><strong>Order Date:</strong> ${order.createdAt.toLocaleDateString()}</td>
+                <td><strong>Invoice Date:</strong> ${new Date().toLocaleDateString()}</td></tr>
+            <tr><td colspan="3"><strong>Sold By:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372</td></tr>
+        </table>
+        <table class="invoice-header">
+            <tr><td><strong>Shipping Address</strong><br>
                 ${order.address.name},<br>
                 ${order.address.locality},<br>
-                ${order.address.address}<br>
+                ${order.address.address},<br>
                 ${order.address.city} - ${order.address.pincode}, IN-${
       order.address.state
-    }
-            </td>
-        </tr>
-    </table>
+    }</td></tr>
+        </table>
+        <table class="invoice-details">
+            <thead>
+                <tr><th>Product</th><th>Price</th><th>Qty</th><th>Discount</th><th>Coupon Amount</th><th>Delivery Charge</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>${product.product_id.product_name}</td><td>${
+      product.product_id.price
+    }</td><td>${product.quantity}</td><td>${discount.toFixed(
+      1
+    )}</td><td>${couponDiscount.toFixed(
+      1
+    )}</td><td>0</td><td>${grandtotal.toFixed(1)}</td></tr>
+            </tbody>
+            <tfoot><tr><td colspan="6" align="right"><strong>Total Price:</strong></td><td><strong>${grandtotal.toFixed(
+              1
+            )}</strong></td></tr></tfoot>
+        </table>
+        <div class="invoice-footer">
+            <p><strong>Seller Registered Address:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372.</p>
+            <p>The goods sold are intended for end user consumption and not for resale.</p>
+        </div>
+        <div class="signature"><p>Authorized Signature</p><img src="signature.png" alt="Signature" style="width: 150px;"></div>
+    </body>
+    </html>
+    `;
 
-    <table class="invoice-details">
-        <thead>
-            <tr>
-                <th>Product</th>
-                <th>Price</th>
-                <th>Qty</th>
-                <th>Discount</th>
-                <th>Coupon Amount</th>
-                <th>Delivery Charge</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>${product.product_id.product_name}</td>
-                <td>${product.product_id.price}</td>
-                <td>${product.quantity}</td>
-                <td>${discout}</td>
-                <td>${coupon}</td>
-                <td>free</td>
-                <td>${grandtotal}</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="6" align="right"><strong>Total Price:</strong></td>
-                <td><strong>${grandtotal}</strong></td>
-            </tr>
-        </tfoot>
-    </table>
-
-    <div class="invoice-footer">
-        <p><strong>Seller Registered Address:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372.</p>
-        <p>The goods sold are intended for end user consumption and not for resale.</p>
-        <p>** Conditions Apply. Please refer to the product page for more details.</p>
-    </div>
-
-    <div class="signature">
-        <p>Authorized Signature</p>
-        <img src="signature.png" alt="Signature" style="width: 150px;">
-    </div>
-
-</body>
-</html>
-  `;
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=invoice0347.pdf"
+      "attachment; filename=invoice_${order.order_id}.pdf"
     );
 
     pdf.create(htmlContent).toStream((err, stream) => {
@@ -817,11 +784,14 @@ exports.downloadInvoice = async (req, res) => {
         stream.pipe(res);
       }
     });
+
+    console.timeEnd("PDF Generation Time");
   } catch (error) {
-    console.log(error);
-    res.json({ error: error.message });
+    console.error("Error in downloadInvoice:", error);
+    res.status(500).json({ error: error.message });
   }
 };
+
 // ================   coupon  ============
 exports.applyCoupon = async (req, res) => {
   try {
