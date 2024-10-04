@@ -98,6 +98,7 @@ include('../layouts/user/userheader') %>
                         value="<%= element.quantity %>"
                         type="number"
                         class="form-control form-control-sm"
+                        disabled
                       />
 
                       <button
@@ -111,8 +112,8 @@ include('../layouts/user/userheader') %>
                     </div>
                     <div class="col-md-3 col-lg-2 col-xl-2 ">
                       <% if(element.product_id.offer) { %>
-                        <% if(element.product_id.offer.is_delete == false && element.product_id.offer.offer_end_date > Date.now()) {%>
-                      <h6 class="mb-0 text-center">₹ <%= element.product_id.discount_price %></h6>
+                        <% if(element.product_id.offer.is_delete == false && element.product_id.offer.offer_end_date >= new Date() && element.product_id.offer.offer_start_date <= new Date()) {%>
+                      <h6 class="mb-0 text-center" id="discount_price">₹ <%= element.product_id.discount_price %></h6>
                         <span class="text-muted text-decoration-line-through text-center fs-2 ms-4">₹ <%= element.product_id.price %></span>
                           <% }else{ %>
                             <h6 class="mb-0">₹ <%= element.product_id.price %></h6>
@@ -174,13 +175,17 @@ include('../layouts/user/userheader') %>
                     <h4 class=" mb-3 text-success">Free</h4>
                   </div>
                   
-
+                    <div class="d-flex justify-content-between mb-5">
+                    <h4 class=" mb-3">Discount amount</h4>
+                    <h4 class=" mb-3 text-success">₹ <span id="discount"><%= discount.toFixed(1) %></span></h4>
+                  </div>
+                  
                  
                   <hr class="my-4" />
 
                   <div class="d-flex justify-content-between mb-5">
                     <h3 class="text-uppercase">Total price</h3>
-                    <h3>₹ <span id="total_price1"><%= total %></span></h3>
+                    <h3>₹ <span id="grand_total"><%= grandTotal.toFixed(1) %></span></h3>
                   </div>
                  
                     <% if(cartData[0].product_id.stock == 0){ %>
@@ -255,15 +260,17 @@ include('../layouts/user/userheader') %>
         },
         body: JSON.stringify({ productId: productId, quantity: newQuantity }),
       })
-        .then((response) => response.json())
+        .then((response) => response.json()) 
         .then((data) => {
           if (data.success) {
             document.getElementById("total_price").innerHTML =
-              data.message.total;
-            document.getElementById("total_price1").innerHTML =
-              data.message.total;
+              data.message.total.toFixed(1);
+            document.getElementById("discount").innerHTML =
+              data.message.discount.toFixed(1);
+              document.getElementById("grand_total").innerHTML =
+              data.message.grandTotal.toFixed(1);
               document.getElementById("total_price2").innerHTML =
-              data.message.total;
+              data.message.total.toFixed(1);
             Swal.fire({
               animation: true,
               position: "bottom",

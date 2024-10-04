@@ -1,26 +1,4 @@
-const mongoose = require('mongoose')
-
-function generateCustomUUID() {
-  const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  let result = "";
-  for (let i = 0; i < 16; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
-async function generateUniqueOrderID() {
-  let orderId;
-  let orderExists = true;
-  while (orderExists) {
-    orderId = generateCustomUUID();
-    const existingOrder = await orderModal.findOne({ order_id: orderId });
-    if (!existingOrder) {
-      orderExists = false; 
-    }
-  }
-  return orderId;
-}
+const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
@@ -33,9 +11,6 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
-      default: async function () {
-        return await generateUniqueOrderID()
-      }
     },
     products: [
       {
@@ -73,7 +48,7 @@ const orderSchema = new mongoose.Schema(
     ],
     paymentOption: {
       type: String,
-      enum: ["COD", "RazorPay"],
+      enum: ["COD", "RazorPay", "Wallet"],
       required: true,
     },
     paymentStatus: {
@@ -93,10 +68,10 @@ const orderSchema = new mongoose.Schema(
       coupon_code: {
         type: String,
       },
-      discountTotal: {
+      discount: {
         type: Number,
-        default:0
-      }
+        default: 0,
+      },
     },
   },
   { timestamps: true }

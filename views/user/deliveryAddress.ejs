@@ -111,11 +111,17 @@ include('../layouts/user/userheader') %>
                     <h4 class="mb-3 text-success">Free</h4>
                   </div>
 
+                  <div class="d-flex justify-content-between mb-5">
+                    <h4 class=" mb-3">Discount amount</h4>
+                    <h4 class=" mb-3 text-success">₹ <span id="discount"><%= discount.toFixed(1) %></span></h4>
+                  </div>
+                  
+
                   <hr class="my-4" />
 
                   <div class="d-flex justify-content-between mb-5">
                     <h3 class="text-uppercase">Total price</h3>
-                    <h3>₹ <span id="total_price1"><%= total %></span></h3>
+                    <h3>₹ <span id="total_price1"><%= grandTotal.toFixed(1) %></span></h3>
                   </div>
 
                   <button

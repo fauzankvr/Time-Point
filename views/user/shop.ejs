@@ -1,160 +1,233 @@
-<%- include('../layouts/user/userhead') %>
-<%- include('../layouts/user/userheader') %>
+<%- include('../layouts/user/userhead') %> <%-
+include('../layouts/user/userheader') %>
 <style>
-    .card-img-top {
-    height: 290px; /* Set a fixed height for the images */
-    object-fit: cover; /* Ensure images cover the area without stretching */
-}
+  .card-img-top {
+    height: 290px;
+    object-fit: cover;
+  }
 </style>
 <!-- Breadcrumb -->
 <nav aria-label="breadcrumb" class="bg-light py-3 mt-5">
-    <div class="container">
-        <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="/home">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Shop</li>
-        </ol>
-    </div>
+  <div class="container">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item"><a href="/home">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Shop</li>
+    </ol>
+  </div>
 </nav>
 
 <div class="container">
-    <div class="row">
-        <!-- Filter Section -->
-        <div class="col-lg-3">
-            <form id="filterForm" action="/home/shop" method="GET">
-                <!-- Gender Filter -->
-                <nav class="navbar navbar-light col-lg-9 mt-5">
-                    <a class="navbar-brand" href="#"><h3>Gender</h3></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#genderFilter" aria-controls="genderFilter" aria-expanded="false" aria-label="Toggle navigation">
-                        <span>+</span>
-                    </button>
-                    <div class="collapse col-lg-12" id="genderFilter">
-                        <ul class="navbar-nav mr-auto">
-                            <li class="nav-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a class="nav-link" href="#">Male</a>
-                                    <input type="checkbox" name="gender" value="Male" <%= gender === 'Male' ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit();"/>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a class="nav-link" href="#">Female</a>
-                                    <input type="checkbox" name="gender" value="Female" <%= gender === 'Female' ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit();"/>
-                                </div>
-                            </li>
-                            <li class="nav-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a class="nav-link" href="#">Unisex</a>
-                                    <input type="checkbox" name="gender" value="Unisex" <%= gender === 'Unisex' ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit();"/>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Brand Filter -->
-                <nav class="navbar navbar-light col-lg-9 mt-5">
-                    <a class="navbar-brand" href="#"><h3>Brand</h3></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#brandFilter" aria-controls="brandFilter" aria-expanded="false" aria-label="Toggle navigation">
-                        <span>+</span>
-                    </button>
-                    <div class="collapse col-lg-12" id="brandFilter">
-                        <ul class="navbar-nav mr-auto">
-                            <% brandData.forEach(element => { %>
-                            <li class="nav-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a class="nav-link" href="#"><%= element.name %></a>
-                                    <input type="checkbox" name="brand" value="<%= element._id %>" <%= (brand && brand.includes(element._id)) ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit();"/>
-                                </div>
-                            </li>
-                            <% }); %>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Category Filter -->
-                <nav class="navbar navbar-light col-lg-9 mt-5">
-                    <a class="navbar-brand" href="#"><h3>Category</h3></a>
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#categoryFilter" aria-controls="categoryFilter" aria-expanded="false" aria-label="Toggle navigation">
-                        <span>+</span>
-                    </button>
-                    <div class="collapse col-lg-12" id="categoryFilter">
-                        <ul class="navbar-nav mr-auto">
-                            <% categoryData.forEach(element => { %>
-                            <li class="nav-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <a class="nav-link" href="#"><%= element.name %></a>
-                                    <input type="checkbox" name="category" value="<%= element._id %>" <%= (category && category.includes(element._id)) ? 'checked' : '' %> onchange="document.getElementById('filterForm').submit();"/>
-                                </div>
-                            </li>
-                            <% }); %>
-                        </ul>
-                    </div>
-                </nav>
-
-                <!-- Hidden Input for Sort -->
-                <input type="hidden" name="sort" id="sortInput" value="<%= sort %>"/>
-            </form>
-        </div>
-
-        <!-- Product Cards Section -->
-        <div class="col-lg-9 mt-5">
-            <div class="d-flex align-items-end justify-content-end">
-                <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle fs-4" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                        Sort By
-                    </button>
-                    <ul class="dropdown-menu fs-4" aria-labelledby="dropdownMenuButton1">
-                        <li><a class="dropdown-item" href="#" onclick="updateSort('asc')">Price Low to High</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateSort('desc')">Price High to Low</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateSort('a-z')">aA - zZ</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateSort('z-a')">zZ - aA</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="updateSort('popularity')">Popularity</a></li>
-                    </ul>
+  <div class="row">
+    <!-- Filter Section -->
+    <div class="col-lg-3">
+      <form id="filterForm" action="/home/shop" method="GET">
+        <!-- Gender Filter -->
+        <nav class="navbar navbar-light col-lg-9 mt-5">
+          <a class="navbar-brand" href="#"><h3>Gender</h3></a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#genderFilter"
+            aria-controls="genderFilter"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span>+</span>
+          </button>
+          <div class="collapse col-lg-12" id="genderFilter">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#">Male</a>
+                  <input type="checkbox" name="gender" value="Male" <%= gender
+                  === 'Male' ? 'checked' : '' %>
+                  onchange="document.getElementById('filterForm').submit();"/>
                 </div>
-            </div>
-       
+              </li>
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#">Female</a>
+                  <input type="checkbox" name="gender" value="Female" <%= gender
+                  === 'Female' ? 'checked' : '' %>
+                  onchange="document.getElementById('filterForm').submit();"/>
+                </div>
+              </li>
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#">Unisex</a>
+                  <input type="checkbox" name="gender" value="Unisex" <%= gender
+                  === 'Unisex' ? 'checked' : '' %>
+                  onchange="document.getElementById('filterForm').submit();"/>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </nav>
 
-        <div class="row">
-            <% productData.forEach(element => { %>
-           <div class="col-lg-4 col-md-6 col-sm-9 mb-4">
-    <div class="card mx-3 mt-5 px-5" style="width: 28rem;">
-        <a href="/home/productDetails/<%= element.id %>">
-            <img src="/public/productImgs/<%= element.images.image1 %>" class="card-img-top img-fluid" alt="<%= element.product_name %>">
-        </a>
-        <div class="card-body">
-            <h4 class="card-title fw-200"><%= element.product_name %></h4>
-            <p class="card-text fw-bold">₹ <%= element.price %> | <span style="color: rgb(99, 98, 98); font-size: bold;">₹ 25,000</span></p>
-           <div class="d-flex align-items-center">
-    <div class="star-rating ">
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="fas fa-star"></i>
-        <i class="far fa-star"></i>
-    </div> 
-    <div class="text-dark ps-2 " >
-        <p class="fs-5" style="margin-bottom: 0px;">(225 Ratings)</p>
+        <!-- Brand Filter -->
+        <nav class="navbar navbar-light col-lg-9 mt-5">
+          <a class="navbar-brand" href="#"><h3>Brand</h3></a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#brandFilter"
+            aria-controls="brandFilter"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span>+</span>
+          </button>
+          <div class="collapse col-lg-12" id="brandFilter">
+            <ul class="navbar-nav mr-auto">
+              <% brandData.forEach(element => { %>
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#"><%= element.name %></a>
+                  <input type="checkbox" name="brand" value="<%= element._id %>"
+                  <%= (brand && brand.includes(element._id)) ? 'checked' : '' %>
+                  onchange="document.getElementById('filterForm').submit();"/>
+                </div>
+              </li>
+              <% }); %>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Category Filter -->
+        <nav class="navbar navbar-light col-lg-9 mt-5">
+          <a class="navbar-brand" href="#"><h3>Category</h3></a>
+          <button
+            class="navbar-toggler"
+            type="button"
+            data-toggle="collapse"
+            data-target="#categoryFilter"
+            aria-controls="categoryFilter"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span>+</span>
+          </button>
+          <div class="collapse col-lg-12" id="categoryFilter">
+            <ul class="navbar-nav mr-auto">
+              <% categoryData.forEach(element => { %>
+              <li class="nav-item">
+                <div class="d-flex justify-content-between align-items-center">
+                  <a class="nav-link" href="#"><%= element.name %></a>
+                  <input type="checkbox" name="category" value="<%= element._id
+                  %>" <%= (category && category.includes(element._id)) ?
+                  'checked' : '' %>
+                  onchange="document.getElementById('filterForm').submit();"/>
+                </div>
+              </li>
+              <% }); %>
+            </ul>
+          </div>
+        </nav>
+
+        <!-- Hidden Input for Sort -->
+        <input type="hidden" name="sort" id="sortInput" value="<%= sort %>" />
+      </form>
     </div>
-</div>
 
+    <!-- Product Cards Section -->
+    <div class="col-lg-9 mt-5">
+      <div class="d-flex align-items-end justify-content-end">
+        <div class="dropdown">
+          <button
+            class="btn btn-secondary dropdown-toggle fs-4"
+            type="button"
+            id="dropdownMenuButton1"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+          >
+            Sort By
+          </button>
+          <ul class="dropdown-menu fs-4" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <a class="dropdown-item" href="#" onclick="updateSort('asc')"
+                >Price Low to High</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="updateSort('desc')"
+                >Price High to Low</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="updateSort('a-z')"
+                >aA - zZ</a
+              >
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" onclick="updateSort('z-a')"
+                >zZ - aA</a
+              >
+            </li>
+            <li>
+              <a
+                class="dropdown-item"
+                href="#"
+                onclick="updateSort('popularity')"
+                >Popularity</a
+              >
+            </li>
+          </ul>
         </div>
-    </div>
-</div>
+      </div>
 
-            <% }); %>
-</div>
-         </div>
-    </div>
-</div>
+      <div class="row">
+        <% productData.forEach(element => { %>
+        <div class="col-lg-4 col-md-6 col-sm-9 mb-4">
+          <div class="card mx-3 mt-5 px-5" style="width: 28rem">
+            <a href="/home/productDetails/<%= element.id %>">
+              <img
+                src="/public/productImgs/<%= element.images.image1 %>"
+                class="card-img-top img-fluid"
+                alt="<%= element.product_name %>"
+              />
+            </a>
+            <div class="card-body">
+              <h4 class="card-title fw-200"><%= element.product_name %></h4>
+              <% if(element.offer && element.offer.offer_start_date <= new Date() && element.offer.offer_end_date >= new Date()){ %>
+              <p class="card-text fw-bold">
+                ₹ <%= element.discount_price %>
+                <span style="color: rgb(99, 98, 98); font-size: bold">
+                  | ₹ <%= element.price %>
+                </span>
+              </p>
+              <% }else{ %>
+              <p class="card-text fw-bold">₹ <%= element.price %> <% } %></p>
 
+              <div class="d-flex align-items-center">
+                <div class="star-rating">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="far fa-star"></i>
+                </div>
+                <div class="text-dark ps-2">
+                  <p class="fs-5" style="margin-bottom: 0px">(225 Ratings)</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <% }); %>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
   function updateSort(sortOrder) {
-    document.getElementById('sortInput').value = sortOrder;
-    document.getElementById('filterForm').submit();
+    document.getElementById("sortInput").value = sortOrder;
+    document.getElementById("filterForm").submit();
   }
 </script>
 
-
-<%- include('../layouts/user/userfooter') %>
-<%- include('../layouts/user/userfoot') %>
+<%- include('../layouts/user/userfooter') %> <%-
+include('../layouts/user/userfoot') %>

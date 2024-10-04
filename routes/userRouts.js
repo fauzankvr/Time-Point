@@ -1,32 +1,33 @@
-const express = require('express')
-const router = express.Router() 
-const userController = require ('../controllers/userController')
-const cartController = require ('../controllers/cartControllers')
-const userAuth = require('../middleware/userAuth') 
-const passport = require('../config/passport')
-const addressController = require('../controllers/addressController')
-const orderController = require('../controllers/checkoutController')
-const wishlistController = require('../controllers/wishlistController')
+const express = require("express");
+const router = express.Router();
+const userController = require("../controllers/userController");
+const cartController = require("../controllers/cartControllers");
+const userAuth = require("../middleware/userAuth");
+const passport = require("../config/passport");
+const addressController = require("../controllers/addressController");
+const orderController = require("../controllers/checkoutController");
+const wishlistController = require("../controllers/wishlistController");
 //app router
 
 router.get("/", userAuth.isLoggedOut, userController.getRoot);
-router.get("/login",userAuth.isLoggedOut, userController.getLogin);
+router.get("/login", userAuth.isLoggedOut, userController.getLogin);
 router.post("/login", userController.postLogin);
-router.get('/signup',userAuth.isLoggedOut, userController.getSignup);
+router.get("/signup", userAuth.isLoggedOut, userController.getSignup);
 router.post("/signup", userController.postSignup);
 router.get("/google", userController.getLogin);
 
+router.get("/forgot_password", userController.getForgottenPassword);
 
 //otp vrification
 router.get("/verify-otp", userAuth.isLoggedOut, userController.getVerifyOtp);
 router.post("/verify-otp", userController.postverifyOtp);
-router.post('/resend-otp',userController.resendOtp);
+router.post("/resend-otp", userController.resendOtp);
 
-//passport routs 
+//passport routs
 router.get(
   "/auth/google",
-  passport.authenticate("google", { 
-    scope: ["profile", "email"], 
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
     prompt: "select_account",
   })
 );
@@ -48,7 +49,6 @@ router.get("/home/shop", userController.getShowProducts);
 router.get("/home/productDetails/:id", userController.getProductDetails);
 router.get("/home", userAuth.isLoggedIn, userController.home);
 
-
 // ===================== profile ====================
 
 router.get("/home/profile", userAuth.isLoggedIn, userController.getProfile);
@@ -67,23 +67,24 @@ router.get(
   userController.profileChangePassword
 );
 
-
-
 // ================== address routs ===================
 
-router.get('/addAddress', userAuth.isLoggedIn, addressController.getAddAddress);
-router.post('/addAddress', userAuth.isLoggedIn, addressController.postAddAddress);
-router.get('/editAddress/:id', addressController.getEditAddress);
+router.get("/addAddress", userAuth.isLoggedIn, addressController.getAddAddress);
+router.post(
+  "/addAddress",
+  userAuth.isLoggedIn,
+  addressController.postAddAddress
+);
+router.get("/editAddress/:id", addressController.getEditAddress);
 router.post("/editAddress/:id", addressController.postEditAddress);
-router.post('/deleteAddress/:id', addressController.deleteAddress);
-
+router.post("/deleteAddress/:id", addressController.deleteAddress);
 
 // ==============cart routs==============================
 
-router.get("/home/cart", userAuth.isLoggedIn,cartController.getAddToCart);
+router.get("/home/cart", userAuth.isLoggedIn, cartController.getAddToCart);
 router.post("/home/cart/:id", cartController.postAddToCart);
-router.post('/cart/update-quantity', cartController.updateQuantity);
-router.post('/cart/delete-item', cartController.deleteItem);
+router.post("/cart/update-quantity", cartController.updateQuantity);
+router.post("/cart/delete-item", cartController.deleteItem);
 
 // ============================= order
 
@@ -99,14 +100,16 @@ router.get(
   orderController.getdeliveryAddress
 );
 router.post("/submitOrder", orderController.postSubmitOrder);
-router.get(
-  "/home/payment",
-  userAuth.isLoggedIn, orderController.getPayment)
-  
+router.get("/home/payment", userAuth.isLoggedIn, orderController.getPayment);
+
 router.post("/payment", orderController.postPayment);
 router.post("/cancelOrder", orderController.cancelOrder);
 router.post("/returnOrder", orderController.returnOrder);
-router.get('/home/orderDetails/:id',userAuth.isLoggedIn, orderController.getOrderDetails)
+router.get(
+  "/home/orderDetails/:id",
+  userAuth.isLoggedIn,
+  orderController.getOrderDetails
+);
 router.get(
   "/downloadInvoice/:productId/:orderId",
   orderController.downloadInvoice
@@ -114,6 +117,7 @@ router.get(
 
 router.post("/create-order", orderController.createOrder);
 router.post("/verify-payment", orderController.verifyPayment);
+router.post("/verify-paymet-again", orderController.verifyPaymentAgain);
 
 // =======================coupen====================
 
@@ -122,16 +126,21 @@ router.post("/removeCoupon", orderController.removeCoupon);
 
 // ===================== wallet =============
 router.get("/home/wallet", userAuth.isLoggedIn, orderController.getWallet);
+router.post("/user/addMoney", orderController.addMoney);
+router.post("/verifyaddMoney", orderController.verifyaddMoney);
+router.post("/walletPayment", orderController.walletPayment);
 
 // ================================wishlist ==========================
 
-router.get('/home/wishlist', userAuth.isLoggedIn, wishlistController.getWishlist)
+router.get(
+  "/home/wishlist",
+  userAuth.isLoggedIn,
+  wishlistController.getWishlist
+);
 router.post("/home/wishlist", wishlistController.postWishlist);
 router.post("/wishlist/delete-item", wishlistController.deleteWishlist);
 
 // ================================== logout===============
 router.post("/logout", userController.getLogout);
 
-
-
-module.exports = router   
+module.exports = router;

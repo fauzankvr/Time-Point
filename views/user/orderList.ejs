@@ -1,5 +1,5 @@
-<%- include('../layouts/user/userhead') %> <%-
-include('../layouts/user/userheader') %> <% if(orderData.length > 0){ %>
+<%- include('../layouts/user/userhead') %> 
+<%-include('../layouts/user/userheader') %> <% if(orderData.length > 0){ %>
 <section class="h-100 h-custom" style="background-color: #d2c9ff">
   <div class="container py-5 h-100">
     <div class="row d-flex justify-content-center align-items-center h-100">
@@ -17,7 +17,7 @@ include('../layouts/user/userheader') %> <% if(orderData.length > 0){ %>
                   >
                     <h1 class="fw-bold mb-0">Order List</h1>
                     <h6 class="mb-0 text-muted">
-                      <%= orderData.length %> items
+                      <%= orderData.length %> items 
                     </h6>
                   </div>
                   <hr class="my-4" />
@@ -41,19 +41,18 @@ include('../layouts/user/userheader') %> <% if(orderData.length > 0){ %>
                             >On Deliver</span
                           > -->
                           <%
-  // Assume order.createdAt is a timestamp in milliseconds
-  var createdAtDate = new Date(order.createdAt);  // Convert timestamp to Date object
-  var futureDate = new Date(createdAtDate);       // Clone the createdAt date
+  var createdAtDate = new Date(order.createdAt);  
+  var futureDate = new Date(createdAtDate); 
   futureDate.setDate(createdAtDate.getDate() + 3); // Add 3 days
 
-  // Format the future date to "28 May 2024"
   var options = { day: '2-digit', month: 'short', year: 'numeric' };
   var formattedDate = futureDate.toLocaleDateString('en-GB', options);
 %>
-
+<% if(order.paymentStatus != "failed" ){ %>
 <p class="text-muted">
   Estimated arrival: <%= formattedDate %>
 </p>
+<% } %>
 
                         </div>
                       </div>

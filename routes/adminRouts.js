@@ -32,8 +32,7 @@ router.get(
   "/admin/dashboard/more",
   adminAuth.isLoggedIn,
   adminControllers.getChart
-);
-  
+); 
 
 router.get('/admin/userManagment',adminAuth.isLoggedIn, adminControllers.getuseManagment) 
 router.get('/admin/userManagment/blockUser/:id',adminAuth.isLoggedIn, adminControllers.blockUser) 
@@ -90,6 +89,7 @@ router.get(
 );
 
 // =========================== Catogory Managmet =====================  
+
 router.post("/admin/addCategory", categoryControllers.postAddCategory);
 router.get(
   "/admin/catogoryManagment",
@@ -112,9 +112,6 @@ router.get(
 );
 router.post("/admin/catetoryManagment/editCatogory/:id", categoryControllers.postEditCatogory);
 
-
-
-
 // =========================== Brand Managmet =====================  
 router.get(
   "/adimin/brandManagment",
@@ -131,7 +128,6 @@ router.get(
   "/admin/brandManagment/unBlockBrand/:id",
   brandControllers.postunBlockBrand
 );
-
 
 // ===================== Order Managment =====================
 
@@ -157,14 +153,12 @@ router.get(
   orderControllers.retrunRejected
 );
 
-
 // =========================couponManagment========================
 
 router.get("/admin/couponManagment", adminAuth.isLoggedIn, couponControllers.getCouponManagment)
 router.post("/admin/couponManagment", couponControllers.postCouponManagment)
 router.get("/admin/couponManagment/blockCoupon/:id", couponControllers.postBlockCoupon)
 router.get("/admin/couponManagment/unBlockCoupon/:id", couponControllers.postunBlockCoupon)
-
 
 // =========================== offer Management =================
 
@@ -174,6 +168,5 @@ router.post("/admin/offerManagement/ChangeOffer", offerControllers.postChangeOff
 router.post("/admin/offerManagement/ChangeCategoryOffer", offerControllers.postChangeCategoryOffer);
 router.get("/admin/offerManagment/blockOffer/:id", offerControllers.postBlockOffer);
 router.get("/admin/offerManagment/unBlockOffer/:id", offerControllers.postunBlockOffer);
-
 
 module.exports = router

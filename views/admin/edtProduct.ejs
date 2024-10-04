@@ -230,7 +230,7 @@ function validDetails() {
           cropper.destroy();
         }
         cropper = new Cropper(imgElement, {
-          aspectRatio: 2 / 2,
+          aspectRatio: 4/5,
           viewMode: 2
         });
       };
@@ -242,8 +242,8 @@ function validDetails() {
     if (!cropper) return;
 
     const croppedCanvas = cropper.getCroppedCanvas({
-        width: 300,
-        height: 300
+        width: 500,
+        height: 600
     });
 
     // Get the original file extension from the current image

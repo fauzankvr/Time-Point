@@ -24,11 +24,22 @@ include('../layouts/user/userheader') %>
     <div class="row d-flex justify-content-center align-items-center h-100">
       <div class="col-lg-10 col-xl-8">
         <div class="card" style="border-radius: 10px">
-          <div class="card-header px-4 py-5">
+          <div class="card-header px-4 py-5 d-flex justify-content-between">
             <h4 class="text-muted mb-0">
-              Thanks for your Order,
+              <% if(order.paymentStatus == "failed") {%> Sorry your Order is
+              failed Please try again, <% }else{ %> Thanks for your Order, <% }
+              %>
               <span style="color: #a8729a"><%= order.address.name %></span>!
             </h4>
+            <% if(order.paymentStatus == "failed") {%>
+            <button
+              type="button"
+              class="btn btn-primary fs-4 me-4"
+              onclick="payNow('<%= order._id %>')"
+            >
+              <i class="fa-solid fa-credit-card pe-2"></i> Pay Now
+            </button>
+            <% }%>
           </div>
           <div class="card-body p-4">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -44,9 +55,7 @@ include('../layouts/user/userheader') %>
                 </p>
               </div>
 
-              <div>
-                 
-              </div>
+              <div></div>
             </div>
 
             <% order.products.forEach(element => { %>
@@ -77,61 +86,78 @@ include('../layouts/user/userheader') %>
                     </p>
                   </div>
                   <div
-  class="col-md-2 text-center d-flex flex-column justify-content-center align-items-center"
->
-  <div>
-    <p class=" mb-0 fw-bold">₹ <%= element.total_price %></p>
-  </div>
-  <div>
-    <p class="text-muted mb-0 small" style="text-decoration: line-through;">₹ <%= element.product_id.price %></p>
-  </div>
-</div>
+                    class="col-md-2 text-center d-flex flex-column justify-content-center align-items-center"
+                  >
+                    <% if(element.product_id.offer && element.product_id.offer.is_delete == false && element.product_id.offer.offer_end_date >= new Date() && element.product_id.offer.offer_start_date <= new Date()){ %>
+                    <div>
+                      <p class="mb-0 fw-bold">
+                        ₹ <%= element.product_id.discount_price %>
+                      </p>
+                    </div>
+                    <div>
+                      <p
+                        class="text-muted mb-0 small"
+                        style="text-decoration: line-through"
+                      >
+                        ₹ <%= element.product_id.price %>
+                      </p>
+                    </div>
+                    <% }else{ %>
+                    <div>
+                      <p class="mb-0 fw-bold">
+                        ₹ <%= element.product_id.price %>
+                      </p>
+                    </div>
+                    <% } %>
+                  </div>
 
                   <div
                     class="col-md-2 text-center d-flex justify-content-center align-items-center"
                   >
-                    <% if(element.status == "pending"){ %>
+                    <% if (order.paymentStatus == "failed") { %>
+                    <div>
+                      <p class="badge bg-danger fs-4">Payment Failed</p>
+                      <p style="font-size: 10px">Your payment has failed</p>
+                    </div>
+                    <% } else { %> <% if (element.status == "pending") { %>
                     <button
                       class="btn btn-danger btn-sm fs-4"
-                      onclick="cancelOrder('<%= element._id %>','<%= order._id %>',)"
+                      onclick="cancelOrder('<%= element._id %>', '<%= order._id %>')"
                     >
                       Cancel Product
                     </button>
-                    <% }else if(element.status == "delivered"){ %>
+                    <% } else if (element.status == "delivered") { %>
                     <button
                       class="btn btn-primary fs-4"
-                      onclick="returnOrder('<%= element._id %>','<%= order._id %>',)"
+                      onclick="returnOrder('<%= element._id %>', '<%= order._id %>')"
                     >
-                      Retrun Product
+                      Return Product
                     </button>
-                    <% } else if(element.status == "cancelled"){ %>
+                    <% } else if (element.status == "cancelled") { %>
                     <span class="badge bg-danger fs-4">Cancelled</span>
-                    <% }else if(element.return_status == "requested") {%>
-                    
+                    <% } else if (element.return_status == "requested") { %>
                     <div>
                       <p class="badge bg-primary fs-4">Requested</p>
                       <p style="font-size: 10px">
                         Your return request has been sent
                       </p>
                     </div>
-                    <% } else if(element.return_status == "approved"){%>
+                    <% } else if (element.return_status == "approved") { %>
                     <div>
                       <p class="badge bg-success fs-4">Approved</p>
                       <p style="font-size: 10px">
                         Your return request has been approved
                       </p>
                     </div>
-                    <% } else if(element.return_status == "rejected"){%>
+                    <% } else if (element.return_status == "rejected") { %>
                     <div>
                       <p class="badge bg-danger fs-4">Rejected</p>
                       <p style="font-size: 10px">
                         Your return request has been rejected
                       </p>
                     </div>
-                    <% } %>
+                    <% } %> <% } %>
                   </div>
-
-
                 </div>
                 <hr
                   class="mb-4"
@@ -139,106 +165,111 @@ include('../layouts/user/userheader') %>
                 />
                 <div class="row d-flex align-items-center">
                   <div class="col-9">
-                  <div class="col-md-12">
-                    <p class="text-muted small text-center">Track your order</p>
-                  </div>
-                  <% if(element.status == "cancelled") {%>
-                  <div
-                    class="progress"
-                    style="height: 6px; border-radius: 16px"
-                  >
-                    <div
-                      class="progress-bar"
-                      role="progressbar"
-                      style="
-                        width: 100%;
-                        border-radius: 16px;
-                        background-color: #e40000;
-                      "
-                      aria-valuenow="65"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    ></div>
-                  </div>
-                  <div class="d-flex justify-content-around mb-1">
-                    <p class="text-muted text-center">Order Cancelled</p>
-                  </div>
-                  <% } else if(element.return_status) { %>
-                  <div
-                    class="progress"
-                    style="height: 6px; border-radius: 16px"
-                  >
-                    <div
-                      class="progress-bar"
-                      role="progressbar"
-                      style="
-                        width: 100%;
-                        border-radius: 16px;
-                        background-color: #0063e4;
-                      "
-                      aria-valuenow="65"
-                      aria-valuemin="0"
-                      aria-valuemax="100"
-                    ></div>
-                  </div>
-                  <div class="d-flex justify-content-around mb-1">
-                    <p class="text-muted text-center">Order returned</p>
-                  </div>
-                  <% }else{ %>
-                  <div class="col-md-12">
+                    <div class="col-md-12">
+                      <p class="text-muted small text-center">
+                        Track your order
+                      </p>
+                    </div>
+                    <% if(element.status == "cancelled") {%>
                     <div
                       class="progress"
                       style="height: 6px; border-radius: 16px"
                     >
-                      <% if(element.status == "pending"){ %>
-                      <div
-                        class="progress-bar"
-                        role="progressbar"
-                        style="
-                          width: 15%;
-                          border-radius: 16px;
-                          background-color: #a8729a;
-                        "
-                        aria-valuenow="65"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      ></div>
-                      <% }else if(element.status == "delivered"){ %>
                       <div
                         class="progress-bar"
                         role="progressbar"
                         style="
                           width: 100%;
                           border-radius: 16px;
-                          background-color: #3ab600;
+                          background-color: #e40000;
                         "
                         aria-valuenow="65"
                         aria-valuemin="0"
                         aria-valuemax="100"
                       ></div>
-                      <% } %>
                     </div>
                     <div class="d-flex justify-content-around mb-1">
-                      <p class="text-muted mt-1 mb-0 small ms-xl-5">
-                        Order conformed
-                      </p>
-                      <p class="text-muted mt-1 mb-0 small ms-xl-5">
-                        Out for delivary
-                      </p>
-                      <p class="text-muted mt-1 mb-0 small ms-xl-5">
-                        Delivered
-                      </p>
+                      <p class="text-muted text-center">Order Cancelled</p>
                     </div>
+                    <% } else if(element.return_status) { %>
+                    <div
+                      class="progress"
+                      style="height: 6px; border-radius: 16px"
+                    >
+                      <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="
+                          width: 100%;
+                          border-radius: 16px;
+                          background-color: #0063e4;
+                        "
+                        aria-valuenow="65"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      ></div>
+                    </div>
+                    <div class="d-flex justify-content-around mb-1">
+                      <p class="text-muted text-center">Order returned</p>
+                    </div>
+                    <% }else{ %>
+                    <div class="col-md-12">
+                      <div
+                        class="progress"
+                        style="height: 6px; border-radius: 16px"
+                      >
+                        <% if(element.status == "pending"){ %>
+                        <div
+                          class="progress-bar"
+                          role="progressbar"
+                          style="
+                            width: 15%;
+                            border-radius: 16px;
+                            background-color: #a8729a;
+                          "
+                          aria-valuenow="65"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                        <% }else if(element.status == "delivered"){ %>
+                        <div
+                          class="progress-bar"
+                          role="progressbar"
+                          style="
+                            width: 100%;
+                            border-radius: 16px;
+                            background-color: #3ab600;
+                          "
+                          aria-valuenow="65"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                        ></div>
+                        <% } %>
+                      </div>
+                      <div class="d-flex justify-content-around mb-1">
+                        <p class="text-muted mt-1 mb-0 small ms-xl-5">
+                          Order conformed
+                        </p>
+                        <p class="text-muted mt-1 mb-0 small ms-xl-5">
+                          Out for delivary
+                        </p>
+                        <p class="text-muted mt-1 mb-0 small ms-xl-5">
+                          Delivered
+                        </p>
+                      </div>
+                    </div>
+                    <% } %>
+                  </div>
+                  <% if(order.paymentStatus == "paid") {%>
+                  <div class="col-3 text-center">
+                    <a
+                      class="btn btn-outline-primary"
+                      href="/downloadInvoice/<%= element.product_id._id %>/<%= order._id %>"
+                      >download invoice</a
+                    >
                   </div>
                   <% } %>
                 </div>
-                <div class="col-3 text-center">
-                  <a class="btn btn-outline-primary" href="/downloadInvoice/<%= element.product_id._id %>/<%= order._id %>">download invoice</a>
-                </div>
-
-                </div>
-
-
               </div>
             </div>
             <% }); %>
@@ -246,15 +277,14 @@ include('../layouts/user/userheader') %>
             <div class="d-flex justify-content-between pt-2">
               <p class="fw-bold mb-0">Order Details</p>
               <p class="text-muted mb-0">
-                <span class="fw-bold me-4">Total</span>₹ <%= total
-                %>
+                <span class="fw-bold me-4">Total</span>₹ <%= total %>
               </p>
             </div>
             <div class="d-flex justify-content-between pt-2">
               <p class="text-muted mb-0">Order Id: <%= order.order_id %></p>
               <p class="text-muted mb-0">
                 <span class="fw-bold me-4">Discount</span> ₹ <%=
-                (total-discount).toFixed(1) %>
+                (discount).toFixed(1) %>
               </p>
             </div>
 
@@ -277,9 +307,7 @@ include('../layouts/user/userheader') %>
               class="d-flex align-items-center justify-content-end text-white text-uppercase mb-0"
             >
               Total paid:
-              <span class="h2 mb-0 ms-2"
-                >₹ <%= (discount).toFixed(1) %></span
-              >
+              <span class="h2 mb-0 ms-2">₹ <%= (total - discount).toFixed(1) %></span>
             </h5>
           </div>
         </div>
@@ -288,6 +316,8 @@ include('../layouts/user/userheader') %>
   </div>
 </section>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfkit/0.12.1/pdfkit.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
   function cancelOrder(productId, orderId) {
@@ -403,10 +433,75 @@ include('../layouts/user/userheader') %>
     });
   }
 
-  // function downloadInvoice(product_id,order_id){
-  //   console.log(product_id,order_id)
-  //   window.location.href = `/downloadInvoice/${product_id}/${order_id}`
-  // }
+  async function payNow(orderId) {
+    try {
+      const response = await fetch("/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ orderId }),
+      });
+      const data = await response.json();
+      console.log(data);
+      if (data.status) {
+        const option = {
+          key: data.key,
+          amount: data.amount * 100,
+          currency: "INR",
+          name: "Time Point",
+          description: "Order Payment",
+          order_id: data.order_id,
+          handler: async function (response) {
+            const verifyResponse = await fetch("/verify-paymet-again", {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                payment_id: response.razorpay_payment_id,
+                order_id: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                orderId: orderId,
+              }),
+            });
+            const verifyData = await verifyResponse.json();
+            if (verifyData.status) {
+              Swal.fire({
+                icon: "success",
+                title: "Order Successful",
+                text: "Your order has been placed successfully",
+                confirmButtonText: "OK",
+                timer: 2000,
+                willClose: () => {
+                  window.location.reload();
+                },
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Payment Error",
+                text: "There was an error processing your payment. Please try again.",
+                confirmButtonText: "OK",
+              });
+            }
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+        const paymentObject = new Razorpay(option);
+        paymentObject.open();
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Payment Error",
+        text: "There was an error processing your payment. Please try again.",
+        confirmButtonText: "OK",
+      });
+    }
+  }
 </script>
 
 <%- include('../layouts/user/userfooter') %> <%-

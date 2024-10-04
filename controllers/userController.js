@@ -1,39 +1,41 @@
-const bcrypt = require('bcrypt');
-const User = require ("../models/users");
+const bcrypt = require("bcrypt");
+const User = require("../models/users");
 const brandCollection = require("../models/brandModel");
-const categoryCollection = require('../models/categoryModel');
-const productsCollection = require('../models/products');
+const categoryCollection = require("../models/categoryModel");
+const productsCollection = require("../models/products");
 const nodeMailer = require("nodemailer");
 const otpVerification = require("../models/otpverification");
-const addressModal = require('../models/addressModal');
-const orderModal = require('../models/orderModal');
-const mongoose = require('mongoose')
+const addressModal = require("../models/addressModal");
+const orderModal = require("../models/orderModal");
+const mongoose = require("mongoose");
 
-exports.home = async (req, res) => { 
-  const productData = await productsCollection.find({is_delete:false}); 
-  const user = req.session.user
-  res.render("user/home", {productData,user});
-}
+exports.home = async (req, res) => {
+  const productData = await productsCollection.find({ is_delete: false });
+  const user = req.session.user;
+  res.render("user/home", { productData, user });
+};
 
 exports.getRoot = async (req, res) => {
-    const productData = await productsCollection.find({is_delete:false});
-    const user = req.session.user;
-    res.render("user/home", { productData, user }); 
-}
+  const productData = await productsCollection.find({ is_delete: false });
+  const user = req.session.user;
+  res.render("user/home", { productData, user });
+};
 
 //get login page
-  exports.getLogin = (req, res) => {
-    res.render("user/userLogin");
-  }; 
+exports.getLogin = (req, res) => {
+  res.render("user/userLogin");
+};
 
 //get sign up page
-
 exports.getSignup = async (req, res) => {
-  let invailed = req.session.invailed
+  let invailed = req.session.invailed;
   let password_invailed = req.session.password_invailed;
+  console.log(req.query.referral);
+  if (req.query.referral) {
+    req.session.referral = req.query.referral;
+  }
   res.render("user/userSignup", { invailed, password_invailed });
- 
-}
+};
 
 exports.postLogin = async (req, res) => {
   try {
@@ -66,7 +68,7 @@ exports.postLogin = async (req, res) => {
   }
 };
 
-// create  a transporter to send mail 
+// create  a transporter to send mail
 const transporter = nodeMailer.createTransport({
   service: "gmail",
   auth: {
@@ -108,26 +110,25 @@ exports.postSignup = async (req, res) => {
       };
       transporter.sendMail(mailOption);
       const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
-      
+
       await otpVerification.create({
-        userId: userData.email, 
+        userId: userData.email,
         otp: otpSend,
         createdAt: Date.now(),
         expiresAt: expiresAt,
       });
 
-      const saltRouds = 10 ;
+      const saltRouds = 10;
       const hashedPassord = await bcrypt.hash(userData.password, saltRouds);
       userData.password = hashedPassord;
       req.session.userData = userData;
-              
+
       res.redirect("/verify-otp");
     }
-  }catch (error) {
+  } catch (error) {
     console.log(error);
   }
 };
-
 
 exports.postverifyOtp = async (req, res) => {
   try {
@@ -137,20 +138,39 @@ exports.postverifyOtp = async (req, res) => {
     const otpRecord = await otpVerification.findOne({ userId });
 
     if (!otpRecord) {
- 
-       return res.json({
-         success: false,
-         message: "Entered OTP is not correct",
-       });
+      return res.json({
+        success: false,
+        message: "Entered OTP is not correct",
+      });
     }
 
-  
     if (new Date() > otpRecord.expiresAt) {
-       return res.json({ success: false, message: "OTP has expired" });
+      return res.json({ success: false, message: "OTP has expired" });
     }
 
     console.log("Provided OTP:", otp, "Stored OTP:", otpRecord.otp);
     if (otp === otpRecord.otp) {
+      console.log(req.session.referral);
+      if (req.session.referral) {
+        let userRefferl = await User.findOne({
+          referrel_code: req.session.referral,
+        });
+
+        if (userRefferl) {
+          await userRefferl.updateOne({
+            $push: {
+              wallet_history: {
+                date: new Date(),
+                amount: 100,
+                description: "Referral Bonus",
+                transactionType: "credited",
+              },
+            },
+            $inc: { wallet: 100 },
+          });
+        }
+      }
+
       console.log("OTP verified successfully");
 
       await User.create({
@@ -176,8 +196,8 @@ exports.postverifyOtp = async (req, res) => {
 };
 
 exports.getVerifyOtp = (req, res) => {
-  const datas = req.session.userData
-  res.render("user/otpPage",{data:datas.email});
+  const datas = req.session.userData;
+  res.render("user/otpPage", { data: datas.email });
 };
 
 exports.resendOtp = async (req, res) => {
@@ -196,18 +216,21 @@ exports.resendOtp = async (req, res) => {
     const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
     // Store the OTP in the database
     await otpVerification.create({
-      userId: userData.email, 
+      userId: userData.email,
       otp: otpSend,
       createdAt: Date.now(),
       expiresAt: expiresAt,
     });
     res.json({ success: true, message: "OTP Resent successfully" });
-
   } catch (error) {
     console.log(error);
-     res.json({ success: false , message: "OTP Resent some issue" });
+    res.json({ success: false, message: "OTP Resent some issue" });
   }
-}
+};
+
+exports.getForgottenPassword = async (req, res) => {
+  res.render("user/enterEmail");
+};
 
 exports.getShowProducts = async (req, res) => {
   try {
@@ -258,8 +281,10 @@ exports.getShowProducts = async (req, res) => {
         break;
     }
 
-    const productData = await productsCollection.find(filter).sort(sortOption);
-
+    const productData = await productsCollection
+      .find(filter)
+      .sort(sortOption)
+      .populate("offer");
     const user = req.session.user;
 
     res.render("user/shop", {
@@ -279,44 +304,47 @@ exports.getShowProducts = async (req, res) => {
   }
 };
 
-
-exports.getProductDetails = async(req, res) => {
+exports.getProductDetails = async (req, res) => {
   try {
-    const id = req.params.id
-    const productData = await productsCollection.findOne({ _id: id }).populate('offer')
+    const id = req.params.id;
+    const productData = await productsCollection
+      .findOne({ _id: id })
+      .populate("offer");
     const user = req.session.user;
-    res.render("user/productDetails",{productData,user});
+    res.render("user/productDetails", { productData, user });
   } catch (error) {
-    console.log(error) 
+    console.log(error);
   }
-}
+};
 
 exports.getLogout = async (req, res) => {
-   req.session.destroy((err) => {
-     if (err) {
-       console.log(err);
-       res.redirect("/home");
-     } else {
-       res.redirect("/");
-     } 
- });
-
-}
-
-
+  req.session.destroy((err) => {
+    if (err) {
+      console.log(err);
+      res.redirect("/home");
+    } else {
+      res.redirect("/");
+    }
+  });
+};
 
 exports.getProfile = async (req, res) => {
   const user = req.session.user;
   const userData = await User.findOne({ email: user });
-  const addressData1 = await addressModal.find({ user_id: userData._id })
+  const addressData1 = await addressModal.find({ user_id: userData._id });
   const orderData = await orderModal
     .find({ user_id: userData._id })
     .populate("products.product_id");
   if (addressData1.length == 0) {
-    return res.render("user/profile", { userData, user,orderData:[] ,addressData:[]});
+    return res.render("user/profile", {
+      userData,
+      user,
+      orderData: [],
+      addressData: [],
+    });
   } else {
     const addressData = addressData1[0].addresses;
-    res.render("user/profile", { userData, user, addressData ,orderData });
+    res.render("user/profile", { userData, user, addressData, orderData });
   }
 };
 
@@ -324,10 +352,10 @@ exports.updateProfile = async (req, res) => {
   const { name, email, phone } = req.body;
   const userData = await User.findOne({ email: email });
   userData.name = name;
-  userData.phone = phone
-  userData.save()
+  userData.phone = phone;
+  userData.save();
   res.redirect("/home/profile");
-}; 
+};
 
 exports.getForgotPassword = async (req, res) => {
   res.render("user/enterEmail");
@@ -392,7 +420,6 @@ exports.profileChangePassword = async (req, res) => {
   res.render("user/changePassword");
 };
 
-
 exports.resetPassword = async (req, res) => {
   let { password } = req.body;
   const userData = await User.findOne({ email: req.session.user.email });
@@ -404,13 +431,12 @@ exports.resetPassword = async (req, res) => {
 
 exports.profileResetPassword = async (req, res) => {
   let { password } = req.body;
-  const userData = await User.findOne({ email: req.session.user});
+  const userData = await User.findOne({ email: req.session.user });
   password = await bcrypt.hash(password, 10);
   const updateData = await userData.updateOne({ password });
   req.session.user = userData.email;
   res.json({ success: true, message: "Password changed successfully" });
 };
-  
 
 exports.getForgotPassword = async (req, res) => {
   res.render("user/enterEmail");
@@ -466,5 +492,3 @@ exports.verifyOTP2 = async (req, res) => {
     }
   }
 };
-
-

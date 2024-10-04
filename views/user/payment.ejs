@@ -38,10 +38,17 @@ include('../layouts/user/userheader') %>
                               class="list-group-item list-group-item-action"
                               data-target="upi"
                             >
-                              <i class="fa-brands fa-google-pay fs-1"></i> Razor Pay
-                              (Pay via any App)
+                              <i class="fa-brands fa-google-pay fs-1"></i> Razor
+                              Pay (Pay via any App)
                             </a>
-                      
+                            <a
+                              href="#"
+                              class="list-group-item list-group-item-action"
+                              data-target="wallet"
+                            >
+                              <i class="fa-solid fa-wallet fs-4"></i> Wallet
+                              (Pay use wallet money)
+                            </a>
                           </div>
                         </div>
 
@@ -82,41 +89,60 @@ include('../layouts/user/userheader') %>
                           <div id="content-upi" class="payment-content d-none">
                             <h4>Razor Pay Payment</h4>
                             <p>Use any UPI app for fast and secure payments.</p>
-                             <div></div>
-                              <button
-                                onclick="placeOrder('RazorPay')"
-                                class="btn btn-primary px-5 py-3"
-                                style="
-                                  font-size: 15px;
-                                  font-weight: 500;
-                                  margin-top: 60px;
-                                  width: 100%;
-                                "
-                              >
-                                PLACE ORDER
-                              </button>
-                            </div>
+                            <div></div>
+                            <button
+                              onclick="placeOrder('RazorPay')"
+                              class="btn btn-primary px-5 py-3"
+                              style="
+                                font-size: 15px;
+                                font-weight: 500;
+                                margin-top: 60px;
+                                width: 100%;
+                              "
+                            >
+                              PLACE ORDER
+                            </button>
                           </div>
 
+                          <div
+                            id="content-wallet"
+                            class="payment-content d-none"
+                          >
+                            <h4>Pay Using Wallet</h4>
+                            <p>You can pay using wallet money.</p>
+                            <div></div>
+                            <button
+                              onclick="walletPaymet()"
+                              class="btn btn-primary px-5 py-3"
+                              style="
+                                font-size: 15px;
+                                font-weight: 500;
+                                margin-top: 60px;
+                                width: 100%;
+                              "
+                            >
+                              PLACE ORDER
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
-
-                    <div
-                      class="pt-5"
-                      style="display: flex; justify-content: space-between"
-                    >
-                      <h6 class="mb-0">
-                        <a href="#!" class="text-body"
-                          ><i class="fas fa-long-arrow-alt-left me-2"></i>Back
-                          to shop</a
-                        >
-                      </h6>
-                    </div>
-                    <div class="pt-5"></div>
                   </div>
+
+                  <div
+                    class="pt-5"
+                    style="display: flex; justify-content: space-between"
+                  >
+                    <h6 class="mb-0">
+                      <a href="#!" class="text-body"
+                        ><i class="fas fa-long-arrow-alt-left me-2"></i>Back to
+                        shop</a
+                      >
+                    </h6>
+                  </div>
+                  <div class="pt-5"></div>
                 </div>
-              
+              </div>
 
               <div class="col-lg-4 bg-body-tertiary">
                 <div class="p-5">
@@ -130,49 +156,71 @@ include('../layouts/user/userheader') %>
                       ₹ <span id="total_price2"><%= total %></span>
                     </h4>
                   </div>
-                  
+
                   <div class="d-flex justify-content-between mb-5">
                     <h4 class="mb-3">Delivery Charges</h4>
                     <h4 class="mb-3 text-success">Free</h4>
                   </div>
-                  <% if(discount){ %>
-                  <div class="d-flex justify-content-between mb-5" id="couponDiv">
+                  <div class="d-flex justify-content-between mb-5">
+                    <h4 class="mb-3">Discount amount</h4>
+                    <h4 class="mb-3 text-success">
+                      ₹ <span id="discount"><%= discount.toFixed(1) %></span>
+                    </h4>
+                  </div>
+
+                  <% if(couponDiscount){ %>
+                  <div
+                    class="d-flex justify-content-between mb-5"
+                    id="couponDiv"
+                  >
                     <h4 class="mb-3">Coupon Discount</h4>
-                    <h4 class="mb-3 text-success" id="couponDiscount"><%= discount %></h4>
+                    <h4 class="mb-3 text-success" id="couponDiscount">
+                      ₹ <%= couponDiscount.toFixed(1) %>
+                    </h4>
                   </div>
                   <% } %>
                   <hr class="my-4" />
                   <div class="d-flex justify-content-between mb-5">
                     <h3 class="text-uppercase">Total price</h3>
-                    <% if(discount) {%>
-                    <h3>₹ <span id="total_price1"><%= grandtotal %></span></h3>
-                    <% } else {%>
-                    <h3>₹ <span id="total_price1"><%= total %></span></h3>
-                    <% } %>
+
+                    <h3>
+                      ₹
+                      <span id="total_price1"
+                        ><%= grandtotal.toFixed(1) %></span
+                      >
+                    </h3>
                   </div>
-
                 </div>
-                 <div class="coupon-container" id="couponContainer1">
-                  <h3 class=" mb-3">Apply Coupon</h3>
+                <div class="coupon-container" id="couponContainer1">
+                  <h3 class="mb-3">Apply Coupon</h3>
 
-                 
                   <!-- Coupon Applied Section -->
-                   <% if(discount){ %>
+                  <% if(couponDiscount){ %>
                   <div
                     class="alert alert-success d-flex justify-content-between align-items-center p-3 mb-3"
                     id="couponApplied2"
                   >
                     <div>
-                      <strong class="text-warning">You Save : ₹ <strong><%= discount %></strong></strong
+                      <strong class="text-warning"
+                        >You Save : ₹
+                        <strong
+                          ><%= couponDiscount.toFixed(1) %></strong
+                        ></strong
                       ><br />
-                      <span>Coupon applied: <strong ><%= couponCode %></strong></span>
+                      <span
+                        >Coupon applied:
+                        <strong><%= couponCode %></strong></span
+                      >
                     </div>
-                    <button class="btn btn-lg" onclick="removeCoupon('<%= couponCode %>')">
+                    <button
+                      class="btn btn-lg"
+                      onclick="removeCoupon('<%= couponCode %>')"
+                    >
                       <i class="fas fa-trash-alt fs-4"></i>
                     </button>
                   </div>
                   <% }else{ %>
-                     <div class="coupon-input-group" id="couponInput">
+                  <div class="coupon-input-group" id="couponInput">
                     <input
                       type="text"
                       class="form-control fs-4 p-2"
@@ -188,11 +236,11 @@ include('../layouts/user/userheader') %>
                     id="couponError"
                     style="font-size: 12px"
                   ></p>
-                    <% } %>
+                  <% } %>
                   <!-- <h3 class="text-center mt-2">Applicable Coupons</h3>
                   <div class="coupon-list"> -->
-                    <!-- Coupon 1 -->
-                    <!-- <div class="coupon-item">
+                  <!-- Coupon 1 -->
+                  <!-- <div class="coupon-item">
                       <div class="form-check">
                         <input
                           class="form-check-input"
@@ -211,13 +259,8 @@ include('../layouts/user/userheader') %>
                       </div>
                     </div> -->
 
-                    <!-- Add more coupons here -->
-                  </div>
+                  <!-- Add more coupons here -->
                 </div>
-
-                
-              </div>
-              </div>
               </div>
             </div>
           </div>
@@ -226,8 +269,8 @@ include('../layouts/user/userheader') %>
     </div>
   </div>
 </section>
- <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
- <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script
   src="https://kit.fontawesome.com/e354b719fb.js"
   crossorigin="anonymous"
@@ -248,7 +291,7 @@ include('../layouts/user/userheader') %>
       .then((data) => {
         if (data.success) {
           window.location.reload();
-           document.getElementById("couponError").innerHTML = "";
+          document.getElementById("couponError").innerHTML = "";
           document.getElementById("couponApplied2").classList.remove("d-none");
           document.getElementById("couponApplied").innerHTML = data.couponCode;
           document.getElementById("couponSavings").innerHTML = data.discount;
@@ -263,21 +306,23 @@ include('../layouts/user/userheader') %>
       .catch((error) => console.error("Error:", error));
   }
 
-function removeCoupon(couponCode) {
-  fetch("/removeCoupon", {  
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      couponCode: couponCode,
-    }),
-  }).then((response) => response.json())
-    .then((data) => {
-      if(data.success){
-        window.location.reload();
-      }
-    })}
+  function removeCoupon(couponCode) {
+    fetch("/removeCoupon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        couponCode: couponCode,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.reload();
+        }
+      });
+  }
 
   document.addEventListener("DOMContentLoaded", function () {
     const options = document.querySelectorAll(".list-group-item");
@@ -292,76 +337,91 @@ function removeCoupon(couponCode) {
         document.getElementById(`content-${target}`).classList.remove("d-none");
       });
     });
-});
+  });
 
+  async function placeOrder(payment) {
+    try {
+      if (payment === "RazorPay") {
+        const response = await fetch("/create-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payment: payment,
+            amount: document.getElementById("total_price1").innerHTML, 
+          }),
+        });
 
- function placeOrder(payment) {
-  if (payment === "RazorPay") {
-    fetch("/create-order", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        payment: payment,
-        amount: document.getElementById("total_price1").innerHTML,
-      }),
-    })
-      .then(response => response.json())
-      .then(data => {
+        const data = await response.json();
         if (data.status) {
-          var options = {
-            key: "rzp_test_wYk4gKQpFEA1Kg", 
+          const options = {
+            key: "rzp_test_wYk4gKQpFEA1Kg",
             amount: data.amount,
             currency: "INR",
             name: "Time Point",
             description: "Order Payment",
             order_id: data.order_id,
-            handler: function (response) {
-              fetch("/verify-payment", {
-                method: "post",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  payment_id: response.razorpay_payment_id,
-                  order_id: response.razorpay_order_id,
-                  signature: response.razorpay_signature,
-                }),
-              })
-                .then((response) => response.json())
-                .then((verifyData) => {
-                  if (verifyData.status) {
-                    Swal.fire({
-                      icon: "success",
-                      title: "Order Successful",
-                      text: "Your order has been placed successfully",
-                      confirmButtonText: "OK",
-                      timer: 2000,
-                      willClose: () => {
-                        window.location = "/home"; 
-                      },
-                    });
-                  } else {
-                    Swal.fire({
-                      icon: "error",
-                      title: "Payment Failed",
-                      text: "Verification failed. Please try again.",
-                      confirmButtonText: "OK",
-                    });
-                  }
+            handler: async function (response) {
+              try {
+                const verifyResponse = await fetch("/verify-payment", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({
+                    payment_id: response.razorpay_payment_id,
+                    order_id: response.razorpay_order_id,
+                    signature: response.razorpay_signature,
+                  }),
                 });
-            },
-            prefill: {
-              name: "Customer Name",
-              email: "customer.email@example.com",
-              contact: "9876543210",
+
+                const verifyData = await verifyResponse.json();
+
+                if (verifyData.status) {
+                  Swal.fire({
+                    icon: "success",
+                    title: "Order Successful",
+                    text: "Your order has been placed successfully",
+                    confirmButtonText: "OK",
+                    timer: 2000,
+                    willClose: () => {
+                      window.location = "/home";
+                    },
+                  });
+                }
+              } catch (error) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Verification Error",
+                  text: "There was an error verifying your payment. Please try again.",
+                  confirmButtonText: "OK",
+                });
+              }
             },
             theme: {
               color: "#3399cc",
             },
           };
-          var rzp1 = new Razorpay(options);
+
+          const rzp1 = new Razorpay(options);
+          rzp1.on("payment.failed", function (response) {
+            Swal.fire({
+              icon: "error",
+              title: "Payment Failed",
+              text: "Payment failed . You can retry or use another payment method to complete your order.",
+              confirmButtonText: "Go to Shop",
+              willClose: () => {
+                fetch("/verify-payment", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                }),
+                  (window.location = "/home/shop");
+              },
+            });
+          });
           rzp1.open();
         } else {
           Swal.fire({
@@ -371,27 +431,18 @@ function removeCoupon(couponCode) {
             confirmButtonText: "OK",
           });
         }
-      })
-      .catch((error) => {
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "Failed to process the order. Please check your network.",
-          confirmButtonText: "OK",
+      } else {
+        const response = await fetch("/payment", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            payment: payment,
+          }),
         });
-      });
-  } else {
-    fetch("/payment", {
-      method: "post",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        payment: payment,
-      }),
-    })
-      .then(response => response.json())
-      .then(data => {
+
+        const data = await response.json();
         if (data.status) {
           Swal.fire({
             icon: "success",
@@ -400,7 +451,7 @@ function removeCoupon(couponCode) {
             confirmButtonText: "OK",
             timer: 2000,
             willClose: () => {
-              window.location = "/home"; 
+              window.location = "/home";
             },
           });
         } else {
@@ -411,19 +462,59 @@ function removeCoupon(couponCode) {
             confirmButtonText: "OK",
           });
         }
-      })
-      .catch((error) => {
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Failed to process the order. Please check your network.",
+        confirmButtonText: "OK",
+      });
+    }
+  }
+
+  async function walletPaymet(orderTotal) {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: "Are you sure?",
+      text: `You are about to pay ₹${orderTotal} using your wallet. Are you sure you want to proceed?`,
+      showCancelButton: true,
+      confirmButtonText: "Yes, Pay",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+    });
+
+    if (result.isConfirmed) {
+      const response = await fetch("/walletPayment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+      if (data.status) {
+        Swal.fire({
+          icon: "success",
+          title: "Payment Successful",
+          text: "Your order has been placed successfully",
+          confirmButtonText: "OK",
+          timer: 2000,
+          willClose: () => {
+            window.location = "/home";
+          },
+        });
+      } else {
         Swal.fire({
           icon: "error",
-          title: "Error",
-          text: "Failed to process the order. Please check your network.",
+          title: "Payment Failed",
+          text: data.message || "Something went wrong. Please try again.",
           confirmButtonText: "OK",
         });
-      });
+      }
+    }
   }
-}
-
-
 </script>
 
 <%- include('../layouts/user/userfooter') %> <%-

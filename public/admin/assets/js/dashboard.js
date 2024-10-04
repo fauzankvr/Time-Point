@@ -88,6 +88,8 @@
 
           scales: {
             y: {
+              beginAtZero: true,
+              
               border: {
                 display: false,
               },

@@ -17,87 +17,64 @@ include('../layouts/user/userheader') %>
       rgba(246, 243, 255, 1)
     );
   }
-  /* Custom Table Styles */
-  .custom-table thead {
-    background-color: #6c757d;
-    color: white;
+
+  .table thead th {
+    border-bottom: 2px solid #ddd;
   }
 
-  .custom-table tbody tr:hover {
+  .table tbody tr {
+    border-bottom: 1px solid #ddd;
+  }
+
+  .table tbody tr:hover {
     background-color: #f1f1f1;
+    cursor: pointer;
   }
 
-  .credit {
-    color: #28a745; /* Bootstrap green for credit */
-    font-weight: bold;
+  .badge {
+    padding: 5px 10px;
+    font-size: 0.95rem;
+  }
+  .bg-success {
+    background-color: #28a745 !important;
   }
 
-  .debit {
-    color: #dc3545; /* Bootstrap red for debit */
-    font-weight: bold;
+  .bg-danger {
+    background-color: #dc3545 !important;
   }
 
-  .table td,
-  .table th {
-    vertical-align: middle;
-  }
-
-  .transaction-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-  }
-
-  /* Custom date styling */
-  .date-cell {
-    font-weight: bold;
-    color: #007bff;
-  }
-
-  /* Padding for the entire section */
-  .custom-section {
-    padding: 30px 0;
-  }
-  /* Custom Table Styles */
-  .custom-table thead {
-    background-color: #6c757d;
+  .input-group-text {
+    width: 30px;
+    font-size: 1.5rem;
+    background-color: #00356e;
     color: white;
+    text-align: center;
   }
 
-  .custom-table tbody tr:hover {
-    background-color: #f1f1f1;
+  .form-control-wallet {
+    border-radius: 7;
+    height: 45px;
+    font-size: 1.5rem;
   }
 
-  .credit {
-    color: #28a745; /* Bootstrap green for credit */
-    font-weight: bold;
+  .button1 {
+    background-color: #00356e;
+    color: white;
+    border-radius: 7px;
+    height: 45px;
+    width: 105px;
+    font-size: 1.5rem;
+    border: none;
+    transition: background-color 0.3s ease, transform 0.2s ease;
   }
-
-  .debit {
-    color: #dc3545; /* Bootstrap red for debit */
-    font-weight: bold;
+  .button1:hover {
+    background-color: #00509e;
+    color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   }
-
-  .table td,
-  .table th {
-    vertical-align: middle;
-  }
-
-  .transaction-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-  }
-
-  /* Custom date styling */
-  .date-cell {
-    font-weight: bold;
-    color: #007bff;
-  }
-
-  /* Padding for the entire section */
-  .custom-section {
-    padding: 30px 0;
+  .input-group {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 </style>
 
@@ -109,30 +86,53 @@ include('../layouts/user/userheader') %>
           <div class="card-header px-4 py-5 d-flex justify-content-between">
             <h2 class="mb-0 fw-bold">Your Wallet</h2>
             <h3 class="d-flex align-items-center mb-0 fw-bold">
-              Wallet Balance: <span class="mb-0 ms-2">₹ </span>
+              Wallet Balance:
+              <span class="mb-0 ms-2">₹ <%= userData.wallet.toFixed(1) %></span>
             </h3>
           </div>
+
+          <div
+            class="row align-items-center mb-4 d-flex justify-content-center pb-5 mt-5"
+          >
+            <div class="col-md-4">
+              <div class="input-group">
+                <span class="input-group-text">₹</span>
+                <input
+                  type="number"
+                  class="form-control form-control-wallet"
+                  id="add_money"
+                  placeholder="Enter amount"
+                />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <button type="button" class="button1" id="add_money_btn">
+                Add Money
+              </button>
+            </div>
+          </div>
+
           <div class="card-body p-4">
-            <div class="container ">
+            <div class="container">
               <section class="custom-section">
                 <div class="container">
-                  <h2 class="text-center mb-4">Wallet Transactions</h2>
+                  <h2 class="text-center mb-5">Wallet Transactions</h2>
                   <div class="table-responsive">
                     <table
-                      class="table custom-table table-bordered table-hover"
+                      class="table custom-table table-hover table-borderless"
                     >
                       <thead class="thead-dark">
                         <tr>
                           <th>Date</th>
                           <th>Amount</th>
                           <th>Reason</th>
-                          <th>Transaction Type</th>
+                          <th class="text-center">Transaction Type</th>
                         </tr>
                       </thead>
                       <tbody>
                         <% userData.wallet_history.forEach(element => { %>
                         <tr>
-                          <td class="date-cell">
+                          <td>
                             <script>
                               document.write(
                                 new Date(
@@ -142,17 +142,17 @@ include('../layouts/user/userheader') %>
                             </script>
                           </td>
                           <td>
-                            ₹ <%= parseFloat(element.amount).toFixed(2) %>
+                            ₹ <%= parseFloat(element.amount).toFixed(1) %>
                           </td>
                           <td><%= element.description %></td>
                           <td class="text-center">
                             <% if (element.transactionType === 'credited') { %>
                             <span class="credit">
-                             <span class="badge bg-success ">Credit</span> 
+                              <span class="badge bg-success">Credit</span>
                             </span>
                             <% } else if(element.transactionType == 'debited') {
                             %>
-                           <span class="badge bg-danger ">Debit</span>
+                            <span class="badge bg-danger">Debit</span>
                             <% } %>
                           </td>
                         </tr>
@@ -181,6 +181,90 @@ include('../layouts/user/userheader') %>
     </div>
   </div>
 </section>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+  document
+    .getElementById("add_money_btn")
+    .addEventListener("click", async function () {
+      let add_money_amount = document.getElementById("add_money").value;
+      if (add_money_amount == "" || add_money_amount <= 0) {
+        return Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Please enter valid amount",
+          footer: '<a href="">Why do I have this issue?</a>',
+        });
+      }
+      let response = await fetch("/user/addMoney", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: add_money_amount,
+        }),
+      });
+
+      let data = await response.json();
+
+      if (data.status) {
+        let options = {
+          key: data.key,
+          amount: data.amount,
+          currency: "INR",
+          name: "Time Point",
+          description: "Add Money",
+          order_id: data.order_id,
+          handler: async function (response) {
+            const verifyResponse = await fetch("/verifyaddMoney", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                payment_id: response.razorpay_payment_id,
+                order_id: response.razorpay_order_id,
+                signature: response.razorpay_signature,
+                amount: add_money_amount,
+              }),
+            });
+
+            const verifyData = await verifyResponse.json();
+
+            if (verifyData.status) {
+              Swal.fire({
+                icon: "success",
+                title: "Money Added",
+                text: "Your money has been added successfully",
+                confirmButtonText: "OK",
+                timer: 2000,
+                willClose: () => {
+                  window.location.reload();
+                },
+              });
+            } else {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Something went wrong!",
+                confirmButtonText: "OK",
+                timer: 2000,
+                willClose: () => {
+                  window.location.reload();
+                },
+              });
+            }
+          },
+          theme: {
+            color: "#3399cc",
+          },
+        };
+
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+      }
+    });
+</script>
 
 <%- include('../layouts/user/userfooter') %> <%-
 include('../layouts/user/userfoot') %>
