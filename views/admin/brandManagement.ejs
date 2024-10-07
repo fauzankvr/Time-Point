@@ -80,20 +80,19 @@
                 </tbody>
               </table>
 
-          <!-- Add New Category Section -->
             <div class="mt-5">
                 <h5>+ Add New Brand</h5>
-                <form action="/admin/addBrand" method="post" class="d-flex align-items-center">
-                 <div class="col-10">
-                  <input type="text" name="brand_name" class="form-control me-2" placeholder="Category Name" required>
-                 </div>
-                 <div class="col-2 ps-2">
-                  <button type="submit" class="btn btn-md btn-dark">Add Brand</button>
-                 </div>   
-                    
-                </form>
+                <form action="/admin/addBrand" onsubmit="return validateForm()" method="post" class="d-flex align-items-center">
+  <div class="col-10">
+    <input type="text" name="brand_name" id="brand_name" class="form-control me-2" placeholder="Brand Name">
+    <p id="brand_error" style="color: brown; font-size: small;"></p>
+  </div>
+  <div class="col-2 ps-2">
+    <button type="submit" class="btn btn-md btn-dark">Add Brand</button>
+  </div>
+</form>
             </div>
-            <!-- End of Add New Category Section -->
+     
 
             </div>
           </div>
@@ -102,6 +101,19 @@
     </div>
   </div>
 </div>
+
+<script>
+  function validateForm() {
+    var name = document.getElementById("brand_name").value;
+    document.getElementById("brand_error").textContent = "";
+
+    if (!name || name.trim().length == 0) {
+      document.getElementById("brand_error").textContent = "Please Enter Brand Name";
+      return false;
+    }
+    return true;
+  }
+</script>
 
 
 <%- include('../layouts/admin/footadmin') %>

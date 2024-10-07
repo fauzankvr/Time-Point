@@ -3,13 +3,12 @@ const couponModel = require("../models/couponModal");
 exports.getCouponManagment = async (req, res) => {
   const couponData = await couponModel.find({}).sort({ createdAt: -1 });
   if (!couponData) {
-    return res.render("admin/couponManagment", { couponData:{} });
+    return res.render("admin/couponManagment", { couponData: {} });
   }
-  res.render("admin/couponManagment", { couponData});
+  res.render("admin/couponManagment", { couponData });
 };
 
 exports.postCouponManagment = async (req, res) => {
-  
   const coupenData = new couponModel({
     coupon_code: req.body.coupon_code,
     discount: req.body.discount,
@@ -20,10 +19,9 @@ exports.postCouponManagment = async (req, res) => {
 
   await coupenData.save();
   res.redirect("/admin/couponManagment");
-}
+};
 
-
-exports.postBlockCoupon = async (req, res) => { 
+exports.postBlockCoupon = async (req, res) => {
   try {
     const couponId = req.params.id;
     const coupon = await couponModel.findOne({ _id: couponId });
@@ -36,10 +34,9 @@ exports.postBlockCoupon = async (req, res) => {
     req.flash("success", "Coupon blocked successfully");
     return res.redirect("/admin/couponManagment");
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};
 
 exports.postunBlockCoupon = async (req, res) => {
   try {
@@ -57,4 +54,3 @@ exports.postunBlockCoupon = async (req, res) => {
     console.log(error);
   }
 };
-

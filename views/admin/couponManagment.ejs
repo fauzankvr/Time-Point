@@ -9,26 +9,28 @@ include('../layouts/admin/adminSidbar2') %>
         <div class="card">
           <div class="card-body">
             <div class="row">
-                <div class="col-lg-9">
-                    <h4 class="card-title">Coupon Management</h4>
-                     <p class="card-description">Manage Coupon detiails</p>
-                </div>
-                <div class="col-lg-3">
-                    <button type="button" class="btn btn-inverse-info btn-icon" 
-                    data-toggle="modal"
-                    data-target="#addCouponModal"
-                    
-                    ><span>+</span>Add New Coupon</button>
-                </div>
+              <div class="col-lg-9">
+                <h4 class="card-title">Coupon Management</h4>
+                <p class="card-description">Manage Coupon detiails</p>
+              </div>
+              <div class="col-lg-3">
+                <button
+                  type="button"
+                  class="btn btn-inverse-info btn-icon"
+                  data-toggle="modal"
+                  data-target="#addCouponModal"
+                >
+                  <span>+</span>Add New Coupon
+                </button>
+              </div>
             </div>
-            
+
             <!-- Flash Messages -->
             <% if (messages.success) { %>
             <div class="alert alert-success"><%= messages.success %></div>
             <% } %> <% if (messages.error) { %>
             <div class="alert alert-danger"><%= messages.error %></div>
             <% } %>
-           
 
             <div class="table-responsive">
               <table class="table table-striped">
@@ -51,21 +53,29 @@ include('../layouts/admin/adminSidbar2') %>
                     <td>₹ <%= element.minimum_amount %></td>
                     <td>
                       <script>
-                document.write(new Date('<%= element.start_date %>').toLocaleDateString('en-GB'));
-            </script>
+                        document.write(
+                          new Date(
+                            "<%= element.start_date %>"
+                          ).toLocaleDateString("en-GB")
+                        );
+                      </script>
                     </td>
                     <td>
-                     <script>
-                document.write(new Date('<%= element.expiry_date %>').toLocaleDateString('en-GB'));
-            </script>
-            </td>
+                      <script>
+                        document.write(
+                          new Date(
+                            "<%= element.expiry_date %>"
+                          ).toLocaleDateString("en-GB")
+                        );
+                      </script>
+                    </td>
                     <td>
                       <div
                         class="d-flex aligin-items-center justify-contern-center"
                       >
                         <!-- <div class="mx-2"> -->
-                          <!-- Trigger button (Your <a> tag) -->
-                          <!-- <a
+                        <!-- Trigger button (Your <a> tag) -->
+                        <!-- <a
                             href="#"
                             class="btn btn-primary btn-rounded btn-icon btn-sm"
                             data-toggle="modal"
@@ -81,7 +91,7 @@ include('../layouts/admin/adminSidbar2') %>
                           <a
                             href="/admin/couponManagment/blockCoupon/<%= element._id %>"
                             type="button"
-                             class="btn btn-secondary btn-rounded btn-icon btn-sm"
+                            class="btn btn-secondary btn-rounded btn-icon btn-sm"
                           >
                             <i class="fa-solid fa-trash-can"></i>
                           </a>
@@ -89,7 +99,6 @@ include('../layouts/admin/adminSidbar2') %>
                           <a
                             href="/admin/couponManagment/unBlockCoupon/<%= element._id %>"
                             type="button"
-                           
                             class="btn btn-danger btn-rounded btn-icon btn-sm"
                           >
                             <i class="fa-solid fa-trash-can"></i>
@@ -97,15 +106,12 @@ include('../layouts/admin/adminSidbar2') %>
 
                           <% } %>
                         </div>
-                        
                       </div>
                     </td>
                   </tr>
                   <% }) %>
                 </tbody>
               </table>
-
-             
             </div>
           </div>
         </div>
@@ -136,59 +142,67 @@ include('../layouts/admin/adminSidbar2') %>
         </button>
       </div>
       <div class="modal-body">
-        <form id="editCategoryForm" method="post" action="/admin/couponManagment" onsubmit="return validDetailsModal()">
+        <form
+          id="editCategoryForm"
+          method="post"
+          action="/admin/couponManagment"
+          onsubmit="return validDetailsModal()"
+        >
           <div class="form-group">
-            <label for="categoryName">Coupon Code</label>
+            <label for="coupon_code">Coupon Code</label>
             <input
               type="text"
               class="form-control"
               id="coupon_code"
               name="coupon_code"
-              
             />
             <p id="coupon-error" style="color: brown; font-size: small"></p>
           </div>
+
           <div class="form-group">
-            <label for="categoryName">Discount</label>
+            <label for="discount">Discount %</label>
             <input
               type="text"
               class="form-control"
               id="discount"
               name="discount"
-              
             />
             <p id="discount-error" style="color: brown; font-size: small"></p>
-            <div class="form-group">
-            <label for="categoryName">Minimum Amount</label>
+          </div>
+
+          <div class="form-group">
+            <label for="minimum_amount">Minimum Amount</label>
             <input
               type="text"
               class="form-control"
-              required
+              id="minimum_amount"
               name="minimum_amount"
-              
             />
+            <p id="minimum_error" style="color: brown; font-size: small"></p>
           </div>
-          </div>
+
           <div class="form-group">
-            <label for="categoryName">Start Date</label>
+            <label for="start_date">Start Date</label>
             <input
               type="date"
               class="form-control"
-              required
+              id="start_date"
               name="start_date"
-              
             />
+            <p id="start_error" style="color: brown; font-size: small"></p>
           </div>
+
           <div class="form-group">
-            <label for="categoryName">Expiry Date</label>
+            <label for="expiry_date">Expiry Date</label>
             <input
               type="date"
               class="form-control"
-              required
+              id="expiry_date"
               name="expiry_date"
-              
             />
+            <p id="expiry_error" style="color: brown; font-size: small"></p>
           </div>
+
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
       </div>
@@ -201,19 +215,47 @@ include('../layouts/admin/adminSidbar2') %>
     return date.toLocaleDateString("en-GB");
   }
 
+  function validDetailsModal() {
+    var couponCode = document.getElementById("coupon_code").value;
+    var discount = document.getElementById("discount").value;
+    var minimumAmount = document.getElementById("minimum_amount").value;
+    var startDate = document.getElementById("start_date").value;
+    var expiryDate = document.getElementById("expiry_date").value;
 
-    function validDetailsModal() {
-    var name = document.getElementById("coupon_code").value;
-    let discount = document.getElementById('discount').value;  
-    document.getElementById('coupon-error').textContent = '';
-    document.getElementById('discount-error').textContent = '';
+    document.getElementById("coupon-error").textContent = "";
+    document.getElementById("discount-error").textContent = "";
+    document.getElementById("minimum_error").textContent = "";
+    document.getElementById("start_error").textContent = "";
+    document.getElementById("expiry_error").textContent = "";
 
-    if (!name || name.trim().length == 0) {
-      document.getElementById("coupon-error").innerHTML = "Field is required";
+    if (!couponCode || couponCode.trim().length == 0) {
+      document.getElementById("coupon-error").innerHTML =
+        "Coupon Code is required";
       return false;
     }
-    if (!discount || discount.trim().length == 0) {
-      document.getElementById("discount-error").innerHTML = "Field is required";
+
+    if (!discount || isNaN(discount) || discount <= 0 || discount > 100) {
+      document.getElementById("discount-error").innerHTML =
+        "Discount must be a number between 0 and 100";
+      return false;
+    }
+
+    if (!minimumAmount || isNaN(minimumAmount) || minimumAmount <= 0) {
+      document.getElementById("minimum_error").innerHTML =
+        "Minimum Amount must be a positive number";
+      return false;
+    }
+
+    var today = new Date().toISOString().split("T")[0];
+    if (!startDate || startDate < today) {
+      document.getElementById("start_error").innerHTML =
+        "Start Date cannot be in the past";
+      return false;
+    }
+
+    if (!expiryDate || expiryDate < startDate) {
+      document.getElementById("expiry_error").innerHTML =
+        "Expiry Date must be after Start Date";
       return false;
     }
 
@@ -221,11 +263,9 @@ include('../layouts/admin/adminSidbar2') %>
   }
 
   function populateModal(categoryId, categoryName) {
-    // Set the form action dynamically based on the category ID
     document.getElementById("editCategoryForm").action =
-      "/admin/catetoryManagment/editCoupon/"+categoryId;
+      "/admin/catetoryManagment/editCoupon/" + categoryId;
 
-    // Set the current category name in the input field
     document.getElementById("categoryName").value = categoryName;
   }
 </script>

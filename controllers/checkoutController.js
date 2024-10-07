@@ -615,9 +615,9 @@ exports.getOrderDetails = async (req, res) => {
       discount = order.products.reduce((acc, item) => {
         return acc + item.total_price;
       }, 0);
-       discount = discount - total;
+      discount = discount - total;
     }
-   
+
     res.render("user/orderDetails", { user, order, total, discount });
   } catch (error) {
     console.log(error);
@@ -639,16 +639,15 @@ exports.downloadInvoice = async (req, res) => {
     const { productId, orderId } = req.params;
     const order = await orderModal
       .findOne({ _id: orderId })
-      .select("products coupon address createdAt order_id") 
+      .select("products coupon address createdAt order_id")
       .populate({
         path: "products.product_id",
-        select: "product_name price discount_price offer", 
+        select: "product_name price discount_price offer",
         populate: {
-          path: "offer", 
+          path: "offer",
           select: "offer_value",
         },
       });
-
 
     const product = order.products.find(
       (p) => p.product_id._id.toString() === productId

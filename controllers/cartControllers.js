@@ -1,5 +1,5 @@
-const cartModel = require ("../models/cartModel")   
-const userModal = require("../models/users")
+const cartModel = require("../models/cartModel");
+const userModal = require("../models/users");
 const productModal = require("../models/products");
 const { json } = require("express");
 
@@ -31,42 +31,40 @@ exports.getAddToCart = async (req, res) => {
       (product) => product.product_id && product.product_id.is_delete === false
     );
 
-    const total = filteredProducts.reduce((acc, item) => { 
-      acc+= item.product_id.price * item.quantity;
-      return acc
-    },0)
-    
+    const total = filteredProducts.reduce((acc, item) => {
+      acc += item.product_id.price * item.quantity;
+      return acc;
+    }, 0);
+
     const grandTotal = filteredProducts.reduce((acc, item) => {
       if (item.product_id.stock > 0) {
-
         if (
           item.product_id.offer &&
           item.product_id.offer.is_delete === false &&
           item.product_id.offer.offer_end_date > new Date() &&
           item.product_id.offer.offer_start_date < new Date()
         ) {
-          acc += item.product_id.discount_price * item.quantity; 
+          acc += item.product_id.discount_price * item.quantity;
         } else {
-          acc += item.product_id.price * item.quantity; 
+          acc += item.product_id.price * item.quantity;
         }
       }
-      return acc; 
+      return acc;
     }, 0);
 
- const discount =  total - grandTotal
+    const discount = total - grandTotal;
     res.render("user/cart", {
       user,
       cartData: filteredProducts,
-      total, 
+      total,
       grandTotal,
-      discount
+      discount,
     });
   } catch (error) {
     console.error("Error in getAddToCart:", error);
     res.status(500).send("An error occurred while retrieving the cart");
   }
 };
-
 
 exports.postAddToCart = async (req, res) => {
   try {
@@ -227,7 +225,6 @@ exports.updateQuantity = async (req, res) => {
       return acc;
     }, 0);
 
-
     const discount = total - grandTotal;
 
     res.json({
@@ -246,9 +243,7 @@ exports.updateQuantity = async (req, res) => {
   }
 };
 
-
-
-exports.deleteItem = async (req, res) => { 
+exports.deleteItem = async (req, res) => {
   try {
     productId = req.body.product_id;
     const user = req.session.user;
@@ -267,10 +262,12 @@ exports.deleteItem = async (req, res) => {
     );
     const userdata = await userModal.findOne({ email: user });
     const cartCollection = await cartModel.findOne({ user_id: userdata._id });
-    const total = cartCollection.products.reduce((acc, crr) => acc + crr.total_price, 0)
+    const total = cartCollection.products.reduce(
+      (acc, crr) => acc + crr.total_price,
+      0
+    );
     res.json({ success: true, total: total });
   } catch (error) {
-    console.log(error)
+    console.log(error);
   }
-}
-
+};

@@ -88,7 +88,6 @@ exports.postSignup = async (req, res) => {
       phone: req.body.phone,
       password: req.body.password,
     };
-    //check if user alredy exist
     req.session.invailed = null;
     const existUser = await User.findOne({
       $or: [{ email: userData.email }, { phone: userData.phone }],

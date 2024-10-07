@@ -1,7 +1,7 @@
-const passport = require('passport'); 
-const GoogleStategy = require('passport-google-oauth20').Strategy;
-const User = require('../models/users');
-const env = require('dotenv').config()
+const passport = require("passport");
+const GoogleStategy = require("passport-google-oauth20").Strategy;
+const User = require("../models/users");
+const env = require("dotenv").config();
 
 passport.use(
   new GoogleStategy(
@@ -19,7 +19,7 @@ passport.use(
           user = new User({
             name: profile.displayName,
             email: profile.emails[0].value,
-            googleId: profile.id ,
+            googleId: profile.id,
           });
           await user.save();
           return done(null, user);
@@ -31,21 +31,19 @@ passport.use(
   )
 );
 
-// Serialize user into the session
 passport.serializeUser((user, done) => {
   done(null, user.id);
 });
 
-// Deserialize user from the session
 passport.deserializeUser((id, done) => {
   User.findById(id)
     .then((user) => {
       done(null, user);
-    }) 
+    })
     .catch((err) => {
-      console.error('Error in deserialization:', err); // Added logging
+      console.error("Error in deserialization:", err); 
       done(err, null);
     });
 });
 
-module.exports = passport
+module.exports = passport;

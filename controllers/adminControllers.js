@@ -358,8 +358,8 @@ exports.getDashbord = async (req, res) => {
     usersCount,
     totalDiscount,
     orderData,
-    currentPage: page, // Send current page number
-    totalPages: Math.ceil(totalOrders / limit), // Calculate total pages
+    currentPage: page,
+    totalPages: Math.ceil(totalOrders / limit),
   });
 };
 
@@ -522,7 +522,10 @@ exports.generateExcel = async (req, res) => {
   }
 
   try {
-    const orders = await orderModal.find(filter).populate("user_id").populate("products.product_id");
+    const orders = await orderModal
+      .find(filter)
+      .populate("user_id")
+      .populate("products.product_id");
 
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Sales Report");
@@ -532,7 +535,7 @@ exports.generateExcel = async (req, res) => {
       { header: "User", key: "user", width: 30 },
       { header: "Product", key: "product", width: 30 },
       { header: "Quantity", key: "quantity", width: 10 },
-      {header:"Payment Type",key:"payment_type",width:20},
+      { header: "Payment Type", key: "payment_type", width: 20 },
       { header: "Date", key: "date", width: 20 },
       { header: "Total Amount", key: "total_amount", width: 15 },
     ];
@@ -548,7 +551,7 @@ exports.generateExcel = async (req, res) => {
           total_amount: order.grant_total_,
           date: order.createdAt.toDateString(),
         });
-      })   
+      });
     });
 
     worksheet.addRow({

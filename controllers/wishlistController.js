@@ -1,17 +1,18 @@
 const wishlistModel = require("../models/wishlistModal");
 const User = require("../models/users");
 
-
 exports.getWishlist = async (req, res) => {
   try {
     const user = req.session.user;
-  const userData = await User.findOne({ email: req.session.user });
-    const wishlist = await wishlistModel.findOne({ user_id: userData._id }).populate("products");
-    if(!wishlist){
-      return res.render("user/wishlist", { wishListData: [], user});
+    const userData = await User.findOne({ email: req.session.user });
+    const wishlist = await wishlistModel
+      .findOne({ user_id: userData._id })
+      .populate("products");
+    if (!wishlist) {
+      return res.render("user/wishlist", { wishListData: [], user });
     }
-  const wishListData = wishlist.products;
-  res.render("user/wishlist", { wishListData, user});
+    const wishListData = wishlist.products;
+    res.render("user/wishlist", { wishListData, user });
   } catch (error) {
     console.log(error);
     res.json({ success: false, data: "Something went wrong in server" });
@@ -60,8 +61,6 @@ exports.postWishlist = async (req, res) => {
   }
 };
 
-
-
 exports.deleteWishlist = async (req, res) => {
   try {
     const user = req.session.user;
@@ -79,7 +78,7 @@ exports.deleteWishlist = async (req, res) => {
       res.json({ success: false, data: "Product not found in wishlist" });
     }
   } catch (error) {
-    console.log(error)
+    console.log(error);
     res.json({ success: false, data: "Something went wrong in server" });
   }
 };

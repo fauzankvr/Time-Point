@@ -7,6 +7,7 @@ const passport = require("../config/passport");
 const addressController = require("../controllers/addressController");
 const orderController = require("../controllers/checkoutController");
 const wishlistController = require("../controllers/wishlistController");
+
 //app router
 
 router.get("/", userAuth.isLoggedOut, userController.getRoot);

@@ -163,7 +163,7 @@ include('../layouts/admin/adminSidbar2') %>
                               </div>
                             </td>
                           </tr>
-                          <% }) %> 
+                          <% }) %>
                         </tbody>
                       </table>
                     </div>
@@ -281,7 +281,6 @@ include('../layouts/admin/adminSidbar2') %>
               </div>
             </div>
 
-         
             <div
               class="tab-pane fade"
               id="catogory"
@@ -420,6 +419,7 @@ include('../layouts/admin/adminSidbar2') %>
           id="addOfferForm"
           method="post"
           action="/admin/offerManagment/addOffer"
+          onsubmit="return validDetailsModal()"
         >
           <input type="hidden" id="productId" name="product_id" />
           <div class="form-group">
@@ -429,9 +429,9 @@ include('../layouts/admin/adminSidbar2') %>
               class="form-control"
               id="add_coupon_code"
               name="offer_name"
-              required
+            
             />
-            <p id="add-coupon-error" style="color: brown; font-size: small"></p>
+            <p id="add_coupon_error" style="color: brown; font-size: small"></p>
           </div>
           <div class="form-group">
             <label for="add_discount">Discount %</label>
@@ -440,10 +440,10 @@ include('../layouts/admin/adminSidbar2') %>
               class="form-control"
               id="add_discount"
               name="offer_percentage"
-              required
+              
             />
             <p
-              id="add-discount-error"
+              id="add_discount_error"
               style="color: brown; font-size: small"
             ></p>
           </div>
@@ -452,20 +452,28 @@ include('../layouts/admin/adminSidbar2') %>
             <input
               type="datetime-local"
               class="form-control"
-              id="add_start_date"
+              id="start_date"
               name="offer_start_date"
-              required
+            
             />
+               <p
+              id="start_error"
+              style="color: brown; font-size: small"
+            ></p>
           </div>
           <div class="form-group">
             <label for="add_expiry_date">Expiry Date</label>
             <input
               type="datetime-local"
               class="form-control"
-              id="add_expiry_date"
+              id="expiry_date"
               name="offer_end_date"
-              required
+            
             />
+               <p
+              id="expiry_error"
+              style="color: brown; font-size: small"
+            ></p>
           </div>
           <button type="submit" class="btn btn-primary">Submit</button>
         </form>
@@ -520,8 +528,9 @@ include('../layouts/admin/adminSidbar2') %>
               class="form-control"
               id="edit_discount"
               name="offer_percentage"
-              required
+            
             />
+
           </div>
 
           <div class="form-group">
@@ -533,6 +542,7 @@ include('../layouts/admin/adminSidbar2') %>
               name="offer_start_date"
               required
             />
+
           </div>
 
           <div class="form-group">
@@ -553,49 +563,68 @@ include('../layouts/admin/adminSidbar2') %>
   </div>
 </div>
 
-
 <script>
   function validDetailsModal() {
     var name = document.getElementById("add_coupon_code").value;
     let discount = document.getElementById("add_discount").value;
-    document.getElementById("add-coupon-error").textContent = "";
-    document.getElementById("add-discount-error").textContent = "";
+    let startDate = document.getElementById("start_date").value;
+    let expiryDate = document.getElementById("expiry_date").value;
 
-    if (!name || name.trim().length == 0) {
-      document.getElementById("add-coupon-error").innerHTML =
-        "Field is required";
+    // Clear previous error messages
+    document.getElementById("expiry_error").textContent = ""  
+    document.getElementById("start_error").textContent = ""
+    document.getElementById("add_coupon_error").textContent = "";
+    document.getElementById("add_discount_error").textContent = "";
+
+    // Get current date in correct format for comparison
+    let today = new Date().toISOString().slice(0, 16); // Trims to match "datetime-local" input format
+
+    if (!name || name.trim().length == 0 ) {
+      document.getElementById("add_coupon_error").innerHTML = "Field is required";
       return false;
     }
-    if (!discount || discount.trim().length == 0) {
-      document.getElementById("add-discount-error").innerHTML =
-        "Field is required";
+
+    if (!discount || discount.trim().length == 0 || isNaN(discount) || discount < 0 || discount > 100) {
+      document.getElementById("add_discount_error").innerHTML = "Field is required and should be a number between 0 and 100";
+      return false;
+    }
+
+    if (!startDate || startDate < today) {
+      document.getElementById("start_error").innerHTML = "Start date must be today or in the future";
+      return false;
+    }
+
+    if (!expiryDate || expiryDate < startDate) {
+      document.getElementById("expiry_error").innerHTML = "Expiry date must be after the start date";
       return false;
     }
 
     return true;
-  }
+}
+
 
   function populateEditModal(
-  offerId,
-  offerName,
-  discount,
-  startDate,
-  expiryDate
-) {
+    offerId,
+    offerName,
+    discount,
+    startDate,
+    expiryDate
+  ) {
+    document.getElementById(
+      "editCouponForm"
+    ).action = `/admin/offerManagment/editOffer/${offerId}`;
 
-  document.getElementById("editCouponForm").action = `/admin/offerManagment/editOffer/${offerId}`;
- 
-  // Set the current offer details in the input fields
-  document.getElementById("editOfferId").value = offerId;
-  document.getElementById("edit_coupon_code").value = offerName;
-  document.getElementById("edit_discount").value = discount;
-  document.getElementById("edit_start_date").value = new Date(startDate)
-    .toISOString()
-    .split("T")[0];
-  document.getElementById("edit_expiry_date").value = new Date(expiryDate)
-    .toISOString()
-    .split("T")[0];
-}
+    // Set the current offer details in the input fields
+    document.getElementById("editOfferId").value = offerId;
+    document.getElementById("edit_coupon_code").value = offerName;
+    document.getElementById("edit_discount").value = discount;
+    document.getElementById("edit_start_date").value = new Date(startDate)
+      .toISOString()
+      .split("T")[0];
+    document.getElementById("edit_expiry_date").value = new Date(expiryDate)
+      .toISOString()
+      .split("T")[0];
+  }
 
   function updateOffer(productId, offerId) {
     if (!offerId) return; // Don't do anything if no offer is selected
