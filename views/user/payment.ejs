@@ -109,6 +109,7 @@ include('../layouts/user/userheader') %>
                             class="payment-content d-none"
                           >
                             <h4>Pay Using Wallet</h4>
+                            <h3 class="my-5 ">Your wallet balance: ₹<%= userData.wallet %></h3>
                             <p>You can pay using wallet money.</p>
                             <div></div>
                             <button
@@ -477,7 +478,7 @@ include('../layouts/user/userheader') %>
     const result = await Swal.fire({
       icon: "warning",
       title: "Are you sure?",
-      text: `You are about to pay ₹${orderTotal} using your wallet. Are you sure you want to proceed?`,
+      text: `Are you sure to pay amount using your wallet. Are you sure you want to proceed?`,
       showCancelButton: true,
       confirmButtonText: "Yes, Pay",
       cancelButtonText: "Cancel",

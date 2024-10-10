@@ -26,6 +26,17 @@ exports.getLogin = (req, res) => {
   res.render("user/userLogin");
 };
 
+exports.getContact = (req, res) => {
+  const user = req.session.user;
+
+  res.render("user/contact", { user })
+}
+
+exports.getAbout = (req, res) => {
+    const user = req.session.user;
+  res.render("user/aboutus",{user})
+}
+
 //get sign up page
 exports.getSignup = async (req, res) => {
   let invailed = req.session.invailed;
@@ -310,7 +321,7 @@ exports.getProductDetails = async (req, res) => {
       .findOne({ _id: id })
       .populate("offer");
     const user = req.session.user;
-    res.render("user/productDetails", { productData, user });
+    res.render("user/productdetails", { productData, user });
   } catch (error) {
     console.log(error);
   }

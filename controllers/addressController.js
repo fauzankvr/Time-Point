@@ -1,5 +1,5 @@
 const addressModel = require("../models/addressModal")
-const userModel = require("../models/users")
+const userModel = require ("../models/users")
 
 exports.getAddAddress = async (req, res) => {
     const user = req.session.user

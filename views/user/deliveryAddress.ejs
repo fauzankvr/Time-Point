@@ -137,6 +137,7 @@ include('../layouts/user/userheader') %>
                   >
                     Continue
                   </button>
+                  <p class="text-danger mb-1 text-center" id="address_err"></p>
                 </div>
             </div>
           </div>
@@ -147,42 +148,65 @@ include('../layouts/user/userheader') %>
 </section>
 
 <script>
+  
+let selectedAddressId = "";
 
-  document.addEventListener("DOMContentLoaded", function () {
-    const cards = document.querySelectorAll(".address-card");
-    let selectedAddressId = cards[0].getAttribute("data-id");
+document.addEventListener("DOMContentLoaded", function () {
+  const cards = document.querySelectorAll(".address-card");
+  const continueBtn = document.getElementById("continueBtn");
+  const addressErr = document.getElementById("address_err");
+  if (cards.length > 0) {
+    selectedAddressId = cards[0].getAttribute("data-id");
+    cards[0].classList.add("selected");
+    continueBtn.disabled = false; 
+    addressErr.textContent = "";  
+  } else {
+    continueBtn.disabled = true;  
+    addressErr.textContent = "Please select an address"; 
+  }
 
-    cards.forEach((card) => {
-      card.addEventListener("click", function () {
-        cards.forEach((c) => c.classList.remove("selected"));
-        this.classList.add("selected");
-        selectedAddressId = this.getAttribute("data-id");
-      });
+  cards.forEach((card) => {
+    card.addEventListener("click", function () {
+      cards.forEach((c) => c.classList.remove("selected"));
+      this.classList.add("selected");
+      selectedAddressId = this.getAttribute("data-id");
+      continueBtn.disabled = false;
+      addressErr.textContent = "";  
     });
-
-    document
-      .getElementById("continueBtn")
-      .addEventListener("click", function () {
-        fetch("/submitOrder", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            selectedAddressId: selectedAddressId,
-          }),
-        })
-          .then((response) => response.json())
-          .then((data) => {
-            if (data.success) {
-              window.location.href = "/home/payment"; // Redirect to payment page
-            } else {
-              alert("Error processing order");
-            }
-          })
-          .catch((error) => console.error("Error:", error));
-      });
   });
+
+  continueBtn.addEventListener("click", function () {
+    if (selectedAddressId === "") {
+      addressErr.textContent = "Please select an address";
+      return;
+    }
+
+    fetch("/submitOrder", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        selectedAddressId: selectedAddressId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.href = "/home/payment"; 
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "Please enter a valid address.",
+            confirmButtonText: "OK",
+          });
+        }
+      })
+      .catch((error) => console.error("Error:", error));
+  });
+});
+
 
   function deleteAddress(id) {
     Swal.fire({
@@ -197,12 +221,11 @@ include('../layouts/user/userheader') %>
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        // Perform an AJAX request instead of submitting the form
+       
         fetch("/deleteAddress/" + id, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            // Include CSRF token here if needed
           },
         })
           .then((response) => response.json())

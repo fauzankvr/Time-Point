@@ -6,7 +6,7 @@ const orderModal = require("../models/orderModal");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
 const couponModel = require("../models/couponModal");
-const pdf = require("html-pdf");
+const pdf = require("html-pdf-node");
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -60,7 +60,6 @@ exports.getdeliveryAddress = async (req, res) => {
       return acc;
     }, 0);
     const discount = total - grandTotal;
-    console.log(discount);
 
     if (address.length == 0) {
       return res.render("user/deliveryAddress", {
@@ -163,6 +162,7 @@ exports.getPayment = async (req, res) => {
       couponDiscount,
       grandtotal,
       couponCode,
+      userData,
     });
   } catch (error) {
     console.error("Error in getPayment:", error);
@@ -173,8 +173,12 @@ exports.getPayment = async (req, res) => {
 exports.postSubmitOrder = async (req, res) => {
   const user = req.session.user;
   const setectedAddress = req.body;
-  req.session.address = setectedAddress;
-  res.json({ success: true });
+  if (!setectedAddress) {
+    return res.json({ success: false });
+  } else {
+      req.session.address = setectedAddress;
+      res.json({ success: true });
+  }
 };
 
 function generateCustomUUID() {
@@ -634,6 +638,7 @@ exports.getOrderHistory = async (req, res) => {
   res.render("user/orderList", { user, orderData });
 };
 
+
 exports.downloadInvoice = async (req, res) => {
   try {
     const { productId, orderId } = req.params;
@@ -658,8 +663,7 @@ exports.downloadInvoice = async (req, res) => {
     }
 
     let total = product.product_id.price * product.quantity;
-
-    let grandtotal = product.product_id.price * product.quantity;
+    let grandtotal = total;
     if (product.product_id.offer) {
       grandtotal = product.product_id.discount_price * product.quantity;
     }
@@ -680,7 +684,7 @@ exports.downloadInvoice = async (req, res) => {
         (applicablePrice * product.quantity * order.coupon.discount) / 100;
     }
 
-    grandtotal = grandtotal - couponDiscount;
+    grandtotal -= couponDiscount;
     const htmlContent = `
     <html>
     <head>
@@ -764,32 +768,33 @@ exports.downloadInvoice = async (req, res) => {
             <p><strong>Seller Registered Address:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372.</p>
             <p>The goods sold are intended for end user consumption and not for resale.</p>
         </div>
-        <div class="signature"><p>Authorized Signature</p><img src="signature.png" alt="Signature" style="width: 150px;"></div>
+        
     </body>
     </html>
     `;
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=invoice_${order.order_id}.pdf"
-    );
-
-    pdf.create(htmlContent).toStream((err, stream) => {
-      if (err) {
-        console.error("Error creating PDF:", err);
-        return res.status(500).send("Error creating PDF");
-      } else {
-        stream.pipe(res);
-      }
-    });
-
-    console.timeEnd("PDF Generation Time");
+    const options = { format: "A4" }; 
+    const file = { content: htmlContent };
+    pdf
+      .generatePdf(file, options)
+      .then((pdfBuffer) => {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          `attachment; filename=invoice_${order.order_id}.pdf`
+        );
+        res.send(pdfBuffer);
+      })
+      .catch((error) => {
+        console.error("Error generating PDF:", error);
+        res.status(500).json({ error: "Failed to generate PDF" });
+      });
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: error.message });
   }
 };
+
 
 // ================   coupon  ============
 exports.applyCoupon = async (req, res) => {

@@ -2,7 +2,7 @@ const usersCollection = require("../models/users");
 const orderModal = require("../models/orderModal");
 const productModal = require("../models/products");
 const bcrypt = require("bcrypt");
-const pdf = require("html-pdf");
+const pdf = require("html-pdf-node");
 const ExcelJS = require("exceljs");
 
 exports.getAdmin = async (req, res) => {
@@ -130,7 +130,7 @@ exports.getDashbord = async (req, res) => {
   let totalDiscount1 = 0;
   orderData.forEach((item) => {
     item.products.forEach((product) => {
-      totalDiscount1 += product.product_price - product.total_price;
+      totalDiscount1 += product.product_price * product.quantity - product.total_price;
     });
   });
 
@@ -363,6 +363,7 @@ exports.getDashbord = async (req, res) => {
   });
 };
 
+
 exports.generatePdf = async (req, res) => {
   const { sort, startDate, endDate } = req.query;
   let filter = {};
@@ -400,7 +401,6 @@ exports.generatePdf = async (req, res) => {
       }
     }
 
-    // Generate HTML content for the PDF
     const htmlContent = `
     <html>
       <head>
@@ -475,24 +475,29 @@ exports.generatePdf = async (req, res) => {
       </body>
     </html>
     `;
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      "attachment; filename=SalesReport.pdf"
-    );
-    // Create PDF from HTML content
-    pdf.create(htmlContent).toStream((err, stream) => {
-      if (err) {
-        console.error("Error creating PDF:", err);
-        return res.status(500).send("Error creating PDF");
-      }
-      stream.pipe(res);
-    });
+
+    const options = { format: "A4" }; 
+    const file = { content: htmlContent };
+    pdf
+      .generatePdf(file, options)
+      .then((pdfBuffer) => {
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader(
+          "Content-Disposition",
+          "attachment; filename=SalesReport.pdf"
+        );
+        res.send(pdfBuffer);
+      })
+      .catch((err) => {
+        console.error("Error generating PDF:", err);
+        res.status(500).send("Error generating PDF");
+      });
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("Error generating PDF");
   }
 };
+
 
 exports.generateExcel = async (req, res) => {
   const { sort, startDate, endDate } = req.query;

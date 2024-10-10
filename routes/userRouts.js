@@ -141,6 +141,13 @@ router.get(
 router.post("/home/wishlist", wishlistController.postWishlist);
 router.post("/wishlist/delete-item", wishlistController.deleteWishlist);
 
+//contact 
+router.get("/home/contact", userController.getContact);
+
+//about
+
+router.get("/home/about", userController.getAbout);
+
 // ================================== logout===============
 router.post("/logout", userController.getLogout);
 
