@@ -637,7 +637,7 @@ exports.getOrderHistory = async (req, res) => {
     .populate("products.product_id");
   res.render("user/orderList", { user, orderData });
 };
-
+const PDFDocument = require("pdfkit");
 
 exports.downloadInvoice = async (req, res) => {
   try {
@@ -685,116 +685,110 @@ exports.downloadInvoice = async (req, res) => {
     }
 
     grandtotal -= couponDiscount;
-    const htmlContent = `
-    <html>
-    <head>
-        <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 30px;
-        }
-        .invoice-header {
-            width: 100%;
-            text-align: left;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .invoice-header td {
-            padding: 5px;
-            vertical-align: top;
-        }
-        .invoice-details {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        .invoice-details th, .invoice-details td {
-            padding: 10px;
-            border: 1px solid #ddd;
-            text-align: left;
-        }
-        .invoice-details th {
-            background-color: #f5f5f5;
-        }
-        .invoice-footer {
-            font-size: 12px;
-            margin-top: 10px;
-        }
-        .invoice-footer table {
-            width: 100%;
-        }
-        .signature {
-            margin-top: 20px;
-            float: right;
-        }
-    </style>
-    </head>
-    <body>
-        <h1 style="text-align: center;">Tax Invoice</h1>
-        <table class="invoice-header">
-            <tr><td><strong>Order Id:</strong> ${order.order_id}</td></tr>
-            <tr><td><strong>Order Date:</strong> ${order.createdAt.toLocaleDateString()}</td>
-                <td><strong>Invoice Date:</strong> ${new Date().toLocaleDateString()}</td></tr>
-            <tr><td colspan="3"><strong>Sold By:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372</td></tr>
-        </table>
-        <table class="invoice-header">
-            <tr><td><strong>Shipping Address</strong><br>
-                ${order.address.name},<br>
-                ${order.address.locality},<br>
-                ${order.address.address},<br>
-                ${order.address.city} - ${order.address.pincode}, IN-${
-      order.address.state
-    }</td></tr>
-        </table>
-        <table class="invoice-details">
-            <thead>
-                <tr><th>Product</th><th>Price</th><th>Qty</th><th>Discount</th><th>Coupon Amount</th><th>Delivery Charge</th><th>Total</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>${product.product_id.product_name}</td><td>${
-      product.product_id.price
-    }</td><td>${product.quantity}</td><td>${discount.toFixed(
-      1
-    )}</td><td>${couponDiscount.toFixed(
-      1
-    )}</td><td>0</td><td>${grandtotal.toFixed(1)}</td></tr>
-            </tbody>
-            <tfoot><tr><td colspan="6" align="right"><strong>Total Price:</strong></td><td><strong>${grandtotal.toFixed(
-              1
-            )}</strong></td></tr></tfoot>
-        </table>
-        <div class="invoice-footer">
-            <p><strong>Seller Registered Address:</strong> TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372.</p>
-            <p>The goods sold are intended for end user consumption and not for resale.</p>
-        </div>
-        
-    </body>
-    </html>
-    `;
+    const doc = new PDFDocument({ size: "A4", margin: 40 });
+    let filename = `invoice_${order.order_id}.pdf`;
+    res.setHeader("Content-disposition", `attachment; filename=${filename}`);
+    res.setHeader("Content-type", "application/pdf");
 
-    const options = { format: "A4" }; 
-    const file = { content: htmlContent };
-    pdf
-      .generatePdf(file, options)
-      .then((pdfBuffer) => {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          `attachment; filename=invoice_${order.order_id}.pdf`
-        );
-        res.send(pdfBuffer);
-      })
-      .catch((error) => {
-        console.error("Error generating PDF:", error);
-        res.status(500).json({ error: "Failed to generate PDF" });
+    doc.pipe(res);
+
+    doc.fontSize(16).text("TIME POINT", { align: "center" });
+    doc
+      .fontSize(8)
+      .text("Your trusted partner in quality.", { align: "center" });
+    doc.moveDown(1);
+    doc.fontSize(14).text("Invoice", { align: "center" });
+    doc.moveDown(2);
+
+    doc.fontSize(10).text(`Order ID: ${order.order_id}`);
+    doc.text(`Order Date: ${order.createdAt.toLocaleDateString()}`);
+    doc.text(`Invoice Date: ${new Date().toLocaleDateString()}`);
+    doc.moveDown(1);
+
+    doc.fontSize(12).text("Shipping Address", { underline: true });
+    doc.fontSize(10).text(`${order.address.name}`);
+    doc.text(`${order.address.locality}`);
+    doc.text(`${order.address.address}`);
+    doc.text(
+      `${order.address.city} - ${order.address.pincode}, IN-${order.address.state}`
+    );
+    doc.moveDown(1);
+
+    doc.moveTo(40, doc.y).lineTo(550, doc.y).stroke();
+    doc.moveDown(1);
+
+    doc.fontSize(12).text("Product Details", { underline: true });
+    doc.moveDown(0.5);
+    const drawTableHeaders = (headers, y) => {
+      doc.font("Helvetica-Bold").fontSize(10);
+      let x = doc.page.margins.left;
+
+      headers.forEach((header) => {
+        doc.text(header.text, x + 5, y + 5, {
+          width: header.width,
+          align: header.align || "left",
+        });
+        doc.rect(x, y, header.width, 20).stroke();
+        x += header.width;
       });
+    };
+
+    const drawTableRow = (row, y) => {
+      doc.font("Helvetica").fontSize(9);
+      let x = doc.page.margins.left;
+
+      row.forEach((cell) => {
+        doc.text(cell.text, x + 5, y + 5, {
+          width: cell.width,
+          align: cell.align || "left",
+        });
+        doc.rect(x, y, cell.width, 20).stroke();
+        x += cell.width;
+      });
+    };
+
+    const headers = [
+      { text: "Product Name", width: 140 },
+      { text: "Price", width: 80 },
+      { text: "Qty", width: 60 },
+      { text: "Discount", width: 80 },
+      { text: "Coupon Amount", width: 80 },
+    ];
+
+    drawTableHeaders(headers, doc.y);
+    let y = doc.y + 20;
+
+    const itemRow = [
+      { text: product.product_id.product_name, width: 140 },
+      { text: product.product_id.price.toFixed(2), width: 80 },
+      { text: product.quantity.toString(), width: 60 },
+      { text: discount.toFixed(2), width: 80 },
+      { text: couponDiscount.toFixed(2), width: 80 },
+    ];
+    drawTableRow(itemRow, y);
+    y += 20;
+
+    doc.moveDown(1);
+    doc
+      .fontSize(10)
+      .text(`Total Price: ${grandtotal.toFixed(2)}`, { align: "right" });
+    doc.moveDown(1);
+
+    doc
+      .fontSize(8)
+      .text(
+        "Seller Registered Address: TIME POINT, CALICUT, THAMARASHERY, KERALA - 65372."
+      );
+    doc.text(
+      "The goods sold are intended for end user consumption and not for resale."
+    );
+
+    doc.end();
   } catch (error) {
     console.error("Error in downloadInvoice:", error);
     res.status(500).json({ error: error.message });
   }
 };
-
 
 // ================   coupon  ============
 exports.applyCoupon = async (req, res) => {

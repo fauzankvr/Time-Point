@@ -2,7 +2,6 @@ const usersCollection = require("../models/users");
 const orderModal = require("../models/orderModal");
 const productModal = require("../models/products");
 const bcrypt = require("bcrypt");
-const pdf = require("html-pdf-node");
 const ExcelJS = require("exceljs");
 
 exports.getAdmin = async (req, res) => {
@@ -364,6 +363,9 @@ exports.getDashbord = async (req, res) => {
 };
 
 
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
+
 exports.generatePdf = async (req, res) => {
   const { sort, startDate, endDate } = req.query;
   let filter = {};
@@ -390,7 +392,6 @@ exports.generatePdf = async (req, res) => {
       $lte: new Date(endDate),
     };
   }
-
   try {
     let orders = await orderModal.find(filter).populate("user_id");
     if (sort) {
@@ -400,103 +401,79 @@ exports.generatePdf = async (req, res) => {
         orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       }
     }
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const path = "./SalesReport.pdf";
+    const writeStream = fs.createWriteStream(path);
+    doc.pipe(writeStream);
+    doc
+      .fontSize(20)
+      .text("Sales Report", { align: "center" })
+      .moveDown()
+      .fontSize(12)
+      .text(`Sort: ${sort ? sort : "Default"}`, { align: "left" })
+      .moveDown();
 
-    const htmlContent = `
-    <html>
-      <head>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-          }
-          h1 {
-            color: #333;
-          }
-          p {
-            font-size: 14px;
-            color: #666;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-          }
-          table, th, td {
-            border: 1px solid #ddd;
-          }
-          th, td {
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            background-color: #f2f2f2;
-          }
-          tr:nth-child(even) {
-            background-color: #f9f9f9;
-          }
-          .grand-total {
-            font-weight: bold;
-            margin-top: 30px;
-            font-size: 23px;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>Sales Report</h1>
-        <p>Sort: ${sort ? sort : "Default"}</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Order ID</th>
-              <th>User</th>
-              <th>Date</th>
-              <th>Total Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${orders
-              .map(
-                (order) => `
-                  <tr>
-                    <td>${order.order_id}</td>
-                    <td>${order.user_id.name}</td> 
-                    <td>${order.createdAt.toDateString()}</td>
-                      <td>${order.grant_total_}</td>
-                  </tr>
-                `
-              )
-              .join("")}
-          </tbody>
-        </table>
-        <p class="grand-total">Grand Total: ${orders.reduce(
-          (total, order) => total + order.grant_total_,
-          0
-        )}</p> 
-      </body>
-    </html>
-    `;
+    doc
+      .fontSize(12)
+      .text("Order ID", 40, doc.y, { continued: true })
+      .text("User", 130, doc.y, { continued: true })
+      .text("Date", 250, doc.y, { continued: true })
+      .text("Total Amount", 390, doc.y);
 
-    const options = { format: "A4" }; 
-    const file = { content: htmlContent };
-    pdf
-      .generatePdf(file, options)
-      .then((pdfBuffer) => {
-        res.setHeader("Content-Type", "application/pdf");
-        res.setHeader(
-          "Content-Disposition",
-          "attachment; filename=SalesReport.pdf"
-        );
-        res.send(pdfBuffer);
-      })
-      .catch((err) => {
-        console.error("Error generating PDF:", err);
+    generateHr(doc, doc.y + 6);
+    doc.moveDown();
+    orders.forEach((order) => {
+      doc.fontSize(9);
+      doc
+        .text(order.order_id, 40, doc.y, { continued: true })
+        .text(order.user_id.name, 120, doc.y, { continued: true })
+        .text(order.createdAt.toDateString(), 190, doc.y, { continued: true })
+        .text(formatCurrency(order.grant_total_), 310, doc.y);
+
+      doc.moveDown();
+    });
+    const grandTotal = orders.reduce(
+      (total, order) => total + order.grant_total_,
+      0
+    );
+    doc
+      .moveDown()
+      .fontSize(12)
+      .text(`Grand Total: ${grandTotal.toFixed(2)}`, { align: "right" });
+
+    doc.end();
+    writeStream.on("finish", () => {
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        "attachment; filename=SalesReport.pdf"
+      );
+      const readStream = fs.createReadStream(path);
+      readStream.pipe(res);
+
+      readStream.on("error", (err) => {
+        console.error("Error reading PDF file:", err);
         res.status(500).send("Error generating PDF");
       });
+    });
+
+    writeStream.on("error", (err) => {
+      console.error("Error writing PDF file:", err);
+      res.status(500).send("Error generating PDF");
+    });
   } catch (error) {
     console.error("Error generating PDF:", error);
     res.status(500).send("Error generating PDF");
   }
 };
+
+function generateHr(doc, y) {
+  doc.strokeColor("#aaaaaa").lineWidth(1).moveTo(50, y).lineTo(550, y).stroke();
+}
+
+function formatCurrency(amount) {
+  return amount.toFixed(2);
+}
 
 
 exports.generateExcel = async (req, res) => {
